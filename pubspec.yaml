@@ -34,6 +34,39 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  encrypt: ^5.0.3
+  get: ^4.7.2
+  json_annotation: ^4.9.0
+  shelf: ^1.4.2
+  shelf_router_generator: ^1.1.1
+  shelf_router: ^1.1.4
+  pointycastle: ^3.9.1
+  url_launcher: ^6.3.1
+  path_provider: ^2.1.5
+  basic_utils: ^5.7.0
+  asn1lib: ^1.5.9
+  auto_route: ^10.0.1
+  auto_route_generator: ^10.0.1
+  mockito: ^5.4.5
+  flutter_html: ^3.0.0
+  universal_html: ^2.2.4
+  flutter_osm_plugin: ^1.3.8
+  http_interceptor: ^2.0.0
+  pem: ^2.0.5
+  geolocator: ^14.0.0
+  flutter_hooks: ^0.21.2
+  pointer_interceptor: ^0.10.1+2
+  osm_flutter_hooks: ^1.4.1
+  hovering: ^1.0.4
+  camera: ^0.11.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  intl: ^0.20.2
+  envied: ^1.1.1
+  flutter_secure_storage: ^4.2.1
+  flutter_lite_camera: ^0.0.1
+  flutter_map: ^8.1.1
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -45,7 +78,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
-
+  build_runner: ^2.4.15
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -58,9 +91,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/images/
+    - assets/images/Icones/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -87,3 +120,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+
+fonts :
+  - asset: KFOmCnqEu92Fr1Me4GZLCzYlKw.woff2
+  - asset: rP2up3q65FkAtHfwd-eIS2brbDN6gxP34F9jRRCe4W3gfQ8gb_VFRkzrbQ.woff2

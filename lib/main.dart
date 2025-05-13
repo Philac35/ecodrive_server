@@ -1,16 +1,51 @@
+import 'package:ecodrive_server/src/Modules/Authentication/Provider/Listenable/AuthProvider.dart';
+import 'package:ecodrive_server/src/Modules/Authentication/View/Form/Controller/AccountCreationController.dart';
+import 'package:ecodrive_server/src/Modules/Authentication/View/Form/Controller/ConnexionFormController.dart';
+import 'package:ecodrive_server/src/Modules/Authentication/View/Form/Controller/ControllerFormInterface.dart';
+import 'package:ecodrive_server/src/Router/AppRouter.dart';
+import 'package:ecodrive_server/src/Router/lib/src/Observer/NavigationObserver.dart';
+import 'package:ecodrive_server/src/Views/Forms/Controler/ContactFormController.dart';
+import 'package:ecodrive_server/src/Views/Graphisme/CustomColors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  Get.put(AccountCreationController());
+  debugPrint('AccountCreationController registered');
+
+  Get.put(ConnexionFormController());//In Authentication form
+  debugPrint('ConnexionFormController registered');
+  Get.put(ControllerFormInterface);
+  Get.put(ContactFormController());
+  runApp( MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+
+
+  final ColorScheme colorScheme = ColorScheme.light(
+    primary: Color(0xFF0051C1),
+    secondary: Color(0xFFC3D0F0),
+    tertiary: Color(0xFFE86A),
+  );
+  final _appRouter = AppRouter();
+
+   MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+
+      return MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+
+        routerConfig: _appRouter.config(
+          reevaluateListenable: AuthProvider(),
+          navigatorObservers: () => [NavigationObserver()],
+        ),
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -28,10 +63,14 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: colorScheme,
+        extensions: [
+          CustomColors(quaternary: Color(0xFF123456)),
+        ],
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+
+
     );
   }
 }
