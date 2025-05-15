@@ -1,29 +1,45 @@
+import 'dart:io';
+
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
+import 'package:flutter/foundation.dart';
 
+import '../../Loader/EnvironmentLoader.dart';
 
-class EcoDriveRouter {
+class FRouter {
 
-  dynamic app;
+  dynamic router;
+  late Map<String,String> configuration ;
 
   Router() {
-    app = Router();
+    router = Router();
+    getConfiguration();
   }
 
+  void setDefaultHeaders(HttpResponse response) {
+    response.headers.contentType = ContentType('application',ContentType.json.toString(), charset: 'utf-8');
+    response.headers.date= DateTime.now();
+    //response.headers.expires=;
 
+  }
   getRoutes() {
-    app.get('/ecodrive-api/driver', (Request request) {
+    router.get('/ecodrive-api/driver', (Request request) {
       return Response.ok('hello-world');
     });
 
-    app.get('/ecodrivef-api/<user>', (Request request, String user) {
+    router.get('/ecodrive-api/<user>', (Request request, String user) {
       return Response.ok('hello $user');
     });
   }
 
-  createServer() async {
-    var server = await io.serve(app, 'localhost', 8080);
+
+
+
+  getConfiguration() async {
+    EnvironmentLoader loader= EnvironmentLoader(path:"");
+    configuration=await loader.loadEnv('ServerConfiguration');
+
   }
 
 }
