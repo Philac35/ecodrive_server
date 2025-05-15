@@ -7,7 +7,7 @@ part of 'Notice.dart';
 // **************************************************************************
 
 Notice _$NoticeFromJson(Map<String, dynamic> json) => Notice(
-      id: (json['id'] as num?)?.toInt(),
+      idInt: (json['idInt'] as num?)?.toInt(),
       title: json['title'] as String,
       description: json['description'] as String,
       note: (json['note'] as num?)?.toInt(),

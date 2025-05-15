@@ -1,20 +1,23 @@
 import 'dart:convert';
-
-
 import 'dart:typed_data';
 
 
+import 'package:angel3_orm/angel3_orm.dart';
+import 'package:angel3_serialize/angel3_serialize.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../BDD/Model/Abstract/FAngelModel.dart';
 import 'Interface/entityInterface.dart';
 part 'Vehicule.g.dart';
 
+
+@orm
+@serializable
 @JsonSerializable()
+class Vehicule extends FAngelModel implements EntityInterface{
 
-class Vehicule  implements EntityInterface{
 
-
-  int? id;
+  int? idInt;
   String? brand;
   String? model;
   String? color;
@@ -26,7 +29,7 @@ class Vehicule  implements EntityInterface{
 
   List<String>?  preferences;
   String? assurance;
-   Vehicule({this.id,this.brand,this.model,this.color,this.energy,this.immatriculation,this.firstImmatriculation,this.nbPlaces,this.preferences,this.assurance});
+   Vehicule({this.idInt,this.brand,this.model,this.color,this.energy,this.immatriculation,this.firstImmatriculation,this.nbPlaces,this.preferences,this.assurance});
 
 
 //Serialization

@@ -7,7 +7,7 @@ part of 'Travel.dart';
 // **************************************************************************
 
 Travel _$TravelFromJson(Map<String, dynamic> json) => Travel(
-      id: (json['id'] as num?)?.toInt(),
+      idInt: (json['idInt'] as num?)?.toInt(),
       driver: Driver.fromJson(json['driver'] as Map<String, dynamic>),
       itinerary: Itinerary.fromJson(json['itinerary'] as Map<String, dynamic>),
       departureTime: json['departureTime'] == null
@@ -25,7 +25,7 @@ Travel _$TravelFromJson(Map<String, dynamic> json) => Travel(
         : DateTime.parse(json['arrivalTime'] as String);
 
 Map<String, dynamic> _$TravelToJson(Travel instance) => <String, dynamic>{
-      'id': instance.id,
+      'idInt': instance.idInt,
       'driver': instance.driver.toJson(),
       'itinerary': instance.itinerary.toJson(),
       'vehicule': instance.vehicule.toJson(),
@@ -33,6 +33,6 @@ Map<String, dynamic> _$TravelToJson(Travel instance) => <String, dynamic>{
       'validate': instance.validate,
       'departureTime': instance.departureTime?.toIso8601String(),
       'arrivalTime': instance.arrivalTime?.toIso8601String(),
-      'createdAt': instance.createdAt.toIso8601String(),
+      'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };

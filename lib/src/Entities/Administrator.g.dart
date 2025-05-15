@@ -8,7 +8,7 @@ part of 'Administrator.dart';
 
 Administrator _$AdministratorFromJson(Map<String, dynamic> json) =>
     Administrator(
-      id: (json['id'] as num?)?.toInt(),
+      idInt: (json['idInt'] as num?)?.toInt(),
       firstname: json['firstname'] as String?,
       lastname: json['lastname'] as String?,
       age: (json['age'] as num?)?.toInt(),
@@ -29,7 +29,7 @@ Administrator _$AdministratorFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$AdministratorToJson(Administrator instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'idInt': instance.idInt,
       'firstname': instance.firstname,
       'lastname': instance.lastname,
       'age': instance.age,

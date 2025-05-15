@@ -7,7 +7,7 @@ part of 'Address.dart';
 // **************************************************************************
 
 Address _$AddressFromJson(Map<String, dynamic> json) => Address(
-      id: (json['id'] as num?)?.toInt(),
+      idInt: (json['idInt'] as num?)?.toInt(),
       type: json['type'] as String?,
       address: json['address'] as String,
       complementAddress: json['complementAddress'] as String?,
@@ -20,7 +20,7 @@ Address _$AddressFromJson(Map<String, dynamic> json) => Address(
     )..number = (json['number'] as num?)?.toInt();
 
 Map<String, dynamic> _$AddressToJson(Address instance) => <String, dynamic>{
-      'id': instance.id,
+      'id': instance.idInt,
       'number': instance.number,
       'type': instance.type,
       'address': instance.address,

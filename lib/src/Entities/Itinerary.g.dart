@@ -7,7 +7,7 @@ part of 'Itinerary.dart';
 // **************************************************************************
 
 Itinerary _$ItineraryFromJson(Map<String, dynamic> json) => Itinerary(
-      id: (json['id'] as num?)?.toInt(),
+      idInt: (json['idInt'] as num?)?.toInt(),
       price: (json['price'] as num?)?.toDouble(),
       addressDeparture: json['addressDeparture'] == null
           ? null
@@ -25,7 +25,7 @@ Itinerary _$ItineraryFromJson(Map<String, dynamic> json) => Itinerary(
     );
 
 Map<String, dynamic> _$ItineraryToJson(Itinerary instance) => <String, dynamic>{
-      'id': instance.id,
+      'idInt': instance.idInt,
       'price': instance.price,
       'addressDeparture': instance.addressDeparture?.toJson(),
       'addressArrival': instance.addressArrival?.toJson(),

@@ -1,15 +1,19 @@
 
+import 'package:angel3_orm/angel3_orm.dart';
+import 'package:angel3_serialize/angel3_serialize.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../Services/Parser/Uint8ListJsonConverter.dart';
+import '../BDD/Model/Abstract/FAngelModel.dart';
 import 'Interface/entityInterface.dart';
 import 'dart:typed_data';
 part 'Photo.g.dart';
 
-
+@orm
+@serializable
 @JsonSerializable()
-class Photo  implements EntityInterface{
-  int? id;
+class Photo extends FAngelModel  implements EntityInterface{
+  int? idInt;
   String? title;
   String? uri;
   String? description;
@@ -17,7 +21,7 @@ class Photo  implements EntityInterface{
   Uint8List? photo;
 
 
-  Photo({this.id,required this.title, this.uri, this.description, this.photo });
+  Photo({this.idInt,required this.title, this.uri, this.description, this.photo });
   //Serialization
   factory Photo.fromJson(Map<String, dynamic> json) => _$PhotoFromJson(json);
 

@@ -7,7 +7,7 @@ part of 'Photo.dart';
 // **************************************************************************
 
 Photo _$PhotoFromJson(Map<String, dynamic> json) => Photo(
-      id: (json['id'] as num?)?.toInt(),
+      idInt: (json['idInt'] as num?)?.toInt(),
       title: json['title'] as String?,
       uri: json['uri'] as String?,
       description: json['description'] as String?,

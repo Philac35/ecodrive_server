@@ -1,8 +1,11 @@
 
 
+import 'package:angel3_orm/angel3_orm.dart';
+import 'package:angel3_serialize/angel3_serialize.dart';
 import 'package:ecodrive_server/src/Entities/Itinerary.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../BDD/Model/Abstract/FAngelModel.dart';
 import 'Driver.dart';
 import 'Interface/entityInterface.dart';
 import 'Itinerary.dart';
@@ -10,9 +13,11 @@ import 'Vehicule.dart';
 
 part 'Travel.g.dart';
 
+@orm
+@serializable
 @JsonSerializable(explicitToJson: true)
-class Travel  implements EntityInterface{
-  int? id;
+class Travel extends FAngelModel implements EntityInterface{
+  int? idInt;
   Driver driver;
   Itinerary itinerary;
 
@@ -21,11 +26,11 @@ class Travel  implements EntityInterface{
   List? validate;
   DateTime? departureTime;
   DateTime? arrivalTime;
-  DateTime createdAt;
+  DateTime? createdAt;
   DateTime? updatedAt;
 
 
-  Travel({this.id, required this.driver,required this.itinerary,required this.departureTime,required this.vehicule, this.userList,this.validate,required this.createdAt, this.updatedAt, });
+  Travel({this.idInt, required this.driver,required this.itinerary,required this.departureTime,required this.vehicule, this.userList,this.validate,required this.createdAt, this.updatedAt, });
 
 
 //Serialization
