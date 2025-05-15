@@ -20,6 +20,7 @@ class HTMLService extends AbstractHTMLService {
   late EncryptService cryptService;
   bool? isEncrypted;
 
+
   HTMLService({Request? request, this.isEncrypted=true}) : super(request){
     if(isEncrypted!){
     this.cryptService= EncryptService();}
@@ -93,7 +94,8 @@ class HTMLService extends AbstractHTMLService {
 
   @override
   Future<bool> send({htmlRequest,String? method,dynamic data, bool? isEncrypted}) async {
-    if (htmlRequest is! String) {
+
+     if (htmlRequest is! String) {
       print('Invalid request type: $htmlRequest');
       LogSystem().debug('Invalid request type: $htmlRequest');
       return false;

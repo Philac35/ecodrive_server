@@ -51,7 +51,7 @@ class ContactFormState extends State<ContactForm> {
           FTextField(
               key: ValueKey('contact_email'),
               name: 'Email',
-              text: "Votre Email",
+              text: "Email de votre contact",
               type: "email",
               placeholder: "Veuillez entrer votre adresse mail!",
               textValidator: "Le champ ne contient pas un email valide"),

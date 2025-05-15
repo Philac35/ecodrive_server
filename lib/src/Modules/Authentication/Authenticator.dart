@@ -65,6 +65,8 @@ class Authenticator{
 
 
       */
+
+   // Set Bearer :    // response.headers.set(HttpHeaders.authorizationHeader,'Bearer <token>',);
    return value;
  }
 

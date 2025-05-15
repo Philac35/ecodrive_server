@@ -53,7 +53,7 @@ class HTMLFetchEntityService<T extends EntityInterface>  extends AbstractHTMLSer
   /**
    * Function parseResult
    * /!\ A Response can Contain Several Entities
-   * @Return Entity
+   * @Return Entities
    */
   dynamic parseResult()async {
     try {

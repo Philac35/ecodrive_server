@@ -4,6 +4,7 @@ import 'package:ecodrive_server/src/Modules/Authentication/View/Form/Controller/
 import 'package:ecodrive_server/src/Modules/Authentication/View/Form/Controller/ControllerFormInterface.dart';
 import 'package:ecodrive_server/src/Router/AppRouter.dart';
 import 'package:ecodrive_server/src/Router/lib/src/Observer/NavigationObserver.dart';
+import 'package:ecodrive_server/src/Server/Server.dart';
 import 'package:ecodrive_server/src/Views/Forms/Controler/ContactFormController.dart';
 import 'package:ecodrive_server/src/Views/Graphisme/CustomColors.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,8 @@ class MyApp extends StatelessWidget {
     secondary: Color(0xFFC3D0F0),
     tertiary: Color(0xFFE86A),
   );
-  final _appRouter = AppRouter();
+  final _appRouter = AppRouter(); //Router Autoroute
+  final _server= Server();
 
    MyApp({super.key});
 

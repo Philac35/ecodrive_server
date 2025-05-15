@@ -53,7 +53,7 @@ class AccountCreationController extends GetxController implements ControllerForm
     );
 
     // Debug print the entire entityMap
-    debugPrint('Entity Map: $entityMap');
+    debugPrint('Entities Map: $entityMap');
 
    Future <bool>? isCreated ;
    int entityId ;

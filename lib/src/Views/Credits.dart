@@ -85,8 +85,8 @@ class _CreditsState extends State<Credits> {
                       Html(
                         data: '''</div class='page-content page-Credits'></div><h1>Crédits</h1> <br/>
                             <h2>Je remercie :</h2>
-                        <ul>
-                        <li>la Région Bretagne pour le soutient apporté</li>
+                        <ul>  
+                        <li>la Région Bretagne pour le soutien apporté</li>
                       <li>le Département d'Ille et Vilaine</li>
                       <li>l'organisme de formation STUDI , Mr Pierre Charvet son Directeur Général </li> 
                       </ul>
@@ -102,7 +102,7 @@ class _CreditsState extends State<Credits> {
                       <li>Mr Christian Lohez</li>
 
 
-                      <li>...</li>
+                     
                       </ul>
 
                       <h2>Images</h2>

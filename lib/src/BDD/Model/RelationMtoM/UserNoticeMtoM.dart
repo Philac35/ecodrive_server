@@ -1,8 +1,8 @@
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
 
-import '../Notice.dart';
-import '../User.dart';
+import '../AbstractModels/Notice.dart';
+import '../AbstractModels/User.dart';
 
 @orm
 @serializable

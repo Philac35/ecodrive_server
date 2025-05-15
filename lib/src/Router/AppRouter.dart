@@ -26,6 +26,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(path: '/connexion', page: Connexion.page),//, guards:[this.authGard]),
     AutoRoute(path: '/administrateur', page: Administrateur.page),//,guards:[this.authGard])
     AutoRoute(path: '/employé', page: Employe.page), //,guards:[this.authGard]
+    AutoRoute(path: '/contact', page: Contact.page),
     AutoRoute(path: '/credits', page: Credits.page),
   ];
 
