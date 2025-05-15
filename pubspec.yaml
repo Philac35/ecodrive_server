@@ -33,40 +33,52 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
+  angel3_orm: ^8.3.2
+  angel3_orm_generator: ^8.4.1
+  angel3_migration_runner: ^8.4.1
+  angel3_serialize: ^8.3.0
+  angel3_orm_mysql: ^8.3.1
+  angel3_orm_postgres: ^8.3.1
+  asn1lib: ^1.5.9
+  auto_route: ^10.0.1
+  auto_route_generator: ^10.0.1
+  basic_utils: ^5.7.0
+  camera: ^0.11.1
   cupertino_icons: ^1.0.8
   encrypt: ^5.0.3
+  envied: ^1.1.1
+  flutter_lite_camera: ^0.0.1
+  flutter_dotenv: ^5.2.1
+  flutter_hooks: ^0.21.2
+  flutter_html: ^3.0.0
+  flutter_map: ^8.1.1
+  flutter_osm_plugin: ^1.3.8
+  flutter_secure_storage: ^4.2.1
+  geolocator: ^14.0.0
   get: ^4.7.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  hovering: ^1.0.4
+  http_interceptor: ^2.0.0
+  image_picker: ^1.1.2
+  intl: ^0.20.2
   json_annotation: ^4.9.0
+  path_provider: ^2.1.5
+  mockito: ^5.4.5
+  pem: ^2.0.5
+  pointer_interceptor: ^0.10.1+2
+  osm_flutter_hooks: ^1.4.1
   shelf: ^1.4.2
   shelf_router_generator: ^1.1.1
   shelf_router: ^1.1.4
   pointycastle: ^3.9.1
   url_launcher: ^6.3.1
-  path_provider: ^2.1.5
-  basic_utils: ^5.7.0
-  asn1lib: ^1.5.9
-  auto_route: ^10.0.1
-  auto_route_generator: ^10.0.1
-  mockito: ^5.4.5
-  flutter_html: ^3.0.0
+  postgres: ^3.5.6
   universal_html: ^2.2.4
-  flutter_osm_plugin: ^1.3.8
-  http_interceptor: ^2.0.0
-  pem: ^2.0.5
-  geolocator: ^14.0.0
-  flutter_hooks: ^0.21.2
-  pointer_interceptor: ^0.10.1+2
-  osm_flutter_hooks: ^1.4.1
-  hovering: ^1.0.4
-  camera: ^0.11.1
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
-  intl: ^0.20.2
-  envied: ^1.1.1
-  flutter_secure_storage: ^4.2.1
-  flutter_lite_camera: ^0.0.1
-  flutter_map: ^8.1.1
-  image_picker: ^1.1.2
+  universal_platform: ^1.1.0
+
+
+
 
 dev_dependencies:
   flutter_test:
@@ -94,6 +106,9 @@ flutter:
   assets:
     - assets/images/
     - assets/images/Icones/
+    #Notify configuration files
+    - lib/src/Configuration/Bdd/ConfigurationBDD.dev.env
+    - lib/src/Configuration/Bdd/ConfigurationBDD.prod.env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
