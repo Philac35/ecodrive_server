@@ -13,8 +13,7 @@ import 'Vehicule.dart';
 
 part 'Travel.g.dart';
 
-@orm
-@serializable
+
 @JsonSerializable(explicitToJson: true)
 class Travel extends FAngelModel implements EntityInterface{
   int? idInt;

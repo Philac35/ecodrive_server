@@ -12,8 +12,6 @@ part 'Address.g.dart';
 
 
 
-@orm
-@serializable
 @JsonSerializable()
 class Address extends  FAngelModel implements EntityInterface {
 

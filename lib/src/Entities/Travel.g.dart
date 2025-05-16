@@ -15,7 +15,7 @@ Travel _$TravelFromJson(Map<String, dynamic> json) => Travel(
           : DateTime.parse(json['departureTime'] as String),
       vehicule: Vehicule.fromJson(json['vehicule'] as Map<String, dynamic>),
       userList: json['userList'] as List<dynamic>?,
-      validate: json['validate'] as List<dynamic>?,
+      validate: json['validIntate'] as List<dynamic>?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: json['updatedAt'] == null
           ? null

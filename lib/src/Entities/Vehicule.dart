@@ -11,8 +11,7 @@ import 'Interface/entityInterface.dart';
 part 'Vehicule.g.dart';
 
 
-@orm
-@serializable
+
 @JsonSerializable()
 class Vehicule extends FAngelModel implements EntityInterface{
 

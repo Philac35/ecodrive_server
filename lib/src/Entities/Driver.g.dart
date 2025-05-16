@@ -29,7 +29,7 @@ Driver _$DriverFromJson(Map<String, dynamic> json) => Driver(
           ? null
           : Notice.fromJson(json['notice'] as Map<String, dynamic>),
       preferences: json['preferences'] as List<dynamic>?,
-      drivinglicense: json['drivinglicense'] as String?,
+      drivinglicense: json['drivinglicense'] as DrivingLicence?,
     );
 
 Map<String, dynamic> _$DriverToJson(Driver instance) => <String, dynamic>{

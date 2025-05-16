@@ -16,8 +16,6 @@ import 'Photo.dart';
 
 part 'Administrator.g.dart';
 
-@orm
-@serializable
 @JsonSerializable(explicitToJson: true)
 class Administrator extends Person  implements EntityInterface{
 

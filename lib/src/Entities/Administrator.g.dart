@@ -29,7 +29,7 @@ Administrator _$AdministratorFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$AdministratorToJson(Administrator instance) =>
     <String, dynamic>{
-      'idInt': instance.idInt,
+      'id': instance.id,
       'firstname': instance.firstname,
       'lastname': instance.lastname,
       'age': instance.age,

@@ -17,7 +17,7 @@ Notice _$NoticeFromJson(Map<String, dynamic> json) => Notice(
     );
 
 Map<String, dynamic> _$NoticeToJson(Notice instance) => <String, dynamic>{
-      'id': instance.id,
+      'idInt': instance.idInt,
       'title': instance.title,
       'description': instance.description,
       'note': instance.note,

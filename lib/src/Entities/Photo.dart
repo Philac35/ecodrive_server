@@ -9,8 +9,7 @@ import 'Interface/entityInterface.dart';
 import 'dart:typed_data';
 part 'Photo.g.dart';
 
-@orm
-@serializable
+
 @JsonSerializable()
 class Photo extends FAngelModel  implements EntityInterface{
   int? idInt;

@@ -20,7 +20,7 @@ Address _$AddressFromJson(Map<String, dynamic> json) => Address(
     )..number = (json['number'] as num?)?.toInt();
 
 Map<String, dynamic> _$AddressToJson(Address instance) => <String, dynamic>{
-      'id': instance.idInt,
+      'idInt': instance.idInt,
       'number': instance.number,
       'type': instance.type,
       'address': instance.address,

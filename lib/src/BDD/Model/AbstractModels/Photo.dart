@@ -1,19 +1,22 @@
 
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Vehicule.dart';
+
 
 import '../../../Services/Parser/Uint8ListJsonConverter.dart';
 import '../Abstract/FAngelModel.dart';
 
+import 'Employee.dart';
+import './User.dart';
+
 
  import '../../../Entities/Interface/entityInterface.dart';
 import 'dart:typed_data';
-
+import './Abstract/Person.dart';
 
 @orm
 @serializable
-@JsonSerializable()
 abstract class Photo extends FAngelModel  implements EntityInterface{
   int? idInt;
   String? title;
@@ -22,10 +25,19 @@ abstract class Photo extends FAngelModel  implements EntityInterface{
   @Uint8ListJsonConverter()
   Uint8List? photo;
 
+  @belongsTo
+  Person? person;
 
-  Photo({this.idInt,required this.title, this.uri, this.description, this.photo });
+ @belongsTo
+ Vehicule? vehicule;
+
+
+  Photo({this.idInt,required this.title, this.uri, this.description, this.photo , this.person, this.vehicule});
   //Serialization
- // factory Photo.fromJson(Map<String, dynamic> json) => _$PhotoFromJson(json);
+  factory Photo.fromJson(Map<String, dynamic> json) {
+    // TODO: implement factory
+    throw UnimplementedError();
+  }
 
   //To Json
   Map<String, dynamic> toJson();

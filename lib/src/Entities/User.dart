@@ -13,8 +13,7 @@ part 'User.g.dart';
 
 
 
-@orm
-@serializable
+
 @JsonSerializable(explicitToJson: true)
 class User extends Person  implements EntityInterface{
 

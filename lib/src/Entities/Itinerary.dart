@@ -12,8 +12,7 @@ import 'Interface/entityInterface.dart';
 part 'Itinerary.g.dart';
 
 
-@orm
-@serializable
+
 @JsonSerializable(explicitToJson: true)
 class Itinerary extends FAngelModel implements EntityInterface {
 

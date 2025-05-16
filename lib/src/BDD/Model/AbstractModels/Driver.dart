@@ -3,11 +3,14 @@ import "dart:typed_data";
 
 import "package:angel3_orm/angel3_orm.dart";
 import "package:angel3_serialize/angel3_serialize.dart";
+
+import "package:ecodrive_server/src/BDD/Model/AbstractModels/Vehicule.dart";
 import "package:ecodrive_server/src/Entities/User.dart";
-import "package:json_annotation/json_annotation.dart";
+
 
 import "../../../Entities/Interface/entityInterface.dart";
 import "./Modules/Authentication/Entities/AuthUser.dart";
+import "./DrivingLicence.dart";
 import "./Notice.dart";
 import "Address.dart";
 
@@ -19,15 +22,32 @@ import "Photo.dart";
 @serializable
 abstract class Driver extends User  implements EntityInterface{
 
+  @hasMany
   Notice? notice;
   List? preferences;
   String? drivinglicense;  //will be stocked as Blob in BDD
 
-  Driver(  {   super.idInt,   required super. firstname,   required super. lastname,  super.age,   super. gender,  super. address,   super.email,   super. photo,   required super.authUser,   super.createdAt,this.notice, this.preferences,this.drivinglicense }):super() ;
+  @hasOne
+  Vehicule vehicule;
+  DrivingLicence? drivingLicence;
 
+
+
+  Driver({ super.idInt,   required super. firstname,   required super. lastname,  super.age,   super. gender,  super. address,   super.email,   super. photo,   required super.authUser,   super.createdAt,this.notice, this.preferences,this.drivinglicense, required this.vehicule }):super() ;
+
+
+
+  //Serialization
+  factory Driver.fromJson(Map<String, dynamic> json)  {
+    // TODO: implement factory
+    throw UnimplementedError();
+  }
+
+
+  //To Json
+  Map<String, dynamic> toJson();
 
 
 
 
 }
-

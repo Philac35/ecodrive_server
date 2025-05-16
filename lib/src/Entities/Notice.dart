@@ -7,8 +7,7 @@ import 'Interface/entityInterface.dart';
 import 'User.dart';
 
 part 'Notice.g.dart';
-@orm
-@serializable
+
 @JsonSerializable()
 class Notice extends FAngelModel implements EntityInterface{
 

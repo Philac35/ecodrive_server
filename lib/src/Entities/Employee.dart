@@ -11,8 +11,7 @@ import 'Photo.dart';
 part 'Employee.g.dart';
 
 
-@orm
-@serializable
+
 @JsonSerializable(explicitToJson: true)
 class Employee extends Person  implements EntityInterface{
  
