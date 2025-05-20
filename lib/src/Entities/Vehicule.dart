@@ -8,6 +8,8 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../BDD/Model/Abstract/FAngelModel.dart';
 import 'Interface/entityInterface.dart';
+
+import 'Driver.dart';
 part 'Vehicule.g.dart';
 
 
@@ -17,8 +19,9 @@ class Vehicule extends FAngelModel implements EntityInterface{
 
 
   int? idInt;
+  Driver? driver;
   String? brand;
-  String? model;
+  String? modele;   //model is a used term in Angel 3, we should better use french term
   String? color;
   String? energy;
   String? immatriculation;
@@ -28,7 +31,7 @@ class Vehicule extends FAngelModel implements EntityInterface{
 
   List<String>?  preferences;
   String? assurance;
-   Vehicule({this.idInt,this.brand,this.model,this.color,this.energy,this.immatriculation,this.firstImmatriculation,this.nbPlaces,this.preferences,this.assurance});
+   Vehicule({this.idInt,this.driver,this.brand,this.modele,this.color,this.energy,this.immatriculation,this.firstImmatriculation,this.nbPlaces,this.preferences,this.assurance});
 
 
 //Serialization

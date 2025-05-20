@@ -24,7 +24,7 @@ class User extends Person  implements EntityInterface{
 
 
 
-  User({super.idInt,   required super.firstname,   required super.lastname,   super.age,   super.gender,   super.address,   super.email,   super.photo,   required super.authUser, super.createdAt}):super();
+  User({super.idInt,   required super.firstname,   required super.lastname,   super.age,   super.gender,   super.address,   super.email,   super.photo,   required super.authUser, super.createdAt, super.id}):super();
 
 
   static User create(Map<String, dynamic> parameters) {

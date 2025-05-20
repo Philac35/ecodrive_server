@@ -3,7 +3,7 @@ import "dart:typed_data";
 
 import "package:angel3_orm/angel3_orm.dart";
 import "package:angel3_serialize/angel3_serialize.dart";
-import "package:ecodrive_server/src/BDD/Model/AbstractModels/DrivingLicence.dart";
+import "package:ecodrive_server/src/BDD/Model/AbstractModels/DrivingLicence2dart";
 import "package:ecodrive_server/src/Entities/User.dart";
 import "package:json_annotation/json_annotation.dart";
 

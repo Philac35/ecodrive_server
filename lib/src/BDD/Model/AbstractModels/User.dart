@@ -1,5 +1,8 @@
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Modules/Authentication/Entities/AuthUser.dart';
+import 'package:optional/optional_internal.dart';
+import '../FAngelModelQuery.dart';
 import './Abstract/Person.dart';
 
 
@@ -8,6 +11,10 @@ import '../../../Entities/Interface/entityInterface.dart';
 import 'Address.dart';
 import 'Photo.dart';
 
+//Import migration system
+import 'package:angel3_migration/angel3_migration.dart';
+import 'package:angel3_orm/angel3_orm.dart';
+part 'User.g.dart';
 
 
 @orm

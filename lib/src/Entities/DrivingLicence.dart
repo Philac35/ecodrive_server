@@ -1,3 +1,5 @@
+import 'dart:nativewrappers/_internal/vm/lib/typed_data_patch.dart';
+
 import 'package:ecodrive_server/src/Entities/Driver.dart';
 import 'package:ecodrive_server/src/Entities/Photo.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -14,6 +16,9 @@ class DrivingLicence implements DocumentInterface {
   int identificationNumber;
 
   @override
+  Uint8List? documentPdf;
+
+  @override
   Photo? photo;
 
   @override
@@ -23,7 +28,7 @@ class DrivingLicence implements DocumentInterface {
   Driver? driver;
 
 
-  DrivingLicence({this.idInt,required this.title, required this.identificationNumber, required this.driver, this.photo});
+  DrivingLicence({this.idInt,required this.title, required this.identificationNumber, required this.driver, this.documentPdf,this.photo});
 
 
   //Serialization

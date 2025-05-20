@@ -3,12 +3,17 @@ import 'dart:core';
 
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
+import 'package:optional/optional_internal.dart';
 
 import '../Abstract/FAngelModel.dart';
+import '../FAngelModelQuery.dart';
 import 'Address.dart';
 import '../../../Entities/Interface/entityInterface.dart';
 
-
+//Import migration system
+import 'package:angel3_migration/angel3_migration.dart';
+import 'package:angel3_orm/angel3_orm.dart';
+part 'Itinerary.g.dart';
 
 @orm
 @serializable

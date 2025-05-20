@@ -3,9 +3,10 @@ import 'package:angel3_model/angel3_model.dart';
 
 @serializable
 abstract class FAngelModel extends Model {
+  String? _id;
   // The int representation you want in your Dart code
-  int get _id;
-  set _id(int value);
+
+
 
   // Override id as String? for Angel, but bridge to intId
   @override
@@ -14,9 +15,9 @@ abstract class FAngelModel extends Model {
   @override
   set id(String? value) {
     if (value == null) {
-      _id = 0; // or handle as needed
+      _id = 0 as String?; // or handle as needed
     } else {
-      _id = int.tryParse(value) ?? 0;
+      _id = (int.tryParse(value) ?? 0) as String?;
     }
   }
 }

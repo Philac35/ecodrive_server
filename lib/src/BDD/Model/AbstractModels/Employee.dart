@@ -1,5 +1,7 @@
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
+import 'package:optional/optional_internal.dart';
+import '../FAngelModelQuery.dart';
 import './Modules/Authentication/Entities/AuthUser.dart';
 
  import '../../../Entities/Interface/entityInterface.dart';
@@ -8,6 +10,10 @@ import 'Address.dart';
 import 'Photo.dart';
 
 
+//Import migration system
+import 'package:angel3_migration/angel3_migration.dart';
+import 'package:angel3_orm/angel3_orm.dart';
+part 'Employee.g.dart';
 
 
 @orm
@@ -25,4 +31,8 @@ abstract class Employee extends Person  implements EntityInterface{
 
 //To Json
    Map<String, dynamic> toJson() ;
+
+
+
+
 }

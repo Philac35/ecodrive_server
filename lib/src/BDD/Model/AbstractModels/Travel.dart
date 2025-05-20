@@ -2,16 +2,23 @@
 
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
-import 'package:ecodrive_server/src/Entities/Itinerary.dart';
+
+import 'package:optional/optional_internal.dart';
 
 
 
 import '../Abstract/FAngelModel.dart';
+import '../FAngelModelQuery.dart';
 import 'Driver.dart';
 import '../../../Entities/Interface/entityInterface.dart';
 import './Itinerary.dart' as iti;
+import 'Itinerary.dart';
 import 'Vehicule.dart';
 
+//Import migration system
+import 'package:angel3_migration/angel3_migration.dart';
+import 'package:angel3_orm/angel3_orm.dart';
+part 'Travel.g.dart';
 
 
 @orm

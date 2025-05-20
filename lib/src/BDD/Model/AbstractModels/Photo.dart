@@ -1,12 +1,16 @@
 
+import 'dart:convert';
+
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
 import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Vehicule.dart';
+import 'package:optional/optional_internal.dart';
 
 
 import '../../../Services/Parser/Uint8ListJsonConverter.dart';
 import '../Abstract/FAngelModel.dart';
 
+import '../FAngelModelQuery.dart';
 import 'Employee.dart';
 import './User.dart';
 
@@ -14,6 +18,11 @@ import './User.dart';
  import '../../../Entities/Interface/entityInterface.dart';
 import 'dart:typed_data';
 import './Abstract/Person.dart';
+
+//Import migration system
+import 'package:angel3_migration/angel3_migration.dart';
+import 'package:angel3_orm/angel3_orm.dart';
+part 'Photo.g.dart';
 
 @orm
 @serializable

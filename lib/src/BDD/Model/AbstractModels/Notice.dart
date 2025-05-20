@@ -1,13 +1,19 @@
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
+import 'package:optional/optional_internal.dart';
 
 
 import '../../../Entities/Interface/entityInterface.dart';
 import '../Abstract/FAngelModel.dart';
 
+import '../FAngelModelQuery.dart';
 import 'Driver.dart';
 import 'User.dart';
 
+//Import migration system
+import 'package:angel3_migration/angel3_migration.dart';
+import 'package:angel3_orm/angel3_orm.dart';
+part 'Notice.g.dart';
 
 @orm
 @serializable

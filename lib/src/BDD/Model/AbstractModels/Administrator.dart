@@ -6,6 +6,7 @@ import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Modules/Authenticat
 
 
 import '../../../Entities/Interface/entityInterface.dart';
+import '../FAngelModelQuery.dart';
 import './Abstract/Person.dart';
 
 import './Modules/Authentication/Entities/AuthUser.dart';
@@ -16,7 +17,11 @@ import './Employee.dart';
 import 'Address.dart';
 import 'Photo.dart';
 
-
+//Import migration system
+import 'package:angel3_migration/angel3_migration.dart';
+import 'package:angel3_orm/angel3_orm.dart';
+import 'package:optional/optional.dart';
+part 'Administrator.g.dart';
 
 @orm
 @serializable
@@ -26,7 +31,7 @@ abstract class Administrator extends Person  implements EntityInterface{
   @override
   AuthUser? authUser;
 
-  Administrator({ super.idInt,required super.firstname,required super.lastname,super.age,super.gender, super.address, super.photo, required super.authUser, super.createdAt}):super();
+  Administrator({ super.idInt,required super.firstname,required super.lastname,super.age,super.gender, super.address,  String? email,super.photo, required super.authUser, super.createdAt, DateTime? updatedAt}):super();
 
   bool  delete(Person person);
   bool   suspend(Person person);
@@ -46,6 +51,7 @@ abstract class Administrator extends Person  implements EntityInterface{
 
   //To Json
   Map<String, dynamic> toJson() ;
+
 }
 
 
