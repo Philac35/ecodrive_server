@@ -969,7 +969,7 @@ packages:
     source: hosted
     version: "0.0.27"
   optional:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: optional
       sha256: f80327d7a3335a0be68418072668043c7ab291df575c21aa42e0c5633641da39
