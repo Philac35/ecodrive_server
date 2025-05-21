@@ -6,8 +6,8 @@ import 'package:angel3_orm_postgres/angel3_orm_postgres.dart';
 import 'package:postgres/postgres.dart' show PostgreSQLConnection ;
 import 'package:postgres/postgres.dart';
 
-import '../Loader/EnvironmentLoader.dart';
-import 'Interface/ConnectionInterface.dart';
+import '../../Loader/EnvironmentLoader.dart';
+import '../Interface/ConnectionInterface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:universal_platform/universal_platform.dart';
 import 'package:logging/logging.dart';

@@ -1,8 +1,8 @@
 import 'package:angel3_orm_mysql/angel3_orm_mysql.dart';
 import 'package:mysql1/mysql1.dart';
 
-import '../Loader/EnvironmentLoader.dart';
-import 'Interface/ConnectionInterface.dart';
+import '../../Loader/EnvironmentLoader.dart';
+import '../Interface/ConnectionInterface.dart';
 import 'package:logging/logging.dart';
 
 
