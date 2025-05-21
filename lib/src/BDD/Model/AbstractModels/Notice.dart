@@ -3,7 +3,7 @@ import 'package:angel3_serialize/angel3_serialize.dart';
 import 'package:optional/optional_internal.dart';
 
 
-import '../../../Entities/Interface/entityInterface.dart';
+import '../../Interface/entityInterface.dart';
 import '../Abstract/FAngelModel.dart';
 
 import '../FAngelModelQuery.dart';

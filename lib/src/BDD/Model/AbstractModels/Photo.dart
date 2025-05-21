@@ -16,7 +16,7 @@ import './User.dart';
 import 'DrivingLicence.dart';
 
 
- import '../../../Entities/Interface/entityInterface.dart';
+import '../../Interface/entityInterface.dart';
 import 'dart:typed_data';
 import './Abstract/Person.dart';
 

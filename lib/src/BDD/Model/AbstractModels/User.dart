@@ -6,7 +6,7 @@ import '../FAngelModelQuery.dart';
 import './Abstract/Person.dart';
 
 
-import '../../../Entities/Interface/entityInterface.dart';
+import '../../Interface/entityInterface.dart';
 
 import 'Address.dart';
 import 'Photo.dart';

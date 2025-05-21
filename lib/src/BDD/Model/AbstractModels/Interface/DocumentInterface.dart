@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 
 
-import '../../../../Entities/Interface/entityInterface.dart';
+import '../../../Interface/entityInterface.dart';
 import '../Driver.dart';
 import '../Photo.dart';
 abstract interface class DocumentInterface implements EntityInterface{

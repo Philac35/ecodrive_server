@@ -6,7 +6,7 @@ import 'package:optional/optional_internal.dart';
 import '../../../Entities/Vehicule.dart' as concreteVehicule;
 import '../Abstract/FAngelModel.dart';
 
-import  '../../../Entities/Interface/entityInterface.dart';
+import '../../Interface/entityInterface.dart';
 
 import '../FAngelModelQuery.dart';
 import 'Assurance.dart';

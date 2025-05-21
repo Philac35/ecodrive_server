@@ -7,7 +7,7 @@ import 'package:angel3_serialize/angel3_serialize.dart';
 import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Modules/Authentication/Entities/AuthUser.dart';
 
 
-import '../../../Entities/Interface/entityInterface.dart';
+import '../../Interface/entityInterface.dart';
 import '../FAngelModelQuery.dart';
 import './Abstract/Person.dart';
 

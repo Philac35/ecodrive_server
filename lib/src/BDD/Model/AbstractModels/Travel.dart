@@ -10,7 +10,7 @@ import 'package:optional/optional_internal.dart';
 import '../Abstract/FAngelModel.dart';
 import '../FAngelModelQuery.dart';
 import 'Driver.dart';
-import '../../../Entities/Interface/entityInterface.dart';
+import '../../Interface/entityInterface.dart';
 import './Itinerary.dart' as iti;
 import 'Itinerary.dart';
 import 'Vehicule.dart';

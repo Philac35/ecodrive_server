@@ -4,7 +4,7 @@ import 'package:optional/optional_internal.dart';
 import '../FAngelModelQuery.dart';
 import './Modules/Authentication/Entities/AuthUser.dart';
 
- import '../../../Entities/Interface/entityInterface.dart';
+import '../../Interface/entityInterface.dart';
 import './Abstract/Person.dart';
 import 'Address.dart';
 import 'Photo.dart';

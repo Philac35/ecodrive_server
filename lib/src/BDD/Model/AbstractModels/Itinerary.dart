@@ -10,7 +10,7 @@ import '../FAngelModelQuery.dart';
 import 'Address.dart';
 import 'Travel.dart';
 
-import '../../../Entities/Interface/entityInterface.dart';
+import '../../Interface/entityInterface.dart';
 
 //Import migration system
 import 'package:angel3_migration/angel3_migration.dart';

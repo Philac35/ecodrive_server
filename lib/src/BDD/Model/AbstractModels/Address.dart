@@ -4,7 +4,8 @@ import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Itinerary.dart';
 import 'package:optional/optional.dart';
 
 import 'package:angel3_orm_mysql/angel3_orm_mysql.dart';
-import 'package:ecodrive_server/src/Entities/Interface/entityInterface.dart';
+import '../../Interface/entityInterface.dart';
+
 
 import '../FAngelModelQuery.dart';
 import './Abstract/Person.dart';

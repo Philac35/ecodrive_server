@@ -9,7 +9,7 @@ import "package:ecodrive_server/src/BDD/Model/AbstractModels/Vehicule.dart";
 import "package:optional/optional_internal.dart";
 
 
-import "../../../Entities/Interface/entityInterface.dart";
+import '../../Interface/entityInterface.dart';
 import "../FAngelModelQuery.dart";
 import "./Modules/Authentication/Entities/AuthUser.dart";
 
