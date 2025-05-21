@@ -7,7 +7,7 @@ import 'package:ecodrive_server/src/Loader/EnvironmentLoader.dart';
 import 'package:mysql_client/mysql_client.dart';
 import 'package:logging/logging.dart';
 import 'package:universal_html/html.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:universal_platform/universal_platform.dart';
 import 'package:logging/logging.dart';
 
@@ -75,7 +75,7 @@ class MysqlConnection implements ConnectionInterface {
      ).timeout(Duration(milliseconds: timeoutMs ?? 30000));
 
    }catch(error){
-     debugPrint("MysqlConnection L55, connect(), Error de connexion to Mysql : ${error}");
+     print("MysqlConnection L55, connect(), Error de connexion to Mysql : ${error}");
    }
     return connexion;
   }
