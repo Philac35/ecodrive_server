@@ -28,6 +28,8 @@ abstract class Travel extends FAngelModel implements EntityInterface{
 
   @belongsTo
   Driver driver;
+
+  @hasOne
   iti.Itinerary itinerary;
 
 

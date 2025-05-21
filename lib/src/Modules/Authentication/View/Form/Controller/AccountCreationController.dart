@@ -76,7 +76,7 @@ class AccountCreationController extends GetxController implements ControllerForm
         isCreated =  driverController?.create(entityMap) ;
         if(isCreated==true){
           Driver  user = await  userController?.repository?.findLast() as Driver ;
-          entityId=   user.id! ;}
+          entityId=  int.parse( user.id!) ;}
         break;
 
       case 'passenger':
@@ -84,7 +84,7 @@ class AccountCreationController extends GetxController implements ControllerForm
         isCreated = userController?.create(entityMap) ;
         if(isCreated==true){
           User  user = await  userController?.repository?.findLast() as User ;
-          entityId=   user.id! ;}
+          entityId=  int.parse( user.id!) ;}
         break;
 
       case 'passenger-driver' || 'driver-passenger':
@@ -92,7 +92,7 @@ class AccountCreationController extends GetxController implements ControllerForm
         isCreated =driverController?.create(entityMap) ;
         if(isCreated==true){
           Driver  user = await  userController?.repository?.findLast() as Driver ;
-          entityId=   user.id! ;}
+          entityId=   int.parse(user.id! );}
 
         break;
 
@@ -101,7 +101,7 @@ class AccountCreationController extends GetxController implements ControllerForm
         isCreated = userController?.create(entityMap); //Here when you create the Entities they are automatically persisted
         if(isCreated == true){
             User  user = await  userController?.repository?.findLast() as User ;
-          entityId=   user.id! ;}
+          entityId=   int.parse(user.id!) ;}
 
         break;
     }

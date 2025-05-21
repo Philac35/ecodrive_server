@@ -70,6 +70,7 @@ class DrivingLicenceQuery extends Query<DrivingLicence, DrivingLicenceQueryWhere
       'title',
       'document_pdf',
       'photo',
+      'driver',
       'driver_id',
     ];
     return _selectedFields.isEmpty
@@ -96,6 +97,8 @@ class DrivingLicenceQuery extends Query<DrivingLicence, DrivingLicenceQueryWhere
     if (row.every((x) => x == null)) {
       return Optional.empty();
     }
+var drivervar;
+    if(fields.contains('driver') ){ drivervar=row[7] as Driver;} ;
     var model = DrivingLicenceModel(
       id: fields.contains('id') ? row[0].toString() : null,
       createdAt:
@@ -107,7 +110,8 @@ class DrivingLicenceQuery extends Query<DrivingLicence, DrivingLicenceQueryWhere
       title: fields.contains('title') ? (row[4] as String?) : null,
       documentPdf: fields.contains('document_pdf') ? (row[5] as String?) : null,
       photo: fields.contains('photo') ? (row[6] as String?) : null,
-      driverId: fields.contains('driver_id') ? mapToInt(row[7]) : null,
+      driver: drivervar,
+      driverId: fields.contains('driver_id') ? mapToInt(row[8]) : null,
     );
     return Optional.of(model as DrivingLicence);
   }
@@ -233,6 +237,13 @@ class DrivingLicenceQueryValues extends MapQueryValues {
 
   set photo(String? value) => values['photo'] = value;
 
+  Driver get driver {
+    return (values['driver'] as Driver);
+  }
+
+  set driver(Driver? value) => values['driver'] = value;
+
+
   int? get driverId {
     return (values['driver_id'] as int?);
   }
@@ -246,6 +257,7 @@ class DrivingLicenceQueryValues extends MapQueryValues {
     title = model.title;
     documentPdf = model.documentPdf;
     photo = model.photo;
+    driver = model.driver;
     driverId = model.driverId;
   }
 }
@@ -266,6 +278,7 @@ class DrivingLicenceModel {
     this.title,
     this.documentPdf,
     this.photo,
+    required this.driver,
     this.driverId,
   });
 
@@ -285,6 +298,8 @@ class DrivingLicenceModel {
 
   final String? photo;
 
+  final Driver driver;
+
   final int? driverId;
 
   DrivingLicenceModel copyWith({
@@ -295,6 +310,7 @@ class DrivingLicenceModel {
     String? title,
     String? documentPdf,
     String? photo,
+    required Driver driver,
     int? driverId,
   }) {
     return DrivingLicenceModel(
@@ -305,6 +321,7 @@ class DrivingLicenceModel {
       title: title ?? this.title,
       documentPdf: documentPdf ?? this.documentPdf,
       photo: photo ?? this.photo,
+      driver: driver ?? this.driver,
       driverId: driverId ?? this.driverId,
     );
   }
@@ -319,6 +336,7 @@ class DrivingLicenceModel {
         other.title == title &&
         other.documentPdf == documentPdf &&
         other.photo == photo &&
+        other.driver== driver &&
         other.driverId== driverId;
   }
 
@@ -332,6 +350,7 @@ class DrivingLicenceModel {
       title,
       documentPdf,
       photo,
+      driver,
       driverId,
     ]);
   }
@@ -368,6 +387,7 @@ abstract class DrivingLicenceSerializer {
       title: map['title'] as String?,
       documentPdf: map['document_pdf'] as String?,
       photo: map['photo'] as String?,
+      driver: map['driver'] as Driver ,
       driverId: map['driver_id'] as int?,
     );
   }
@@ -384,6 +404,7 @@ abstract class DrivingLicenceSerializer {
       'title': model.title,
       'document_pdf': model.documentPdf,
       'photo': model.photo,
+      'driver': model.driver,
       'driver_id': model.driver?.idInt,
     };
   }
@@ -398,6 +419,7 @@ abstract class DrivingLicenceFields {
     title,
     documentPdf,
     photo,
+    driver,
     driverId,
   ];
 
@@ -414,6 +436,6 @@ abstract class DrivingLicenceFields {
   static const String documentPdf = 'document_pdf';
 
   static const String photo = 'photo';
-
+  static const String driver= 'driver';
   static const String driverId = 'driver_id';
 }

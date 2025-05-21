@@ -1,9 +1,11 @@
 
-import 'dart:nativewrappers/_internal/vm/lib/typed_data_patch.dart';
+
+import 'dart:typed_data';
+
+
+
 
 import 'package:optional/optional_internal.dart';
-
-
 
 import 'Interface/DocumentInterface.dart';
 import 'Driver.dart' ;
@@ -34,9 +36,11 @@ abstract class DrivingLicence extends  FAngelModel  implements DocumentInterface
   @override
   int identificationNumber;
 
+  @hasOne
   @override
   Uint8List? documentPdf;
 
+  @hasOne
   @override
   Photo? photo;
 

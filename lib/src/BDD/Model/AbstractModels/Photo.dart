@@ -13,6 +13,7 @@ import '../Abstract/FAngelModel.dart';
 import '../FAngelModelQuery.dart';
 import 'Employee.dart';
 import './User.dart';
+import 'DrivingLicence.dart';
 
 
  import '../../../Entities/Interface/entityInterface.dart';
@@ -40,8 +41,10 @@ abstract class Photo extends FAngelModel  implements EntityInterface{
  @belongsTo
  Vehicule? vehicule;
 
+  @belongsTo
+  DrivingLicence? drivingLicence;
 
-  Photo({this.idInt,required this.title, this.uri, this.description, this.photo , this.person, this.vehicule});
+  Photo({this.idInt,required this.title, this.uri, this.description, this.photo , this.person, this.vehicule, this.drivingLicence});
   //Serialization
   factory Photo.fromJson(Map<String, dynamic> json) {
     // TODO: implement factory

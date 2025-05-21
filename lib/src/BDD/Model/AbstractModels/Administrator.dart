@@ -1,4 +1,6 @@
-import 'dart:ffi';
+
+import 'dart:typed_data';
+
 
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
@@ -35,7 +37,7 @@ abstract class Administrator extends Person  implements EntityInterface{
 
   bool  delete(Person person);
   bool   suspend(Person person);
-  pay(Float price);
+  pay(double price);
   create(User user,Employee employee){
     // TODO: implement create user and employee
     throw UnimplementedError();

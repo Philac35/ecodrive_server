@@ -1,4 +1,5 @@
-import 'dart:nativewrappers/_internal/vm/lib/typed_data_patch.dart';
+import 'dart:typed_data';
+
 
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
@@ -22,9 +23,6 @@ abstract class Assurance  extends  FAngelModel  implements DocumentInterface{
 
    int? idInt;
 
-  @override
-  Driver? driver;
-
 
   @override
   int identificationNumber;
@@ -41,7 +39,7 @@ abstract class Assurance  extends  FAngelModel  implements DocumentInterface{
   @belongsTo
   Vehicule vehicule;
 
-  Assurance ({this. idInt ,required this.title, required this.identificationNumber, required this.vehicule,required this.driver, this.documentPdf,this.photo});
+  Assurance ({this. idInt ,required this.title, required this.identificationNumber, required this.vehicule, this.documentPdf,this.photo});
 
   //Serialization
   factory Assurance.fromJson(Map<String, dynamic> json) {

@@ -44,7 +44,7 @@ class ListVoyagesState extends State<ListVoyages> {
         addressDeparture: a.Address(city: "Paris", address: 'Rue Saint Augustin', postCode: '75000',  createdAt: DateTime(2025,5,9)),
     addressArrival: a.Address(city: "Lyon", address: 'Rue Saint Pancras', postCode: '69000', createdAt: DateTime(2025,5,9)),
     duration: DateTime(0, 0, 0, 2,0),
-    ), driver: Driver(firstname: 'Sam', lastname: 'Auburn', authUser: null), vehicule: Vehicule(id:1,brand:'Rover',model:'Range'), createdAt: DateTime(2025,5,9));
+    ), driver: Driver(firstname: 'Sam', lastname: 'Auburn', authUser: null), vehicule: Vehicule(idInt:1,brand:'Rover',modele:'Range'), createdAt: DateTime(2025,5,9));
     setState(() {
       travels=[example];
       if(fetchedTravels!=null){

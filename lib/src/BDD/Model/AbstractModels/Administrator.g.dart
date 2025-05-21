@@ -484,7 +484,7 @@ class AdministratorModel extends Administrator {
   }
 
   @override
-  pay(Float price) {
+  pay(double price) {
     // TODO: implement pay
     throw UnimplementedError();
   }

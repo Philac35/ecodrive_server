@@ -13,7 +13,6 @@ class AssuranceMigration extends Migration {
       table.serial('id').primaryKey();
       table.timeStamp('created_at');
       table.timeStamp('updated_at');
-      table.varChar('driver', length: 255);
       table.integer('identification_number');
       table.varChar('document_pdf', length: 255);
       table.varChar('photo', length: 255);
@@ -67,7 +66,6 @@ class AssuranceQuery extends Query<Assurance, AssuranceQueryWhere> {
       'id',
       'created_at',
       'updated_at',
-      'driver',
       'identification_number',
       'document_pdf',
       'photo',
@@ -104,13 +102,12 @@ class AssuranceQuery extends Query<Assurance, AssuranceQueryWhere> {
       fields.contains('created_at') ? mapToNullableDateTime(row[1]) : null,
       updatedAt:
       fields.contains('updated_at') ? mapToNullableDateTime(row[2]) : null,
-      driver: fields.contains('driver') ? (row[3] as String?) : null,
       identificationNumber:
-      fields.contains('identification_number') ? mapToInt(row[4]) : null,
-      documentPdf: fields.contains('document_pdf') ? (row[5] as String?) : null,
-      photo: fields.contains('photo') ? (row[6] as String?) : null,
-      title: fields.contains('title') ? (row[7] as String?) : null,
-      vehiculeId: fields.contains('vehicule_id') ? mapToInt(row[8]) : null,
+      fields.contains('identification_number') ? mapToInt(row[3]) : null,
+      documentPdf: fields.contains('document_pdf') ? (row[4] as String?) : null,
+      photo: fields.contains('photo') ? (row[5] as String?) : null,
+      title: fields.contains('title') ? (row[6] as String?) : null,
+      vehiculeId: fields.contains('vehicule_id') ? mapToInt(row[7]) : null,
     );
     return Optional.of(model as Assurance);
   }
@@ -134,10 +131,6 @@ class AssuranceQueryWhere extends QueryWhere {
         updatedAt = DateTimeSqlExpressionBuilder(
           query,
           'updated_at',
-        ),
-        driver = StringSqlExpressionBuilder(
-          query,
-          'driver',
         ),
         identificationNumber = NumericSqlExpressionBuilder<int>(
           query,
@@ -166,8 +159,6 @@ class AssuranceQueryWhere extends QueryWhere {
 
   final DateTimeSqlExpressionBuilder updatedAt;
 
-  final StringSqlExpressionBuilder driver;
-
   final NumericSqlExpressionBuilder<int> identificationNumber;
 
   final StringSqlExpressionBuilder documentPdf;
@@ -184,7 +175,6 @@ class AssuranceQueryWhere extends QueryWhere {
       id,
       createdAt,
       updatedAt,
-      driver,
       identificationNumber,
       documentPdf,
       photo,
@@ -218,11 +208,7 @@ class AssuranceQueryValues extends MapQueryValues {
 
   set updatedAt(DateTime? value) => values['updated_at'] = value;
 
-  String? get driver {
-    return (values['driver'] as String?);
-  }
 
-  set driver(String? value) => values['driver'] = value;
 
   int? get identificationNumber {
     return (values['identification_number'] as int?);
@@ -258,7 +244,6 @@ class AssuranceQueryValues extends MapQueryValues {
   void copyFrom(AssuranceModel model) {
     createdAt = model.createdAt;
     updatedAt = model.updatedAt;
-    driver = model.driver;
     identificationNumber = model.identificationNumber;
     documentPdf = model.documentPdf;
     photo = model.photo;
@@ -277,7 +262,6 @@ class AssuranceModel {
     this.id,
     this.createdAt,
     this.updatedAt,
-    this.driver,
     this.identificationNumber,
     this.documentPdf,
     this.photo,
@@ -293,7 +277,6 @@ class AssuranceModel {
   /// The last time at which this item was updated.
   final DateTime? updatedAt;
 
-  final String? driver;
 
   final int? identificationNumber;
 
@@ -309,7 +292,6 @@ class AssuranceModel {
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    String? driver,
     int? identificationNumber,
     String? documentPdf,
     String? photo,
@@ -320,7 +302,6 @@ class AssuranceModel {
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      driver: driver ?? this.driver,
       identificationNumber: identificationNumber ?? this.identificationNumber,
       documentPdf: documentPdf ?? this.documentPdf,
       photo: photo ?? this.photo,
@@ -335,7 +316,6 @@ class AssuranceModel {
         other.id == id &&
         other.createdAt == createdAt &&
         other.updatedAt == updatedAt &&
-        other.driver == driver &&
         other.identificationNumber == identificationNumber &&
         other.documentPdf == documentPdf &&
         other.photo == photo &&
@@ -349,7 +329,6 @@ class AssuranceModel {
       id,
       createdAt,
       updatedAt,
-      driver,
       identificationNumber,
       documentPdf,
       photo,
@@ -360,7 +339,7 @@ class AssuranceModel {
 
   @override
   String toString() {
-    return 'Assurance(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, driver=$driver, identificationNumber=$identificationNumber, documentPdf=$documentPdf, photo=$photo, title=$title, vehiculeId=$vehiculeId)';
+    return 'Assurance(id=$id, createdAt=$createdAt, updatedAt=$updatedAt,  identificationNumber=$identificationNumber, documentPdf=$documentPdf, photo=$photo, title=$title, vehiculeId=$vehiculeId)';
   }
 
   Map<String, dynamic> toJson() {
@@ -386,7 +365,6 @@ abstract class AssuranceSerializer {
           ? (map['updated_at'] as DateTime)
           : DateTime.parse(map['updated_at'].toString()))
           : null,
-      driver: map['driver'] as String?,
       identificationNumber: map['identification_number'] as int?,
       documentPdf: map['document_pdf'] as String?,
       photo: map['photo'] as String?,
@@ -404,7 +382,6 @@ abstract class AssuranceSerializer {
       'id': model.id,
       'created_at': model.createdAt?.toIso8601String(),
       'updated_at': model.updatedAt?.toIso8601String(),
-      'driver': model.driver,
       'identification_number': model.identificationNumber,
       'document_pdf': model.documentPdf,
       'photo': model.photo,
@@ -419,7 +396,6 @@ abstract class AssuranceFields {
     id,
     createdAt,
     updatedAt,
-    driver,
     identificationNumber,
     documentPdf,
     photo,
@@ -433,7 +409,7 @@ abstract class AssuranceFields {
 
   static const String updatedAt = 'updated_at';
 
-  static const String driver = 'driver';
+
 
   static const String identificationNumber = 'identification_number';
 

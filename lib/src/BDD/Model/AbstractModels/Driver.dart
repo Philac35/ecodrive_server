@@ -31,7 +31,10 @@ abstract class Driver extends User  implements EntityInterface{
 
   @hasMany
   List<Notice>? notices;
+
   List? preferences;
+
+  @hasOne
   String? drivinglicense;  //will be stocked as Blob in BDD
 
   @hasOne
@@ -52,9 +55,9 @@ abstract class Driver extends User  implements EntityInterface{
     super.createdAt,
     this.notices,
     this.preferences,
-    this.drivinglicense,
+    this.drivingLicence,
     required this.vehicule,
-    DateTime? updatedAt, required vehicule_id,
+    DateTime? updatedAt, required vehicule_id
      }):super() ;
 
 

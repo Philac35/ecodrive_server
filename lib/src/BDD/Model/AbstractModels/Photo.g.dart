@@ -219,7 +219,12 @@ class PhotoQueryWhere extends QueryWhere {
         vehiculeId = NumericSqlExpressionBuilder<int>(
           query,
           'vehicule_id',
-        );
+        ),
+        drivingLicenceId = NumericSqlExpressionBuilder<int>(
+          query,
+          'drivingLicence_id',
+  )
+  ;
 
   final NumericSqlExpressionBuilder<int> id;
 
@@ -241,6 +246,8 @@ class PhotoQueryWhere extends QueryWhere {
 
   final NumericSqlExpressionBuilder<int> vehiculeId;
 
+  final NumericSqlExpressionBuilder<int> drivingLicenceId;
+
   @override
   List<SqlExpressionBuilder> get expressionBuilders {
     return [
@@ -254,6 +261,7 @@ class PhotoQueryWhere extends QueryWhere {
       photo,
       personId,
       vehiculeId,
+      drivingLicenceId
     ];
   }
 }
@@ -324,6 +332,12 @@ class PhotoQueryValues extends MapQueryValues {
 
   set vehiculeId(int value) => values['vehicule_id'] = value;
 
+  int get drivingLicenceId {
+    return (values['vehicule_id'] as int);
+  }
+
+  set drivingLicenceId(int value) => values['drivingLicence_id'] = value;
+
   void copyFrom(Photo model) {
     createdAt = model.createdAt;
     updatedAt = model.updatedAt;
@@ -337,6 +351,9 @@ class PhotoQueryValues extends MapQueryValues {
     }
     if (model.vehicule != null) {
       values['vehicule_id'] = model.vehicule?.id;
+    }
+    if (model.drivingLicence != null) {
+      values['drivingLicence_id'] = model.drivingLicence?.id;
     }
   }
 }
@@ -359,7 +376,8 @@ class PhotoModel extends Photo {
     this.photo,
     this.person,
     this.vehicule,
-  }) : super(idInt: idInt, title:title,uri:  uri,description:  description,photo: photo,person: person,vehicule: vehicule);
+    this.drivingLicence
+  }) : super(idInt: idInt, title:title,uri:  uri,description:  description,photo: photo,person: person,vehicule: vehicule,drivingLicence:drivingLicence);
 
   @override
   String? id;
@@ -393,6 +411,9 @@ class PhotoModel extends Photo {
   @override
   Vehicule? vehicule;
 
+  @override
+  DrivingLicence? drivingLicence;
+
   Photo copyWith(
     {
     String? id,
@@ -405,6 +426,7 @@ class PhotoModel extends Photo {
     Uint8List? photo,
     Person? person,
     Vehicule? vehicule,
+    DrivingLicence? drivingLicence
   }) {
     return PhotoModel(
         id: id ?? this.id,
@@ -416,7 +438,8 @@ class PhotoModel extends Photo {
         description: description ?? this.description,
         photo: photo ?? this.photo,
         person: person ?? this.person,
-        vehicule: vehicule ?? this.vehicule);
+        vehicule: vehicule ?? this.vehicule,
+        drivingLicence : drivingLicence ?? this.drivingLicence );
   }
 
   @override
@@ -431,7 +454,9 @@ class PhotoModel extends Photo {
         other.description == description &&
         ListEquality().equals(other.photo, photo) &&
         other.person == person &&
-        other.vehicule == vehicule;
+        other.vehicule == vehicule &&
+        other.drivingLicence == drivingLicence
+    ;
   }
 
   @override
@@ -447,12 +472,13 @@ class PhotoModel extends Photo {
       photo,
       person,
       vehicule,
+      drivingLicence
     ]);
   }
 
   @override
   String toString() {
-    return 'Photo(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, idInt=$idInt, title=$title, uri=$uri, description=$description, photo=$photo, person=$person, vehicule=$vehicule)';
+    return 'Photo(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, idInt=$idInt, title=$title, uri=$uri, description=$description, photo=$photo, person=$person, vehicule=$vehicule,drivingLicence=$drivingLicence)';
   }
 
   Map<String, dynamic> toJson() {
@@ -466,41 +492,45 @@ class PhotoModel extends Photo {
 // **************************************************************************
 // SerializerGenerator
 // **************************************************************************
-
 abstract class PhotoSerializer {
-  static Photo fromMap(
-    Map map,
-
-  ) {
+  static Photo fromMap(Map map) {
+    var drivingLicencevar;
+    if (map['drivingLicence'] != null) {
+      drivingLicencevar = DrivingLicenceSerializer.fromMap(map['drivingLicence'] as Map);
+    } else {
+      drivingLicencevar = null;
+    }
     return PhotoModel(
-        id: map['id'] as String?,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null,
-        idInt: map['id_int'] as int?,
-        title: map['title'] as String?,
-        uri: map['uri'] as String?,
-        description: map['description'] as String?,
-        photo: map['photo'] is Uint8List
-            ? (map['photo'] as Uint8List)
-            : (map['photo'] is Iterable<int>
-                ? Uint8List.fromList((map['photo'] as Iterable<int>).toList())
-                : (map['photo'] is String
-                    ? Uint8List.fromList(base64.decode(map['photo'] as String))
-                    : null)),
-        person: map['person'] != null
-            ? PersonSerializer.fromMap(map['person'] as Map)
-            : null,
-        vehicule: map['vehicule'] != null
-            ? VehiculeSerializer.fromMap(map['vehicule'] as Map)
-            : null);
+      id: map['id'] as String?,
+      createdAt: map['created_at'] != null
+          ? (map['created_at'] is DateTime
+          ? (map['created_at'] as DateTime)
+          : DateTime.parse(map['created_at'].toString()))
+          : null,
+      updatedAt: map['updated_at'] != null
+          ? (map['updated_at'] is DateTime
+          ? (map['updated_at'] as DateTime)
+          : DateTime.parse(map['updated_at'].toString()))
+          : null,
+      idInt: map['id_int'] as int?,
+      title: map['title'] as String?,
+      uri: map['uri'] as String?,
+      description: map['description'] as String?,
+      photo: map['photo'] is Uint8List
+          ? (map['photo'] as Uint8List)
+          : (map['photo'] is Iterable<int>
+          ? Uint8List.fromList((map['photo'] as Iterable<int>).toList())
+          : (map['photo'] is String
+          ? Uint8List.fromList(base64.decode(map['photo'] as String))
+          : null)),
+      person: map['person'] != null
+          ? PersonSerializer.fromMap(map['person'] as Map)
+          : null,
+      vehicule: map['vehicule'] != null
+          ? VehiculeSerializer.fromMap(map['vehicule'] as Map)
+          : null,
+      drivingLicence: drivingLicencevar,
+    );
   }
 
   static Map<String, dynamic> toMap(Photo? model) {
@@ -517,10 +547,12 @@ abstract class PhotoSerializer {
       'description': model.description,
       'photo': model.photo != null ? base64.encode(model.photo!) : null,
       'person': PersonSerializer.toMap(model.person),
-      'vehicule': VehiculeSerializer.toMap(model.vehicule)
+      'vehicule': VehiculeSerializer.toMap(model.vehicule),
+      'drivingLicence': DrivingLicenceSerializer.toMap(model.drivingLicence)
     };
   }
 }
+
 
 abstract class PhotoFields {
   static const List<String> allFields = <String>[
@@ -534,6 +566,7 @@ abstract class PhotoFields {
     photo,
     person,
     vehicule,
+    drivingLicence
   ];
 
   static const String id = 'id';
@@ -555,4 +588,6 @@ abstract class PhotoFields {
   static const String person = 'person';
 
   static const String vehicule = 'vehicule';
+
+  static const String drivingLicence = 'drivingLicence';
 }

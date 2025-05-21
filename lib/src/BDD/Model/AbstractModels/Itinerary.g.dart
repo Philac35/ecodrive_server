@@ -299,8 +299,10 @@ class ItineraryModel extends Itinerary {
     this.eco,
     this.duration,
     this.createdAt,
+    this.travel,
+    this.travelId
   }) : super(idInt: idInt,price: price,addressDeparture:  addressDeparture,addressArrival:  addressArrival, eco: eco, duration: duration,
-createdAt: createdAt);
+createdAt: createdAt, travel: travel);
 
   @override
   String? id;
@@ -329,6 +331,11 @@ createdAt: createdAt);
 
   @override
   DateTime? createdAt;
+
+   int?  travelId;
+
+   @override
+   Travel? travel;
 
   Itinerary copyWith(
     {
@@ -425,7 +432,8 @@ abstract class ItinerarySerializer {
             ? (map['created_at'] is DateTime
                 ? (map['created_at'] as DateTime)
                 : DateTime.parse(map['created_at'].toString()))
-            : null);
+            : null,
+        travelId: map['travel_id'] as int?);
   }
 
   static Map<String, dynamic> toMap(Itinerary? model) {
@@ -441,7 +449,8 @@ abstract class ItinerarySerializer {
       'address_arrival': AddressSerializer.toMap(model.addressArrival),
       'eco': model.eco,
       'duration': model.duration?.toIso8601String(),
-      'created_at': model.createdAt?.toIso8601String()
+      'created_at': model.createdAt?.toIso8601String(),
+      'travel_id': model.travel?.idInt
     };
   }
 }
@@ -457,6 +466,7 @@ abstract class ItineraryFields {
     eco,
     duration,
     createdAt,
+    travel_id,
   ];
 
   static const String id = 'id';
@@ -476,4 +486,6 @@ abstract class ItineraryFields {
   static const String duration = 'duration';
 
   static const String createdAt = 'created_at';
+
+  static const String travel_id = 'travel_id';
 }

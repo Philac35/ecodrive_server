@@ -8,6 +8,8 @@ import 'package:optional/optional_internal.dart';
 import '../Abstract/FAngelModel.dart';
 import '../FAngelModelQuery.dart';
 import 'Address.dart';
+import 'Travel.dart';
+
 import '../../../Entities/Interface/entityInterface.dart';
 
 //Import migration system
@@ -32,7 +34,9 @@ abstract class Itinerary extends FAngelModel implements EntityInterface {
   DateTime? duration;
   DateTime? createdAt;
 
-  Itinerary({this.idInt, this.price, this.addressDeparture,this.addressArrival, this.eco,this.duration,this.createdAt});
+  @belongsTo
+  Travel? travel;
+  Itinerary({this.idInt, this.price, this.addressDeparture,this.addressArrival, this.eco,this.duration,this.createdAt,this.travel});
 
 
 //Serialization

@@ -172,8 +172,6 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
           fields.contains('created_at') ? mapToNullableDateTime(row[9]) : null,
       preferences:
           fields.contains('preferences') ? (row[10] as List<dynamic>?) : null,
-      drivinglicense:
-          fields.contains('drivinglicense') ? (row[11] as String?) : null,
       drivingLicence: fields.contains('driving_licence')
           ? (row[12] as DrivingLicence?)
           : null,
@@ -486,14 +484,13 @@ class DriverModel extends Driver {
     this.photo,
     List<Notice>? this.notices,
     List<dynamic>? preferences = const [],
-    this.drivinglicense,
-     this.vehicule_id,
+   this.vehicule_id,
     this.vehicule,
     this.drivingLicence,
     this.authUser,
   })  : preferences = List.unmodifiable(preferences ?? []),
         super(idInt:idInt, firstname: firstname, lastname: lastname, age:age, gender:gender, address: address, email:email, photo:photo,
-           authUser:authUser,createdAt:  createdAt, notices:notices, preferences:preferences, drivinglicense: drivinglicense, vehicule: vehicule!, vehicule_id:vehicule_id);
+           authUser:authUser,createdAt:  createdAt, notices:notices, preferences:preferences, drivingLicence: drivingLicence, vehicule: vehicule!, vehicule_id:vehicule_id);
 
   @override
   String? id;
@@ -536,9 +533,6 @@ class DriverModel extends Driver {
   List<dynamic>? preferences;
 
   @override
-  String? drivinglicense;
-
-  @override
   Vehicule? vehicule;
 
   @override
@@ -563,7 +557,6 @@ class DriverModel extends Driver {
     Photo? photo,
     List<Notice>?  notices,
     List<dynamic>? preferences,
-    String? drivinglicense,
     Vehicule? vehicule,
     DrivingLicence? drivingLicence,
   }) {
@@ -581,7 +574,6 @@ class DriverModel extends Driver {
         photo: photo ?? this.photo,
         notices: notices ?? this.notices,
         preferences: preferences ?? this.preferences,
-        drivinglicense: drivinglicense ?? this.drivinglicense,
         vehicule: vehicule ?? this.vehicule,
         drivingLicence: drivingLicence ?? this.drivingLicence);
   }
@@ -603,7 +595,6 @@ class DriverModel extends Driver {
         other.notices == notices &&
         ListEquality<dynamic>(DefaultEquality())
             .equals(other.preferences, preferences) &&
-        other.drivinglicense == drivinglicense &&
         other.vehicule == vehicule &&
         other.drivingLicence == drivingLicence;
   }
@@ -624,7 +615,6 @@ class DriverModel extends Driver {
       photo,
       notices,
       preferences,
-      drivinglicense,
       vehicule,
       drivingLicence,
     ]);
@@ -632,7 +622,7 @@ class DriverModel extends Driver {
 
   @override
   String toString() {
-    return 'Driver(id=$id, updatedAt=$updatedAt, idInt=$idInt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, address=$address, email=$email, createdAt=$createdAt, photo=$photo, notices=$notices, preferences=$preferences, drivinglicense=$drivinglicense, vehicule=$vehicule, drivingLicence=$drivingLicence)';
+    return 'Driver(id=$id, updatedAt=$updatedAt, idInt=$idInt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, address=$address, email=$email, createdAt=$createdAt, photo=$photo, notices=$notices, preferences=$preferences, vehicule=$vehicule, drivingLicence=$drivingLicence)';
   }
 
   Map<String, dynamic> toJson() {
@@ -679,7 +669,6 @@ abstract class DriverSerializer {
         preferences: map['preferences'] is Iterable
             ? (map['preferences'] as Iterable).cast<dynamic>().toList()
             : [],
-        drivinglicense: map['drivinglicense'] as String?,
         vehicule_id: map['vehicule_id'] != null
             ? VehiculeSerializer.fromMap(map['vehicule_id'] as Map)
             : null,
