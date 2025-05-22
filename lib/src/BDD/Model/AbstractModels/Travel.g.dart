@@ -12,7 +12,9 @@ class TravelMigration extends Migration {
     schema.create('travels', (table) {
       table.serial('id').primaryKey();
       table.integer('id_int');
-      table.varChar('itinerary', length: 255);
+      table
+          .declare('itinerary_id', ColumnType('int'))
+          .references('f_angel_models', 'id');
       table.declareColumn(
         'user_list',
         Column(type: ColumnType('jsonb'), length: 255),

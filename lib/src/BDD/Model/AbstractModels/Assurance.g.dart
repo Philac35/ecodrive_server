@@ -14,8 +14,12 @@ class AssuranceMigration extends Migration {
       table.timeStamp('created_at');
       table.timeStamp('updated_at');
       table.integer('identification_number');
-      table.varChar('document_pdf', length: 255);
-      table.varChar('photo', length: 255);
+      table.declareColumn(
+        'document_pdf',
+        Column(type: ColumnType('jsonb'), length: 255),
+      );
+      var photoRef = table.integer('photo_id').references('photos', 'id');
+      photoRef.onDeleteCascade();
       table.varChar('title', length: 255);
       table
           .declare('vehicule_id', ColumnType('int'))

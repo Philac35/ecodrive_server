@@ -27,6 +27,9 @@ class PhotoMigration extends Migration {
       table
           .declare('vehicule_id', ColumnType('int'))
           .references('f_angel_models', 'id');
+      table
+          .declare('diver_licence_id', ColumnType('int'))
+          .references('f_angel_models', 'id');
     });
   }
 

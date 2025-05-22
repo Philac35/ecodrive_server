@@ -14,9 +14,27 @@ class ItineraryMigration extends Migration {
       table.timeStamp('updated_at');
       table.integer('id_int');
       table.double('price');
+
+      // Adding foreign keys for addressDeparture and addressArrival
+      var addressDepartureRef = table.integer('addressDeparture_id').references('addresses', 'id');
+      addressDepartureRef.onDeleteCascade();
+
+      var addressArrivalRef = table.integer('addressArrival_id').references('addresses', 'id');
+      addressArrivalRef.onDeleteCascade();
+
+      // Adding GeoPointList as a JSON field
+      table.declareColumn(
+        'GeoPointList',
+        Column(type: ColumnType('jsonb'), length: 255),
+      );
       table.boolean('eco');
       table.timeStamp('duration');
+      // Adding travel_id as a foreign key
+      var travelRef = table.integer('travel_id').references('travels', 'id');
+      travelRef.onDeleteCascade();
       table.timeStamp('created_at');
+
+
     });
   }
 
@@ -318,10 +336,10 @@ createdAt: createdAt, travel: travel);
   double? price;
 
   @override
-  Address? addressDeparture;
+  a.Address? addressDeparture;
 
   @override
-  Address? addressArrival;
+  a.Address? addressArrival;
 
   @override
   bool? eco;
@@ -343,8 +361,8 @@ createdAt: createdAt, travel: travel);
     DateTime? updatedAt,
     int? idInt,
     double? price,
-    Address? addressDeparture,
-    Address? addressArrival,
+    a.Address? addressDeparture,
+    a.Address? addressArrival,
     bool? eco,
     DateTime? duration,
     DateTime? createdAt,

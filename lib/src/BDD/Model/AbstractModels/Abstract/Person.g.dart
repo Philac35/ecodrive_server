@@ -9,7 +9,7 @@ part of 'Person.dart';
 class PersonMigration extends Migration {
   @override
   void up(Schema schema) {
-    schema.create('people', (table) {
+    schema.create('persons', (table) {
       table.serial('id').primaryKey();
       table.timeStamp('updated_at');
       table.integer('id_int');
@@ -19,12 +19,17 @@ class PersonMigration extends Migration {
       table.varChar('gender', length: 255);
       table.varChar('email', length: 255);
       table.timeStamp('created_at');
+
+
+      // Add foreign keys for Photo and AuthUser
+      table.integer('photo_id').references('photos', 'id').onDeleteCascade();
+      table.integer('auth_user_id').references('auth_users', 'id').onDeleteCascade();
     });
   }
 
   @override
   void down(Schema schema) {
-    schema.drop('people', cascade: true);
+    schema.drop('persons', cascade: true);
   }
 }
 
@@ -110,7 +115,7 @@ class PersonQuery extends Query<Person, PersonQueryWhere> {
 
   @override
   String get tableName {
-    return 'people';
+    return 'person';
   }
 
   @override

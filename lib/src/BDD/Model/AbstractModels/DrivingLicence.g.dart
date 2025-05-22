@@ -15,11 +15,18 @@ class DrivingLicenceMigration extends Migration {
       table.timeStamp('updated_at');
       table.integer('identification_number');
       table.varChar('title', length: 255);
-      table.varChar('document_pdf', length: 255);
-      table.varChar('photo', length: 255);
+      // Store document_pdf as a binary field
+      table.declareColumn(
+        'document_pdf',
+        Column(type: ColumnType('jsonb'), length: 255),
+      );
+      var photoRef = table.integer('photo_id').references('photos', 'id');
+      photoRef.onDeleteCascade();
       table
           .declare('driver_id', ColumnType('int'))
           .references('f_angel_models', 'id');
+
+
     });
   }
 

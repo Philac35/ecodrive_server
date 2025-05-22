@@ -28,6 +28,12 @@ class VehiculeMigration extends Migration {
       table
           .declare('driver_id', ColumnType('int'))
           .references('f_angel_models', 'id');
+      var assuranceRef = table.integer('assurance_id').references('assurances', 'id');
+      assuranceRef.onDeleteCascade();
+      table.declareColumn(
+        'photo_list',
+        Column(type: ColumnType('jsonb'), length: 255),
+      );
     });
   }
 

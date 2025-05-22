@@ -1,12 +1,15 @@
 
+import 'dart:convert';
 import 'dart:core';
 
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:optional/optional_internal.dart';
 
 import '../Abstract/FAngelModel.dart';
 import '../FAngelModelQuery.dart';
+import 'Address.dart' as a;
 import 'Address.dart';
 import 'Travel.dart';
 
@@ -25,18 +28,21 @@ abstract class Itinerary extends FAngelModel implements EntityInterface {
   double? price;
 
   @hasOne
-  Address? addressDeparture;
+  a.Address? addressDeparture;
 
   @hasOne
-  Address? addressArrival;
+  a.Address? addressArrival;
 
   bool? eco;
   DateTime? duration;
   DateTime? createdAt;
 
+  List<GeoPoint>? geoPointList;
+
+
   @belongsTo
   Travel? travel;
-  Itinerary({this.idInt, this.price, this.addressDeparture,this.addressArrival, this.eco,this.duration,this.createdAt,this.travel});
+  Itinerary({this.idInt, this.price, this.addressDeparture,this.addressArrival,this.geoPointList, this.eco,this.duration,this.createdAt,this.travel});
 
 
 //Serialization

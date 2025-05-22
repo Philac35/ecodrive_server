@@ -17,15 +17,30 @@ class DriverMigration extends Migration {
       table.varChar('lastname', length: 255);
       table.integer('age');
       table.varChar('gender', length: 255);
-      table.varChar('address', length: 255);
+      var addressRef = table.integer('address_id').references('addresses', 'id');
+      addressRef.onDeleteCascade();
+      var photoRef = table.integer('photo_id').references('photos', 'id');
+      photoRef.onDeleteCascade();
       table.varChar('email', length: 255);
+      var authUserRef = table.integer('auth_user_id').references('auth_users', 'id');
+      authUserRef.onDeleteCascade();
       table.timeStamp('created_at');
       table.declareColumn(
         'preferences',
         Column(type: ColumnType('jsonb'), length: 255),
       );
-      table.varChar('drivinglicense', length: 255);
-      table.varChar('driving_licence', length: 255);
+
+
+      // Add foreign keys for Photo, Notice, and Vehicle with cascade delete
+
+      var noticeRef = table.integer('notice_id').references('notices', 'id');
+      noticeRef.onDeleteCascade();
+
+      var vehicleRef = table.integer('vehicle_id').references('vehicles', 'id');
+      vehicleRef.onDeleteCascade();
+
+      var drivingLicenceRef = table.integer('driving_licence_id').references('driving_licences', 'id');
+      drivingLicenceRef.onDeleteCascade();
     });
   }
 

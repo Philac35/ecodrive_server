@@ -9,6 +9,7 @@ part of 'Administrator.dart';
 class AdministratorMigration extends Migration {
   @override
   void up(Schema schema) {
+    print('Running administrators table migration...');
     schema.create('administrators', (table) {
       table.serial('id').primaryKey();
       table.timeStamp('updated_at');
@@ -19,6 +20,16 @@ class AdministratorMigration extends Migration {
       table.varChar('gender', length: 255);
       table.varChar('email', length: 255);
       table.timeStamp('created_at');
+
+      // Add foreign keys for Address, Photo, and AuthUser with cascade delete  (after generation)
+      var addressRef = table.integer('address_id').references('addresses', 'id');
+      addressRef.onDeleteCascade();
+
+      var photoRef = table.integer('photo_id').references('photos', 'id');
+      photoRef.onDeleteCascade();
+
+      var authUserRef = table.integer('auth_user_id').references('auth_users', 'id');
+      authUserRef.onDeleteCascade();
     });
   }
 
