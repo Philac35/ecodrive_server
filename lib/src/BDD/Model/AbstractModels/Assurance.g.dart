@@ -18,12 +18,8 @@ class AssuranceMigration extends Migration {
         'document_pdf',
         Column(type: ColumnType('jsonb'), length: 255),
       );
-      var photoRef = table.integer('photo_id').references('photos', 'id');
-      photoRef.onDeleteCascade();
       table.varChar('title', length: 255);
-      table
-          .declare('vehicule_id', ColumnType('int'))
-          .references('vehicules', 'id');
+
     });
   }
 

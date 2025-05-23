@@ -17,17 +17,16 @@ class DriverMigration extends Migration {
       table.varChar('lastname', length: 255);
       table.integer('age');
       table.varChar('gender', length: 255);
-      var addressRef = table.integer('address_id').references('addresses', 'id');
-      addressRef.onDeleteCascade();
-      var photoRef = table.integer('photo_id').references('photos', 'id');
-      photoRef.onDeleteCascade();
+
+
+
       table.varChar('email', length: 255);
-      var authUserRef = table.integer('auth_user_id').references('auth_users', 'id');
-      authUserRef.onDeleteCascade();
+
       table.timeStamp('created_at');
       table.declareColumn(
         'preferences',
         Column(type: ColumnType('jsonb'), length: 255),
+
       );
 
 

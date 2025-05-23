@@ -12,9 +12,7 @@ class TravelMigration extends Migration {
     schema.create('travels', (table) {
       table.serial('id').primaryKey();
       table.integer('id_int');
-      table
-          .declare('itinerary_id', ColumnType('int'))
-          .references('f_angel_models', 'id');
+
       table.declareColumn(
         'user_list',
         Column(type: ColumnType('jsonb'), length: 255),
@@ -27,9 +25,7 @@ class TravelMigration extends Migration {
       table.timeStamp('arrival_time');
       table.timeStamp('created_at');
       table.timeStamp('updated_at');
-      table
-          .declare('driver_id', ColumnType('int'))
-          .references('f_angel_models', 'id');
+
     });
   }
 

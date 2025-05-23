@@ -21,12 +21,7 @@ class AddressMigration extends Migration {
       table.varChar('city', length: 255);
       table.varChar('country', length: 255);
       table.timeStamp('created_at');
-      table
-          .declare('person_id', ColumnType('int'))
-          .references('f_angel_models', 'id');
-      table
-          .declare('itinerary_id', ColumnType('int'))
-          .references('f_angel_models', 'id');
+
     });
   }
 

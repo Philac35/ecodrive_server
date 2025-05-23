@@ -20,11 +20,6 @@ class DrivingLicenceMigration extends Migration {
         'document_pdf',
         Column(type: ColumnType('jsonb'), length: 255),
       );
-      var photoRef = table.integer('photo_id').references('photos', 'id');
-      photoRef.onDeleteCascade();
-      table
-          .declare('driver_id', ColumnType('int'))
-          .references('f_angel_models', 'id');
 
 
     });

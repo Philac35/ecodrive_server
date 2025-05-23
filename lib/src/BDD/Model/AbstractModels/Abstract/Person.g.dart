@@ -21,9 +21,7 @@ class PersonMigration extends Migration {
       table.timeStamp('created_at');
 
 
-      // Add foreign keys for Photo and AuthUser
-      table.integer('photo_id').references('photos', 'id').onDeleteCascade();
-      table.integer('auth_user_id').references('auth_users', 'id').onDeleteCascade();
+
     });
   }
 

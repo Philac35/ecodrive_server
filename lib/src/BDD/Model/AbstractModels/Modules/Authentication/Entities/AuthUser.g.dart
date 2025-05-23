@@ -20,9 +20,7 @@ class AuthUserMigration extends Migration {
         'role',
         Column(type: ColumnType('jsonb'), length: 255),
       );
-      table
-          .declare('person_id', ColumnType('int'))
-          .references('f_angel_models', 'id');
+
     });
   }
 

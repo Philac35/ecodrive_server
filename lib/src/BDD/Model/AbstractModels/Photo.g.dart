@@ -21,15 +21,7 @@ class PhotoMigration extends Migration {
         'photo',
         Column(type: ColumnType('jsonb'), length: 255),
       );
-      table
-          .declare('person_id', ColumnType('int'))
-          .references('f_angel_models', 'id');
-      table
-          .declare('vehicule_id', ColumnType('int'))
-          .references('f_angel_models', 'id');
-      table
-          .declare('diver_licence_id', ColumnType('int'))
-          .references('f_angel_models', 'id');
+
     });
   }
 

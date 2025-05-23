@@ -17,9 +17,7 @@ class NoticeMigration extends Migration {
       table.varChar('description', length: 255);
       table.integer('note');
       table.timeStamp('created_at');
-      table
-          .declare('driver_id', ColumnType('int'))
-          .references('f_angel_models', 'id');
+
     });
   }
 

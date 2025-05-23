@@ -19,15 +19,7 @@ class UserMigration extends Migration {
       table.varChar('gender', length: 255);
       table.varChar('email', length: 255);
       table.timeStamp('created_at');
-      // Add foreign keys for Address, Photo, and AuthUser with cascade delete  (after generation)
-      var addressRef = table.integer('address_id').references('addresses', 'id');
-      addressRef.onDeleteCascade();
 
-      var photoRef = table.integer('photo_id').references('photos', 'id');
-      photoRef.onDeleteCascade();
-
-      var authUserRef = table.integer('auth_user_id').references('auth_users', 'id');
-      authUserRef.onDeleteCascade();
     });
   }
 

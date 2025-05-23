@@ -15,13 +15,6 @@ class ItineraryMigration extends Migration {
       table.integer('id_int');
       table.double('price');
 
-      // Adding foreign keys for addressDeparture and addressArrival
-      var addressDepartureRef = table.integer('addressDeparture_id').references('addresses', 'id');
-      addressDepartureRef.onDeleteCascade();
-
-      var addressArrivalRef = table.integer('addressArrival_id').references('addresses', 'id');
-      addressArrivalRef.onDeleteCascade();
-
       // Adding GeoPointList as a JSON field
       table.declareColumn(
         'GeoPointList',
@@ -29,9 +22,7 @@ class ItineraryMigration extends Migration {
       );
       table.boolean('eco');
       table.timeStamp('duration');
-      // Adding travel_id as a foreign key
-      var travelRef = table.integer('travel_id').references('travels', 'id');
-      travelRef.onDeleteCascade();
+
       table.timeStamp('created_at');
 
 
