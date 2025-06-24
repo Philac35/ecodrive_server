@@ -3,22 +3,22 @@ import 'dart:typed_data';
 
 
 import '../../../Interface/entityInterface.dart';
-import '../Driver.dart';
-import '../Photo.dart';
+import '../DriverEntity.dart';
+import '../PhotoEntity.dart';
 abstract interface class DocumentInterface implements EntityInterface{
 
-  int? get  id_Int;
+
   String get  title;
   int  get  identificationNumber;
-  Photo? get photo;
+  PhotoEntity? get photo;
   Uint8List? documentPdf;
-  Driver? get driver;
+  DriverEntity? get driver;
 
-  void set (int idInt);
+
   void set  title(String title) ;
   void  set identificationNumber(int identificationNumber);
-  void set photo(Photo? photo);
+  void set photo(PhotoEntity? photo);
 
-  void set driver(Driver? driver);
+  void set driver(DriverEntity? driver);
 
 }
