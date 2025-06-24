@@ -1,14 +1,11 @@
-
-
 import 'package:ecodrive_server/src/Controller/Abstract/AbstractController.dart';
 import 'package:ecodrive_server/src/Repository/Repository.dart';
 
-import '../Entities/Abstract/Person.dart';
-import '../Entities/Interface/entityInterface.dart';
-import '../Entities/User.dart';
+import '../BDD/Interface/entityInterface.dart';
+
 import 'package:flutter/foundation.dart';
 
-class Controller<T extends EntityInterface> extends AbstractController{
+abstract class Controller<T extends EntityInterface> extends AbstractController{
   T? entity;
   final T Function(Map<String, dynamic>)? entityFactory;
 

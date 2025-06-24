@@ -1,8 +1,9 @@
 
 
 import 'package:ecodrive_server/src/Controller/Controller.dart';
-import 'package:ecodrive_server/src/Entities/Interface/entityInterface.dart';
 
+
+import '../../BDD/Interface/entityInterface.dart';
 import '../../Repository/Repository.dart';
 
 
