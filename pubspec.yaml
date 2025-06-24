@@ -33,8 +33,10 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  angel3_orm: ^8.3.2
+  angel3_orm: ^8.3.1
   angel3_orm_generator: ^8.4.1
+  angel3_framework: ^8.5.0
+  angel3_migration: ^8.4.0
   angel3_migration_runner: ^8.4.1
   angel3_serialize: ^8.3.0
   angel3_orm_mysql: ^8.3.1
@@ -77,6 +79,8 @@ dependencies:
   universal_html: ^2.2.4
   universal_platform: ^1.1.0
   optional: ^6.1.0+1
+  mysql_client: ^0.0.27
+
 
 
 
