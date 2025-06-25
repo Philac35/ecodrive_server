@@ -1,7 +1,9 @@
 import 'dart:convert';
 
-import 'package:ecodrive_server/src/Entities/Interface/entityInterface.dart';
+
 import 'package:ecodrive_server/src/Services/Parser/Interface/ParserJsonInterface.dart';
+
+import '../../BDD/Interface/entityInterface.dart';
 
 class ParserEntityJson<T extends EntityInterface> implements ParserJsonInterface {
   final T Function(Map<String, dynamic>) fromJsonFactory;

@@ -3,14 +3,32 @@
 
 import 'dart:convert';
 
-import 'package:ecodrive_server/src/Entities/Interface/entityInterface.dart';
+import 'package:angel3_orm/angel3_orm.dart';
+import 'package:ecodrive_server/src/BDD/Connection/MysqlConnection.dart';
+import 'package:ecodrive_server/src/BDD/Executor/SQLExecutor.dart';
+import 'package:ecodrive_server/src/BDD/Interface/ManageBDDInterface.dart';
 import 'package:ecodrive_server/src/Repository/Abstract/AbstractRepository.dart';
 import 'package:ecodrive_server/src/Services/HTMLService/HTMLFetchEntityService.dart';
 
-import '../Entities/Interface/entityInterface.dart';
+import '../BDD/Interface/entityInterface.dart';
+
+typedef QueryFactory<T> = dynamic Function();
+
+//ToBe sur that the factory return the matched queryClass :
+// If general function doesn't work //TOTRY 24/06/2025
+/* Register factories for each entity
+final Map<Type, QueryFactory> queryFactories = {
+  Car: () => CarQuery(),
+  Driver: () => DriverQuery(),
+  // Add more as needed
+};
+*/
+
+
 class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 
-
+  final QueryExecutor executor;
+  final QueryFactory<T> queryFactory;
 
   //late HTMLFetchEntityService htmlFetchEntityService ;
   final T Function(Map<String, dynamic>) fromJson;
@@ -18,9 +36,12 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 
   Repository({
   //  required this.htmlFetchEntityService,
+    required this.executor,
+    required this.queryFactory,
     required this.fromJson,
     Repository<T>? repository,
-  }) : super(repository: repository);
+  }) : super(repository: repository,
+      executor: SQLExecutor(connexion: MysqlConnection()));
 
 
   Future<T?> find() {
@@ -85,9 +106,24 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 
 
   @override
-  Future<bool>persist(T entity) {
-    throw UnimplementedError();
+  Future<bool>persist(T entity) async {
+    final query = queryFactory();
+    query.values = entity;
+    return await query.insert(executor);
   }
+
+
+/* In Case of define explicitely Factories cf note 24/06/2026 l17
+  Future<T> persist(T entity) async {
+    final factory = queryFactories[T];
+    if (factory == null) {
+      throw Exception('No query factory registered for type $T');
+    }
+    final query = factory() as dynamic; // Must be dynamic due to Dart's type system
+    query.values = entity;
+    return await query.insert(executor);
+  }
+*/
 
   @override
   Future<bool> delete({int? id, EntityInterface? entity})async {
@@ -105,6 +141,14 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
   Future<bool>update(EntityInterface entity) {
     throw UnimplementedError();
   }
+
+
+}
+
+extension on QueryBase {
+  set values(values) {}
+
+  insert(QueryExecutor executor) {}
 
 
 }

@@ -3,7 +3,8 @@ import 'dart:math';
 import 'package:ecodrive_server/src/Services/Parser/ParserEntityJson.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
-import '../../Entities/Interface/entityInterface.dart';
+
+import '../../BDD/Interface/entityInterface.dart';
 import '../LogSystem/LogSystem.dart';
 
 import 'Abstract/AbstractHTMLService.dart';

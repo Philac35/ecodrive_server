@@ -8,21 +8,20 @@ import 'package:mysql_client/mysql_client.dart';
 
 //import 'package:mysql1/mysql1.dart';
 import 'package:ecodrive_server/src/BDD/Connection/MysqlConnection.dart';
-
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Abstract/Person.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Address.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Administrator.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Assurance.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Driver.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/DrivingLicence.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Employee.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Itinerary.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Modules/Authentication/Entities/AuthUser.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Notice.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Photo.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Travel.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/User.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Vehicule.dart';
+import 'package:ecodrive_server/src/BDD/Model/Abstract/PersonEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/AddressEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/AdministratorEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/AssuranceEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/DriverEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/DrivingLicenceEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/EmployeeEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/ItineraryEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/Modules/Authentication/Entities/AuthUserEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/NoticeEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/PhotoEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/TravelEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/UserEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/VehiculeEntity.dart';
 
 
 Future<void> runM() async {

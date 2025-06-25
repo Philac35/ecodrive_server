@@ -1,11 +1,14 @@
-import 'package:ecodrive_server/src/Entities/Interface/entityInterface.dart';
 
+
+import 'package:ecodrive_server/src/BDD/Executor/SQLExecutor.dart';
+
+import '../../BDD/Interface/entityInterface.dart';
 import '../Repository.dart';
 
 abstract class  AbstractRepository<T extends EntityInterface>{
 Repository <T>?  repository;
 
-AbstractRepository({this.repository});
+AbstractRepository({this.repository, required SQLExecutor executor});
 
 // Fetch entities Functions
 

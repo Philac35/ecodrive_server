@@ -13,9 +13,9 @@ import 'package:ecodrive_server/src/Services/Parser/ParserEntityJson.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../Controller/Controller.dart';
-import '../../Entities/Driver.dart';
-import '../../Entities/User.dart';
 
+
+import '../../Controller/UserController.dart';
 import 'Entities/AuthUser.dart';
 
 

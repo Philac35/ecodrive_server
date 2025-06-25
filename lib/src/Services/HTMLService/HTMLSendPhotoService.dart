@@ -4,7 +4,9 @@ import 'package:ecodrive_server/src/Services/HTMLService/HTMLService.dart';
 import 'package:ecodrive_server/src/Services/Interface/Service.dart';
 import 'package:http/http.dart' as http;
 
-import '../../Entities/Photo.dart';
+import '../../BDD/Model/AbstractModels/PhotoEntity.dart';
+
+
 class HTMLSendPhotoService implements Service{
 
 

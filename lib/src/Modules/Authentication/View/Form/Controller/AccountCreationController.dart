@@ -6,16 +6,19 @@ import 'dart:typed_data';
 
 import 'package:basic_utils/basic_utils.dart';
 import 'package:camera/camera.dart';
-import 'package:ecodrive_server/src/Entities/Interface/entityInterface.dart';
+
 import 'package:flutter/src/foundation/key.dart';
 import 'package:get/get.dart';
 
 import 'package:ecodrive_server/src/Controller/Controller.dart';
-import 'package:ecodrive_server/src/Entities/Driver.dart';
-import 'package:ecodrive_server/src/Entities/User.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/DriverEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/UserEntity.dart';
+import 'package:ecodrive_server/src/BDD/Model/AbstractModels/PhotoEntity.dart';
 import 'package:ecodrive_server/src/Services/HTMLService/HTMLService.dart';
-import 'package:ecodrive_server/src/Entities/Photo.dart';
 
+
+import '../../../../../Controller/DriverController.dart';
+import '../../../../../Controller/UserController.dart';
 import '../../../Controllers/AuthUserController.dart';
 import '../../../Entities/AuthUser.dart';
 import 'ControllerFormInterface.dart';
@@ -72,7 +75,7 @@ class AccountCreationController extends GetxController implements ControllerForm
     // TODO beneath entity relative to role, seams to manage address and photos but it must be tested
     switch (role) {
       case 'driver':
-        driverController = Controller<Driver>();
+        driverController = DriverController();
         isCreated =  driverController?.create(entityMap) ;
         if(isCreated==true){
           Driver  user = await  userController?.repository?.findLast() as Driver ;
@@ -80,7 +83,7 @@ class AccountCreationController extends GetxController implements ControllerForm
         break;
 
       case 'passenger':
-        userController = Controller<User>();
+        userController = UserController();
         isCreated = userController?.create(entityMap) ;
         if(isCreated==true){
           User  user = await  userController?.repository?.findLast() as User ;
@@ -88,7 +91,7 @@ class AccountCreationController extends GetxController implements ControllerForm
         break;
 
       case 'passenger-driver' || 'driver-passenger':
-        driverController = Controller<Driver>();
+        driverController = DriverController();
         isCreated =driverController?.create(entityMap) ;
         if(isCreated==true){
           Driver  user = await  userController?.repository?.findLast() as Driver ;
@@ -97,7 +100,7 @@ class AccountCreationController extends GetxController implements ControllerForm
         break;
 
       default:
-        userController = Controller<User>();
+        userController = UserController();
         isCreated = userController?.create(entityMap); //Here when you create the Entities they are automatically persisted
         if(isCreated == true){
             User  user = await  userController?.repository?.findLast() as User ;

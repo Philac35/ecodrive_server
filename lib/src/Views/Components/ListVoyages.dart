@@ -1,16 +1,25 @@
+
+import 'dart:typed_data';
+
+import 'package:angel3_framework/angel3_framework.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:ecodrive_server/src/Entities/Vehicule.dart';
+
 import 'package:ecodrive_server/src/Repository/Repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ecodrive_server/src/Controller/Controller.dart';
 
 import 'package:http/http.dart';
-import '../../Entities/Driver.dart';
-import '../../Entities/Itinerary.dart';
+
+import '../../BDD/Model/Abstract/PersonEntity.dart';
+import '../../BDD/Model/AbstractModels/ItineraryEntity.dart';
+import '../../BDD/Model/AbstractModels/TravelEntity.dart';
+import '../../BDD/Model/AbstractModels/UserEntity.dart';
+import '../../BDD/Model/AbstractModels/VehiculeEntity.dart';
+import '../../BDD/Model/AbstractModels/DriverEntity.dart' as driver;
 import '../../Router/AppRouter.gr.dart' show VoyageDetails;
-import '../../Entities/Travel.dart';
-import '../../Entities/Address.dart' as a;
+
+import '../../BDD/Model/AbstractModels/AddressEntity.dart' as a;
 //import 'package:ecodrive_server/src/Services/HTMLService/HTMLFetchEntityService.dart'; TODO this must manager intern
 
 
@@ -44,7 +53,8 @@ class ListVoyagesState extends State<ListVoyages> {
         addressDeparture: a.Address(city: "Paris", address: 'Rue Saint Augustin', postCode: '75000',  createdAt: DateTime(2025,5,9)),
     addressArrival: a.Address(city: "Lyon", address: 'Rue Saint Pancras', postCode: '69000', createdAt: DateTime(2025,5,9)),
     duration: DateTime(0, 0, 0, 2,0),
-    ), driver: Driver(firstname: 'Sam', lastname: 'Auburn', authUser: null), vehicule: Vehicule(idInt:1,brand:'Rover',modele:'Range'), createdAt: DateTime(2025,5,9));
+    ), driver: driver.Driver(firstname: 'Sam', lastname: 'Auburn', authUser: null, credits: 100, person: {} as Person, user: {} as User),
+      createdAt: DateTime(2025,5,9));
     setState(() {
       travels=[example];
       if(fetchedTravels!=null){

@@ -8,7 +8,8 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:get/get.dart';
 import 'package:convert/convert.dart';
 
-import '../../../../../Entities/User.dart';
+
+import '../../../../../BDD/Model/AbstractModels/UserEntity.dart';
 import '../../../Controllers/AuthUserController.dart';
 import 'ControllerFormInterface.dart';
 import 'package:flutter/foundation.dart';

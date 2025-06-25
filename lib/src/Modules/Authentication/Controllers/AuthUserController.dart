@@ -1,18 +1,19 @@
 import 'dart:convert';
 
-import 'package:ecodrive_server/src/Entities/Interface/entityInterface.dart';
 import 'package:ecodrive_server/src/Services/CryptService/TokenService.dart';
 import 'package:ecodrive_server/src/Services/LogSystem/LogSystem.dart';
 import 'package:http/http.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../BDD/Model/AbstractModels/UserEntity.dart';
 import '../../../Controller/Controller.dart';
-import '../../../Entities/Driver.dart';
+
+import '../../../Controller/DriverController.dart';
+import '../../../Controller/UserController.dart';
 import '../../../Services/LogSystem/LogSystemBDD.dart';
 import '../Authenticator.dart';
 import '../Entities/AuthUser.dart';
-import '../../../Entities/Abstract/Person.dart';
-import '../../../Entities/User.dart';
+
 import 'package:flutter/foundation.dart';
 import '../Repository/Repository.dart';
 
@@ -44,9 +45,9 @@ class AuthUserController<T extends User> {  //Lorsque l'on cree un AuthUser on c
 
   authenticateUser(User? user) {
     if (user != null) {
-      return authenticateAuthUser(user.authUser);
+      return authenticateAuthUser(user.authUser as AuthUser?);
     } else if (this.user != null) {
-      return authenticateAuthUser(this.user?.authUser);
+      return authenticateAuthUser(this.user?.authUser as AuthUser?);
     } else {
       debugPrint(
           "AuthUserController authenticateUser L26 : User doesn't exist or is null");
@@ -117,7 +118,7 @@ class AuthUserController<T extends User> {  //Lorsque l'on cree un AuthUser on c
   Future<void> fetchUser(String userJson) async {
     try {
       final Map<String, dynamic> userData = jsonDecode(userJson);
-      final User user = User.fromJson(userData);
+      final User user = User.fromJson(userData) ;
       String role = user.authUser?.role as String;
       if (role == null) {
         throw Exception("Role of user not found");
@@ -126,11 +127,11 @@ class AuthUserController<T extends User> {  //Lorsque l'on cree un AuthUser on c
       // Create the appropriate controller based on the role
       switch (role) {
         case 'driver':
-          this.controller = Controller<Driver>() as Controller<T>;
+          this.controller = DriverController() as Controller<T>;
           await this.controller?.create(user as Map<String, dynamic>);
           break;
         default:
-          this.controller = Controller<User>() as Controller<T>;
+          this.controller = UserController() as Controller<T> ;
           await this.controller?.create(user as Map<String, dynamic>);
           break;
       }

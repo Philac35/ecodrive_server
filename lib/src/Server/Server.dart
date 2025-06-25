@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:ui_web';
+//import 'dart:ui_web';
 
 import 'package:ecodrive_server/src/Loader/EnvironmentLoader.dart';
 import 'package:ecodrive_server/src/Server/Router/Router.dart';
@@ -21,7 +21,7 @@ class Server {
 
   late int id;
   late final List<String> args;
-  late HttpServer   _server;
+   HttpServer?  _server;
   late bool compress= false;  // use of gzip
   late Map<String,String> configuration ;
 
@@ -38,7 +38,7 @@ class Server {
     frouter = FRouter();
     createServer();
     setServerHeader();
-    this._server.autoCompress=compress;
+    this._server?.autoCompress=compress;
   }
 
   createServer() async {
@@ -58,7 +58,7 @@ class Server {
        }
         _server = await io.serve(frouter.router, 'localhost', 8080,securityContext:context);
         print("SERVER STARTED");
-        print('Server running on http://${_server.address.host}:${_server.port}');
+        print('Server running on http://${_server?.address.host}:${_server?.port}');
 
     } catch (error, stack) {
       debugPrint("Router.dart Server fail to start, Error : ${error} ");
@@ -66,8 +66,8 @@ class Server {
   }
 
 
- Future<dynamic> stopServer(){
-   return this._server.close();
+ Future<dynamic> stopServer() async {
+   return this._server?.close();
   }
 
 
@@ -103,11 +103,11 @@ class Server {
    * Function setServerHeader
    */
  setServerHeader(){
-   this._server.serverHeader= 'EcodriveServer/1.0';
+   this._server?.serverHeader= 'EcodriveServer/1.0';
  }
 
   timeOut({int timeout=144000}){
-    this._server.sessionTimeout=timeout;
+    this._server?.sessionTimeout=timeout;
   }
 
 
