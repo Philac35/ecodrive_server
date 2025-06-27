@@ -1,42 +1,52 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
-//import 'dart:ui_web';
 
-import 'package:ecodrive_server/src/Loader/EnvironmentLoader.dart';
-import 'package:ecodrive_server/src/Server/Router/Router.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/src/request.dart';
-import 'package:http/src/response.dart';
+import 'dart:io';
+import 'dart:io' as io;
+import 'dart:math';
+import 'dart:io' show ProcessUtils;
+
+
+import '../Server/Router/Router.dart';
 import 'package:shelf/shelf_io.dart' as io;
-import 'package:flutter/foundation.dart';
-import 'package:ecodrive_server/src/Services/HTMLService/HTMLService.dart';
-import 'package:universal_html/html.dart';
+//import '../Services/HTMLService/HTMLService.dart';
 import 'package:universal_platform/universal_platform.dart';
 class Server {
 
+   int? _pid;
 
   late FRouter frouter;
   static final Server  _instance = Server._internal();
+
+  static Server get instance {
+    if (_instance == null) {
+      throw Exception('Server not initialized!');
+    }
+    return _instance!;
+  }
 
   late int id;
   late final List<String> args;
    HttpServer?  _server;
   late bool compress= false;  // use of gzip
-  late Map<String,String> configuration ;
+   Map<String,String>? configuration={};
 
   int backlog =128;  //The number of simultaneous connection when the server is busy. If it is reached new connections are rejected until new sapce is available
 
   factory Server() {
-    return _instance;
+    return instance;
   }
 
-  Server._internal(){
+  Server._internal() {
 
     id=this.getId();
-    getConfiguration();
+
+
+     getConfiguration();
+    Future.delayed(Duration(seconds: 120));
+    //debugPrint("Server L39 : ${configuration!.toString()}");
+
     frouter = FRouter();
     createServer();
+    Future.delayed(Duration(seconds: 60));
     setServerHeader();
     this._server?.autoCompress=compress;
   }
@@ -45,7 +55,7 @@ class Server {
     var context;
     try {
 
-       if(configuration["USE_TLS"] ==true){
+       if(configuration!["USE_TLS"] ==true){
          context = SecurityContext();
 
          if(UniversalPlatform.isIOS==false || UniversalPlatform.isApple==false){
@@ -56,32 +66,64 @@ class Server {
 
          context.usePrivateKey('key.pem');
        }
-        _server = await io.serve(frouter.router, 'localhost', 8080,securityContext:context);
+       var route=frouter.router;
+        _server = await io.serve(route, 'localhost', 8080,securityContext:context);
         print("SERVER STARTED");
         print('Server running on http://${_server?.address.host}:${_server?.port}');
 
     } catch (error, stack) {
-      debugPrint("Router.dart Server fail to start, Error : ${error} ");
+        print("Router.dart Server fail to start, Error : ${error} ");
     }
   }
 
 
- Future<dynamic> stopServer() async {
-   return this._server?.close();
+ static Future startServer() async{
+    Server();
+    pidwrite();
+
+ }
+
+  static Future<dynamic> stopServer() async {
+ Map<dynamic, Object>? pidNum= readPid();
+    final killed = Process.killPid(pidNum!['pid'] as int);
+    if (killed) {
+      print('Server process $pidNum killed.');
+      (pidNum?['file'] as File).deleteSync();
+    } else {
+      print('Failed to kill process $pidNum. It may not be running.');
+    }
+
+
   }
+
+
+
+
+
 
 
   getConfiguration() async {
-    EnvironmentLoader loader= EnvironmentLoader(path:"");
-    configuration=await loader.loadEnv('ServerConfiguration');
+    // If you use environments variables
+    // configuration?.addAll({'Env':String.fromEnvironment('Env'),
+    //   'USE_TLS':String.fromEnvironment('USE_TLS') } as Map<String, String>);
+    File conf= File('../Configuration/ConfigurationServer.env');
+        List<String> line=await conf.readAsLines();
+        for(var l in line  ){
+          List<String> keyvalue=l.split('=');
+         configuration?.addAll({keyvalue[0]:keyvalue[1]});
+    }
 
+
+
+    print("Server L98, configuration : $configuration!");
   }
 
+  /*
   Future<void> getStatus() async {
     String schema='http';
-    if(configuration["USE_TLS"]==true){schema='https';}
+    if(configuration!["USE_TLS"]==true){schema='https';}
 
-    Request request=Request( 'GET',Uri(scheme:schema,host:configuration['ADDRESS_SERVER'],path:'/ecodrive-api/status')) ;
+    Request request=Request( 'GET',Uri(scheme:schema,host:configuration!['ADDRESS_SERVER'],path:'/ecodrive-api/status')) ;
     final status = {
       'status': 'running',
       'timestamp': DateTime.now().toIso8601String()
@@ -97,7 +139,7 @@ class Server {
     else{print("The server is not Running. Status Code : ${res?.statusCode}. Cause : ${res?.reasonPhrase}");}
   }
 
-  }
+  }*/
 
   /**
    * Function setServerHeader
@@ -112,24 +154,28 @@ class Server {
 
 
   /**
-   * Function cldMenu
+   * Function cliMenu
    * TODO watch how to use the cli
    */
-  cliMenu(List<String>args){
-
+  static cliMenu(List<String>args){
+  //print (args);
     for(String arg in args) {
       switch(arg){
-          case "-gzip" : compress=true;
+          case "-start" : startServer() ;
+          case "-stop" : Server.stopServer();
+          case "-gzip" : instance.compress=true; print('Compression activated');
           case "-help" : help();
       }
     }
   }
 
 
-  help(){
+ static help(){
        print('''Serveur v.1 d'Ecodrive
-                options : -gzip : to compress datas   
-                          -help : help menu           
+       options : -start
+                 -stop
+                 -gzip : to compress datas   
+                 -help : help menu           
          ''');
 
   }
@@ -143,11 +189,35 @@ class Server {
     int randomNumber = random.nextInt(10^15);
     return randomNumber;
   }
+
+   /**
+    * Function pidwrite
+    * Fetch current Server pid and save it in file
+    */
+  static pidwrite(){
+    final pidFile = File('server.pid');
+    pidFile.writeAsStringSync(io.pid.toString());}
+
+
+static  Map<dynamic, Object>?  readPid(){
+     final pidFile = File('server.pid');
+     if (!pidFile.existsSync()) {
+       print('PID file not found. Server may not be running.');
+       return null;
+     }
+     final pidStr = pidFile.readAsStringSync();
+     final pidNum = int.tryParse(pidStr);
+     if (pidNum == null) {
+       print('Invalid PID in file.');
+       return null;
+     }
+    return {'pid':pidNum,'file':pidFile};
+   }
 }
 
 
-void main(List<String> args) async {
- final instance=Server();
-  instance.cliMenu(args);
+//void main(List<String> args) async {
+ //final instance=Server();
+  //:instance.cliMenu(args);
 
-}
+//}
