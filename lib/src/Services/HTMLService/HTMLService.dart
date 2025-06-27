@@ -21,10 +21,12 @@ class HTMLService extends AbstractHTMLService {
   bool? isEncrypted;
 
 
-  HTMLService({Request? request, this.isEncrypted=true}) : super(request){
-    if(isEncrypted!){
-    this.cryptService= EncryptService();}
-    this.cryptService.setPublicKeyFromFile();
+  HTMLService({Request? request, this.isEncrypted=false}) : super(request){
+    if(this.isEncrypted==true){
+      this.cryptService= EncryptService();
+      this.cryptService.setPublicKeyFromFile();
+    }
+
   }
 
   @override

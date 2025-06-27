@@ -21,6 +21,7 @@ void main() {
   debugPrint('ConnexionFormController registered');
   Get.put(ControllerFormInterface);
   Get.put(ContactFormController());
+  debugPrint('ContactFormController registered');
   runApp( MyApp());
 }
 
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
     tertiary: Color(0xFFE86A),
   );
   final _appRouter = AppRouter(); //Router Autoroute
-  final _server= Server();
+
 
    MyApp({super.key});
 
