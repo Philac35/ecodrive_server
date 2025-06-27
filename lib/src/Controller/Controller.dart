@@ -5,16 +5,17 @@ import '../BDD/Interface/entityInterface.dart';
 
 import 'package:flutter/foundation.dart';
 
-abstract class Controller<T extends EntityInterface> extends AbstractController{
+ class Controller<T extends EntityInterface> extends AbstractController{
   T? entity;
   final T Function(Map<String, dynamic>)? entityFactory;
 
   Controller({
-     this.entityFactory,
+    this.entityFactory,
     Repository<T>? repository,
   }) : super( repository: repository);
 
 
+  //CRUD Functions
 
   @override
   Future<bool> create(Map<String, dynamic> parameters) async {
@@ -26,12 +27,12 @@ abstract class Controller<T extends EntityInterface> extends AbstractController{
 
   @override
   Future<bool> delete({EntityInterface? entity,int? id} )async {
-  bool exit=false;
+    bool exit=false;
     try {
       var a= await repository?.delete(entity:entity,id:id); //TODO Check if it works
-    exit = true;
+      exit = true;
     } catch (e) {
-       debugPrint('Error deleting entity: $e');
+      debugPrint('Error deleting entity: $e');
     }
     return exit;
   }
@@ -42,23 +43,11 @@ abstract class Controller<T extends EntityInterface> extends AbstractController{
     bool exit=false;
     try {
       var a=   await repository?.persist(entity.toJson() as EntityInterface);  //TODO Check if it works
-    exit = true; // Creation successful
+      exit = true; // Creation successful
     } catch (e) {
-    print('Error creating entity: $e');
+      print('Error creating entity: $e');
     }
     return exit;
-  }
-
-
-  @override
-  fromJson(Map<String, dynamic> json) {
-    // TODO: implement fromJson
-    throw UnimplementedError();
-  }
-
-  @override
-  Map<String, dynamic> toJson(entity) {
-    return entity.toJson();
   }
 
   @override
@@ -72,7 +61,47 @@ abstract class Controller<T extends EntityInterface> extends AbstractController{
     }
     return exit;
   }
-  
 
-}
+  //JSON Functions
+  @override
+  fromJson(Map<String, dynamic> json) {
+    // TODO: implement fromJson
+    throw UnimplementedError();
+  }
+
+  @override
+  Map<String, dynamic> toJson(entity) {
+    return entity.toJson();
+  }
+
+
+
+
+  //FETCH Function
+  @override
+  Future<List<EntityInterface>?> getEntities() async {
+    return await repository?.findAll();
+  }
+
+
+  @override
+  Future<EntityInterface?>? getEntity(int id) async {
+    return await repository?.findById(id);
+  }
+
+  @override
+  Future<EntityInterface?>? getLast(){
+    return  repository?.findLast();
+  }
+
+  @override
+  Future<int?> getLastId() async { return  await repository?.getLastId();}
+   }
+
+
+
+
+
+
+
 

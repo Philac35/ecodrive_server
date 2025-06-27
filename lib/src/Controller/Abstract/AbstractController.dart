@@ -1,8 +1,6 @@
 
 
 import 'package:ecodrive_server/src/Controller/Controller.dart';
-
-
 import '../../BDD/Interface/entityInterface.dart';
 import '../../Repository/Repository.dart';
 
@@ -23,6 +21,11 @@ import '../../Repository/Repository.dart';
     throw UnimplementedError();
   }
 
+  //Fetch Functions
+  Future<List<EntityInterface>?> getEntities();
+  Future<EntityInterface?>? getEntity(int id);
+  Future<EntityInterface?>? getLast();
+  Future<int?>? getLastId();
 
   // Serialize
   Map<String, dynamic> toJson(T entity);
