@@ -1,0 +1,17 @@
+name: ecodriver_internal_server
+description: "ECF Ecodrive 2025 - Serveur"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  runtime_type: ^1.1.0
+  shelf: ^1.4.2
+  shelf_router_generator: ^1.1.1
+  shelf_router: ^1.1.4
+  universal_platform: ^1.1.0
+
+
