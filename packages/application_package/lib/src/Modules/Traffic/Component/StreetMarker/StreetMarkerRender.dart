@@ -1,17 +1,13 @@
 
 
 
-import 'package:shared_package/Modules/OpenStreetMap/OpenStreetMapTraffic.dart';
-import 'package:shared_package/Modules/Traffic/Component/MapWithTraffic.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_map/flutter_map.dart';
-//import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart' ;
+
 
 import 'StreetMarker.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/MapControllerInterface.dart' ;
+import 'package:application_package/src/Modules/OpenStreetMap/Controller/MapControllerInterface.dart' ;
 
-import 'package:shared_package/Modules/OpenStreetMap/Controller/FBaseMapController.dart';
 
 class StreetMarkerRender{
   late StreetMarker streetMarker;
@@ -44,23 +40,11 @@ class StreetMarkerRender{
 
 
   Future<void> addStreetMarker(StreetMarker streetMarker) async {
-    if (streetMarker!.geoPoint != null) {
+    await mapController.addMarker(
+        streetMarker.geoPoint, // Use the non-null assertion operator (!)
+        markerIcon: streetMarker.markerIcone);
 
-
-      await mapController.addMarker(
-          streetMarker.geoPoint!, // Use the non-null assertion operator (!)
-          markerIcon: streetMarker.markerIcone);
-
-    } else {
-      // Handle the case where geoPoint is null
-      print(
-          "Warning: Cannot add marker for event with missing location: ${streetMarker.event.description}");
-      // We might choose to:
-      // - Skip adding the marker (as we're doing here)
-      // - Add a marker at a default location
-      // - Display the event information in a different way (e.g., a list)
     }
-  }
 
 
 

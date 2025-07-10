@@ -1,13 +1,8 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 
-import 'package:ecodrive_server/src/Router/AppRouter.gr.dart';
-import 'Forms/Controler/ContactFormController.dart';
 import 'Forms/View/ContactForm.dart';
 import 'Structure/Footer/Footer.dart';
 import 'Structure/Header/Header.dart';
@@ -15,7 +10,7 @@ import 'Structure/Menu/FMenu.dart';
 
 @RoutePage()
 class Contact extends StatelessWidget {
-  const Contact({Key? key}) : super(key: key);
+  const Contact({super.key});
   @override
   Widget build(BuildContext context) {
     //Initialize the ContactFormController as a singleton:

@@ -1,10 +1,9 @@
-import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../../Services/LogSystem/LogSystem.dart';
-import '../../../Services/LogSystem/LogSystemBDD.dart';
+import 'package:shared_package/Services/LogSystem/LogSystem.dart';
+import 'package:shared_package/Services/LogSystem/LogSystemBDD.dart';
 
 class ImageCameraController extends CameraController{
 
@@ -32,38 +31,38 @@ class ImageCameraController extends CameraController{
     // Request camera permission
     final status = await Permission.camera.request();
     if (status.isGranted) {
-      print('status camera L57 : ' + status.isGranted.toString());
+      print('status camera L57 : ${status.isGranted}');
       //Initialize camera
       try {
-        this._cameras = await availableCameras();
-        if (this._cameras.isEmpty) {
+        _cameras = await availableCameras();
+        if (_cameras.isEmpty) {
           debugPrint('No cameras available');
         }
       } catch (e) {
         debugPrint("There is a pb with availableCameras()");
       }
       try {
-        this._cameraController = ImageCameraController.init(
+        _cameraController = ImageCameraController.init(
           description:cameraContParam['cameraDescription'],
           resolutionPreset: cameraContParam['resolution'],
           enableAudio:cameraContParam['enableAudio'],
           imageFormatGroup: cameraContParam['imageFormatGroup'],
         ); //    cameraDescription,
 
-        await this._cameraController!.initialize();
+        await _cameraController.initialize();
         isInitialized = true;
         debugPrint('Camera intialized successfully');
       } catch (e) {
         isInitialized = false;
         if (kDebugMode) {
           debugPrint(
-              "FPhotoUploadField L65 initCamera(): erreur d'initialisation de la camera :${e}");
+              "FPhotoUploadField L65 initCamera(): erreur d'initialisation de la camera :$e");
           if (isSkiaWeb) {
             LogSystemBDD().log(
-                "FPhotoUploadField L68 iniCamera(): erreur d'initialisation de la camera :${e}");
+                "FPhotoUploadField L68 iniCamera(): erreur d'initialisation de la camera :$e");
           } else {
             LogSystem().error(
-                "FPhotoUploadField L71 iniCamera(): erreur d'initialisation de la camera :${e}");
+                "FPhotoUploadField L71 iniCamera(): erreur d'initialisation de la camera :$e");
           }
         }
       }
@@ -84,32 +83,29 @@ class ImageCameraController extends CameraController{
 
   void takePhoto() async {
 
-    if (this._cameraController != null &&
-        this._cameraController!.value.isInitialized) {
+    if (_cameraController.value.isInitialized) {
       try {
         Uint8List? imageBytes;
-        final XFile? photo = await this._cameraController!.takePicture();
-        if (photo != null) {
-          imageBytes = await photo.readAsBytes();
+        final XFile photo = await _cameraController.takePicture();
+        imageBytes = await photo.readAsBytes();
 
-          this.  _imageBytes = imageBytes;
-            //_image = File(photo.path);
+          _imageBytes = imageBytes;
+          //_image = File(photo.path);
 
-        }
-      } catch (e) {
+            } catch (e) {
         if (kDebugMode) {
           debugPrint(
-              "FPhotoUploadField L86 _takePhoto(): Error when photo was taken :${e}");
+              "FPhotoUploadField L86 _takePhoto(): Error when photo was taken :$e");
           if (isSkiaWeb) {
             LogSystemBDD().log(
-                "FPhotoUploadField L86 _takePhoto(): Error when photo was taken :${e}");
+                "FPhotoUploadField L86 _takePhoto(): Error when photo was taken :$e");
           } else {
             LogSystem().error(
-                "FPhotoUploadField L86 _takePhoto(): Error when photo was taken :${e}");
+                "FPhotoUploadField L86 _takePhoto(): Error when photo was taken :$e");
           }
         }
       } finally {
-        _cameraController?.dispose();
+        _cameraController.dispose();
       }
     } else {
       if (kDebugMode) {
@@ -126,8 +122,9 @@ class ImageCameraController extends CameraController{
     }
   }
 
- Future <void> dispose() async {
-    _cameraController?.dispose();
+ @override
+  Future <void> dispose() async {
+    _cameraController.dispose();
     super.dispose();
   }
   void setCameraContParam(Map<String, dynamic> params) {

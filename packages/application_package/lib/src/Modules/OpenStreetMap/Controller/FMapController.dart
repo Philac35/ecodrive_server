@@ -1,13 +1,10 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/src/foundation/change_notifier.dart';
 
 //import 'package:flutter_osm_interface/src/osm_controller/osm_controller.dart'; // /!\ These classes have the same name but are not really the same thing/ I let is for exemple
 import 'package:flutter_osm_plugin/src/controller/osm/osm_controller.dart';
 
-import 'package:flutter_osm_interface/flutter_osm_interface.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import '../Class/Observer/GeoPointObserver.dart';
 import 'MapControllerInterface.dart';
@@ -131,6 +128,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   ///
   /// this method used to change tiles of map,
   /// for now we support only raster tiles for now
+  @override
   Future<void> changeTileLayer({CustomTile? tileLayer}) async {
     await osmBaseController.changeTileLayer(tileLayer: tileLayer);
   }
@@ -140,6 +138,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// this method is to set area camera limit of the map
   ///
   /// [boundingBox] : (BoundingBox) bounding that map cannot exceed from it
+  @override
   Future<void> limitAreaMap(BoundingBox boundingBox) async {
     await osmBaseController.limitArea(boundingBox);
   }
@@ -147,6 +146,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// [removeLimitAreaMap]
   ///
   /// remove area camera limit from the map, this support only in android
+  @override
   Future<void> removeLimitAreaMap() async {
     await osmBaseController.removeLimitArea();
   }
@@ -156,6 +156,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// initialise or change of position with creating marker in that specific position
   ///
   /// [p] : geoPoint
+  @override
   @Deprecated("we will remove this method in future release")
   Future<void> changeLocation(GeoPoint position) async {
     await osmBaseController.changeLocation(position);
@@ -166,6 +167,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// animate to specific position with out add marker into the map
   ///
   /// [position] : (GeoPoint) position that will be go to map
+  @override
   @Deprecated("use moveTo")
   Future<void> goToLocation(GeoPoint position) async {
     await osmBaseController.goToPosition(position);
@@ -177,6 +179,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// using [animate] parameter (default: false)
   ///
   /// [position] : (GeoPoint) position that will be go to map
+  @override
   Future<void> moveTo(GeoPoint position, {bool animate = false}) async {
     await osmBaseController.goToPosition(position, animate: animate);
   }
@@ -186,6 +189,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// remove marker from map of position
   ///
   /// [position] : marker position that we want to remove from the map
+  @override
   Future<void> removeMarker(GeoPoint position) async {
     osmBaseController.removeMarker(position);
   }
@@ -193,6 +197,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// [removeMarkers]
   ///
   ///remove markers from map of position
+  @override
   Future<void> removeMarkers(List<GeoPoint> geoPoints) async {
     osmBaseController.removeMarkers(geoPoints);
   }
@@ -205,6 +210,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// [point] : (GeoPoint) geopoint that you want to change icon
   ///
   /// [icon] : (MarkerIcon) widget that represent the new home marker
+  @override
   Future setMarkerIcon(GeoPoint point, MarkerIcon icon) async {
     await osmBaseController.setIconMarker(point, icon);
   }
@@ -221,6 +227,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// change static position in runtime
   ///  [geoPoints] : list of static geoPoint
   ///  [id] : String of that list of static geoPoint
+  @override
   Future<void> setStaticPosition(List<GeoPoint> geoPoints, String id) async {
     await osmBaseController.setStaticPosition(geoPoints, id);
   }
@@ -232,6 +239,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// [id] : (String) id  of the static group geopoint
   ///
   /// [markerIcon] : (MarkerIcon) new marker that will set to the static group geopoint
+  @override
   Future<void> setMarkerOfStaticPoint({
     required String id,
     required MarkerIcon markerIcon,
@@ -240,6 +248,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// [getZoom]
   ///
   /// recuperate current zoom level
+  @override
   Future<double> getZoom() async => await osmBaseController.getZoom();
 
   /// [setZoom]
@@ -257,6 +266,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// [zoomLevel] : (double) should be between minZoomLevel and maxZoomLevel
   ///
   /// [stepZoom] : (double) step zoom that will be added to current zoom
+  @override
   Future<void> setZoom({double? zoomLevel, double? stepZoom}) async {
     await osmBaseController.setZoom(zoomLevel: zoomLevel, stepZoom: stepZoom);
   }
@@ -265,6 +275,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   ///
   /// will change the zoom of the map by zoom in using default stepZoom
   /// positive value:zoomIN
+  @override
   Future<void> zoomIn() async {
     await osmBaseController.zoomIn();
   }
@@ -273,6 +284,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   ///
   ///  will change the zoom of the map by zoom out using default stepZoom
   /// negative value:zoomOut
+  @override
   Future<void> zoomOut() async {
     await osmBaseController.zoomOut();
   }
@@ -285,6 +297,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// [box] : (BoundingBox) the region that the map will move to and adjust the zoom level to be visible
   ///
   /// [paddinInPixel] : (int) padding that will be used to show specific region
+  @override
   Future<void> zoomToBoundingBox(BoundingBox box, {
     int paddinInPixel = 0,
   }) async {
@@ -295,11 +308,13 @@ class FMapController extends BaseMapController implements MapController, MapCont
   }
 
   /// activate current location position
+  @override
   Future<void> currentLocation() async {
     await osmBaseController.currentLocation();
   }
 
   /// recuperation of user current position
+  @override
   Future<GeoPoint> myLocation() async {
     return await osmBaseController.myLocation();
   }
@@ -315,6 +330,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// change [disableUserMarkerRotation] to true (default : false)
   ///
   ///
+  @override
   Future<void> enableTracking({
     bool enableStopFollow = false,
     bool disableUserMarkerRotation = false,
@@ -335,6 +351,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   ///
   /// use this method to start only receiving the user location without
   /// controlling the map which you can do that manually
+  @override
   Future<void> startLocationUpdating({
     bool enableStopFollow = false,
     bool disableUserMarkerRotation = false,
@@ -349,11 +366,13 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// Stops receive of location updates.
   ///
   /// use this method to stop receiving the user location events
+  @override
   Future<void> stopLocationUpdating() async {
     await osmBaseController.stopLocationUpdating();
   }
 
   /// disabled tracking user location
+  @override
   Future<void> disabledTracking() async {
     await osmBaseController.disabledTracking();
   }
@@ -376,6 +395,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   ///  [intersectPoint] : (List of GeoPoint) middle position that you want you road to pass through it
   ///
   ///  [roadOption] : (RoadOption) runtime configuration of the road
+  @override
   Future<RoadInfo> drawRoad(GeoPoint start,
       GeoPoint end, {
         RoadType roadType = RoadType.car,
@@ -404,6 +424,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   ///  [configs]        : (List) list of road configuration
   ///
   /// [commonRoadOption]  : (MultiRoadOption) common road config that can apply to all roads that doesn't define any inner roadOption
+  @override
   Future<List<RoadInfo>> drawMultipleRoad(List<MultiRoadConfiguration> configs,
       {
         MultiRoadOption commonRoadOption = const MultiRoadOption.empty(),
@@ -417,6 +438,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// [removeLastRoad]
   ///
   ///delete last road draw in the map
+  @override
   Future<void> removeLastRoad() async {
     await osmBaseController.removeLastRoad();
   }
@@ -424,47 +446,56 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// [removeRoad]
   ///
   ///delete road draw in the map using [roadKey]
+  @override
   Future<void> removeRoad({required String roadKey}) async {
     await osmBaseController.removeRoad(roadKey: roadKey);
   }
 
   /// [clearAllRoads]
   ///this method will delete all roads drawn in the map
+  @override
   Future<void> clearAllRoads() async {
     await osmBaseController.clearAllRoads();
   }
 
   /// draw circle into map
+  @override
   Future<void> drawCircle(CircleOSM circleOSM) async {
     await osmBaseController.drawCircle(circleOSM);
   }
 
   /// remove specific circle in the map
+  @override
   Future<void> removeCircle(String keyCircle) async {
     await osmBaseController.removeCircle(keyCircle);
   }
 
   /// draw rect into map
+  @override
   Future<void> drawRect(RectOSM rectOSM) async {
     await osmBaseController.drawRect(rectOSM);
   }
 
   /// remove specific region in the map
+  @override
   Future<void> removeRect(String keyRect) async {
     await osmBaseController.removeRect(keyRect);
   }
 
   /// remove all rect shape from map
+  @override
   Future<void> removeAllRect() async {
     return await osmBaseController.removeAllRect();
   }
 
   /// clear all circle
+  @override
   Future<void> removeAllCircle() async {
     await osmBaseController.removeAllCircle();
   }
 
   /// remove all shape from map
+  @override
   Future<void> removeAllShapes() async {
     await osmBaseController.removeAllShapes();
   }
@@ -472,6 +503,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   /// [rotateMapCamera]
   ///
   /// rotate camera of osm map
+  @override
   Future<void> rotateMapCamera(double degree) async {
     return await osmBaseController.mapOrientation(degree);
   }
@@ -488,6 +520,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
   ///  [path] : (list of GeoPoint) path of the road
   ///
   ///  [roadOption] : (RoadOption) define styles of the road
+  @override
   Future<String> drawRoadManually(List<GeoPoint> path,
       RoadOption roadOption,) async {
     return await osmBaseController.drawRoadManually(
@@ -497,6 +530,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
     );
   }
 
+  @override
   Future<void> addMarker(GeoPoint p, {
     MarkerIcon? markerIcon,
     double? angle,
@@ -516,6 +550,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
     );
   }
 
+  @override
   Future<void> changeLocationMarker({
     required GeoPoint oldLocation,
     required GeoPoint newLocation,
@@ -536,14 +571,17 @@ class FMapController extends BaseMapController implements MapController, MapCont
 
 
 
+  @override
   Future<BoundingBox> get bounds async => await osmBaseController.getBounds();
 
   /// centerMap
   ///
   /// this attribute to retrieve center location of the map
+  @override
   Future<GeoPoint> get centerMap async =>
       await osmBaseController.getMapCenter();
 
+  @override
   Future<List<GeoPoint>> get geopoints async =>
       await osmBaseController.geoPoints();
 
@@ -555,7 +593,7 @@ class FMapController extends BaseMapController implements MapController, MapCont
 
   @override
   void setMapReady() {
-    this._isMapReady = true;
+    _isMapReady = true;
     debugPrint("MapControllerExtension: Map is now ready!");
   }
 
@@ -583,19 +621,9 @@ class FMapController extends BaseMapController implements MapController, MapCont
   //bool get isMapReady => _isMapReady;
 
 
-  @override
-  void addObserver(OSMMixinObserver osmMixinObserver) {
-    super.addObserver(osmMixinObserver);
-  }
-
-  @override
-  // TODO: implement areaLimit
-  BoundingBox? get areaLimit => super.areaLimit;
 
 
-  @override
-  // TODO: implement customTile
-  CustomTile? get customTile => super.customTile;
+
 
 
   @override
@@ -604,54 +632,16 @@ class FMapController extends BaseMapController implements MapController, MapCont
     super.init();
   }
 
-  @override
-  // TODO: implement initMapWithUserPosition
-  UserTrackingOption? get initMapWithUserPosition =>
-      super.initMapWithUserPosition;
 
-  @override
-  // TODO: implement initPosition
-  GeoPoint? get initPosition => super.initPosition;
 
-  @override
-  // TODO: implement isAllLayersVisible
-  bool get isAllLayersVisible => super.isAllLayersVisible;
 
-  @override
-  // TODO: implement listenerMapLongTapping
-  ValueListenable<GeoPoint?> get listenerMapLongTapping =>
-      super.listenerMapLongTapping;
 
-  @override
-  // TODO: implement listenerMapSingleTapping
-  ValueListenable<GeoPoint?> get listenerMapSingleTapping =>
-      super.listenerMapSingleTapping;
 
-  @override
-  // TODO: implement listenerRegionIsChanging
-  ValueListenable<Region?> get listenerRegionIsChanging =>
-      super.listenerRegionIsChanging;
 
-  @override
-  // TODO: implement listenerRoadTapped
-  ValueListenable<RoadInfo?> get listenerRoadTapped => super.listenerRoadTapped;
 
-  @override
-  // TODO: implement osmBaseController
-  IBaseOSMController get osmBaseController => super.osmBaseController;
 
-  @override
-  void removeObserver(OSMMixinObserver osmMixinObserver) {
-    super.removeObserver(osmMixinObserver);
-  }
 
-  @override
-  Future<void> toggleLayersVisibility() async {
-    super.toggleLayersVisibility();
-  }
 
-  @override
-  bool get useExternalTracking => super.useExternalTracking;
 
 
 

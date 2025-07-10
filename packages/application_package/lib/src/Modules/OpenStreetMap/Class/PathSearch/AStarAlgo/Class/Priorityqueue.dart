@@ -7,8 +7,10 @@ class PriorityQueue<E> implements Iterable<E>{
       : _heap = [],
         _elementToIndex = {};
 
+  @override
   int get length => _heap.length;
 
+  @override
   bool get isEmpty => _heap.isEmpty;
 
   void add(E element) {
@@ -59,6 +61,7 @@ class PriorityQueue<E> implements Iterable<E>{
     throw StateError('No element');
   }
 
+  @override
   E get first => _heap.first;
 
   @override

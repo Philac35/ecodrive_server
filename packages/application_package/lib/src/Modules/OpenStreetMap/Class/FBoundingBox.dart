@@ -34,15 +34,15 @@ BoundingBox hadBufferedBox( {required BoundingBox bbox,double buffer = 0.01} ) {
      minLat = departure!.latitude < arrival!.latitude
         ? departure.latitude
         : arrival.latitude;
-       maxLat = departure!.latitude > arrival!.latitude
+       maxLat = departure.latitude > arrival.latitude
         ? departure.latitude
         : arrival.latitude;
-       minLon = departure!.longitude < arrival!.longitude
+       minLon = departure.longitude < arrival.longitude
         ? departure.longitude
         : arrival.longitude;
-        maxLon = departure!.longitude > arrival!.longitude
-        ? departure!.longitude
-        : arrival!.longitude;
+        maxLon = departure.longitude > arrival.longitude
+        ? departure.longitude
+        : arrival.longitude;
 
     return BoundingBox(
         north: maxLat,

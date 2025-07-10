@@ -1,6 +1,7 @@
 ///  GENERATED FILE - DO NOT MODIFY BY HAND
-/// Use modules Generator, Script : ClassesRegisterGenerator.dart
+/// Use modules Generator, Script : ClassesIndexGenerator.dart
 ///  Author E.H 27/06/2025
+library;
 
 /// Use : Contollers access in files :
 ///       controllerRegistry['entityController']!()
@@ -9,7 +10,6 @@ import 'AddressController.dart';
 import 'AdministratorController.dart';
 import 'AssuranceController.dart';
 import 'CommandController.dart';
-import 'Controller.dart';
 import 'DriverController.dart';
 import 'DrivingLicenceController.dart';
 import 'EmployeeController.dart';
@@ -25,7 +25,7 @@ final Map<String, dynamic Function()> controllerIndex = {
   'AdministratorController': () => AdministratorController(),
   'AssuranceController': () => AssuranceController(),
   'CommandController': () => CommandController(),
-  'Controller': () => Controller(),
+  //'Controller': () => Controller(),
   'DriverController': () => DriverController(),
   'DrivingLicenceController': () => DrivingLicenceController(),
   'EmployeeController': () => EmployeeController(),
@@ -35,4 +35,15 @@ final Map<String, dynamic Function()> controllerIndex = {
   'TravelController': () => TravelController(),
   'UserController': () => UserController(),
   'VehiculeController': () => VehiculeController(),
+
+  
+
+
+  
+
+
+  
+
+
+
 };

@@ -1,10 +1,22 @@
 import 'dart:io';
 
-import 'package:runtime_type/runtime_type.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/AddressEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/AdministratorEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/AssuranceEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/CommandEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/DriverEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/DrivingLicenceEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/EmployeeEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/ItineraryEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/NoticeEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/PhotoEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/TravelEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/UserEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/VehiculeEntity.dart';
+import 'package:shared_package/Loader/EnvironmentLoader.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf/shelf.dart';
-import 'package:shelf/shelf_io.dart' as io;
-import 'package:shared_package/BDD/Model/AbstractModels/Entity_registry.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/Entity_registry_saved.dart';
 import 'RoutesEntityBuilder.dart';
 //import '../../Loader/EnvironmentLoader.dart';
 
@@ -39,30 +51,43 @@ class FRouter {
 
     Iterable<MapEntry<String, dynamic>> classList=Entity_Registry.entries ;
      for (var c in classList){
+        RouteEntityBuilder<dynamic>? routeEntity ;
 
-      var routeBuilder=  c.value['routeBuilder'];
+        //print(router);
+        switch(c.value['type'].toString()){   //Les types ne peuvent pas être utilisé via des variable dans un constructeur d'ou ce switch
+          case 'Address':  routeEntity=  RouteEntityBuilder<Address> (router:router);
+          case 'Assurance': routeEntity=  RouteEntityBuilder<Assurance> (router:router);
+          case 'Administrator': routeEntity=  RouteEntityBuilder<Administrator> (router:router);
+          case 'DrivingLicence': routeEntity=  RouteEntityBuilder<DrivingLicence> (router:router);
+          case 'Command':  routeEntity=  RouteEntityBuilder<Command> (router:router);
+          case 'User': routeEntity=  RouteEntityBuilder<User> (router:router);
+          case 'Driver': routeEntity=  RouteEntityBuilder<Driver> (router:router);
+          case 'Employee': routeEntity=  RouteEntityBuilder<Employee> (router:router);
+          case 'Itinerary': routeEntity=  RouteEntityBuilder<Itinerary> (router:router);
+          case 'Notice': routeEntity=  RouteEntityBuilder<Notice> (router:router);
+          case 'Photo':  routeEntity=  RouteEntityBuilder<Photo> (router:router);
+          case 'Travel':  routeEntity=  RouteEntityBuilder<Travel> (router:router);
+          case 'Vehicule':  routeEntity=  RouteEntityBuilder<Vehicule> (router:router);
+        }
 
+        routeEntity!.buildGetRoutes();
+        routeEntity.buildPostRoutes();
 
+         //Class relative
+         print('Entity : ${c.value['type']}');
+         List routes=routeEntity.registeredRoutes;
+         for (var route in routes) {
+           print(route);
+         }
+         print("");
      }
 
 
   }
 
-
-  getConfiguration() async {
-
-    File conf = File('../../Configuration/ConfigurationServer.env');
-    List<String> line = await conf.readAsLines();
-    for (var l in line) {
-      List<String> keyvalue = l.split('=');
-      configuration?.addAll({keyvalue[0]: keyvalue[1]});
-    }
-
-    /*getConfiguration() async {
-    EnvironmentLoader loader= EnvironmentLoader(path:"");
-    configuration=await loader.loadEnv('ServerConfiguration');
-
-  }*/
-
+  getConfiguration()async{
+    EnvironmentLoader loader=EnvironmentLoader();
+    configuration =( loader.gnlConfigurationf())!;
   }
+
 }

@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:shared_package/Services/LogSystem/LogSystemBDD.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -31,15 +29,14 @@ class ConnexionFormState extends State<ConnexionForm> {
   // Note: This is a `GlobalKey<FormState>`,
   // not a GlobalKey<MyCustomFormState>.
   late GlobalKey<FormState>  _formKey ;
-  late bool _passwordVisible =false;
+  late final bool _passwordVisible =false;
   late ConnexionFormController connexionFormController;
 
 
   ConnexionFormState(){
     _formKey= GlobalKey<FormState>() ;
      connexionFormController=Get.find<ConnexionFormController>();
-     if(connexionFormController != null){debugPrint("connexionFormController exist!");}else{debugPrint("connexionFormController is null!");} 
-
+debugPrint("connexionFormController exist!");
   }
 
 
@@ -54,7 +51,7 @@ class ConnexionFormState extends State<ConnexionForm> {
     }
     // Build a Form widget using the _formKey created above.
     return Form(
-      key: this._formKey, 
+      key: _formKey, 
       
       child: ConstrainedBox(
          constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
@@ -79,7 +76,7 @@ class ConnexionFormState extends State<ConnexionForm> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Send Indentification Informations')),
                             );}else{ ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Indentification Informations wasn\'t sent'), )); };
+                                  const SnackBar(content: Text('Indentification Informations wasn\'t sent'), )); }
                           }
                         },
                         child: const Text('Envoyer'),

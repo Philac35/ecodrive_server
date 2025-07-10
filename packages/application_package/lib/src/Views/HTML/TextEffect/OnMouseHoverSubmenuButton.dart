@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 
 
-import 'package:ecodrive_server/src/Router/AppRouter.gr.dart'; // Import the generated router
+// Import the generated router
 class OnMouseHoverSubmenubutton extends StatefulWidget {
   final String text;
   final PageRouteInfo<dynamic> route; // Accept PageRouteInfo
@@ -10,12 +10,12 @@ class OnMouseHoverSubmenubutton extends StatefulWidget {
   final Color hoverColor;
 
   const OnMouseHoverSubmenubutton({
-    Key? key,
+    super.key,
     required this.text,
     required this.route,
     this.defaultColor = Colors.black,
     this.hoverColor = Colors.blue,
-  }) : super(key: key);
+  });
 
   @override
   _OnMouseHoverSubmenubuttonState createState() =>

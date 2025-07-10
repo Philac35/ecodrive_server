@@ -1,12 +1,11 @@
-import 'package:shared_package/Modules/Authentication/Entities/AuthUser.dart';
-import 'package:shared_package/Modules/Authentication/Provider/Abstract/AbstractAuthProvider.dart';
+import 'package:application_package/src/Modules/Authentication/Entities/AuthUser.dart';
+import 'package:application_package/src/Modules/Authentication/Provider/Abstract/AbstractAuthProvider.dart';
 import 'package:shared_package/Services/LogSystem/LogSystemBDD.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:shared_package/Modules/Authentication/Controllers/AuthUserController.dart';
+import 'package:application_package/src/Modules/Authentication/Controllers/AuthUserController.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_package/Services/LogSystem/LogSystem.dart';
 
-
+ 
 
 class AuthProvider extends ChangeNotifier implements AbstractAuthProvider {
 
@@ -18,7 +17,7 @@ class AuthProvider extends ChangeNotifier implements AbstractAuthProvider {
   }
 
   AuthProvider._internal(){
-    this.authUserController = AuthUserController();
+    authUserController = AuthUserController();
   }
 
 
@@ -30,39 +29,41 @@ class AuthProvider extends ChangeNotifier implements AbstractAuthProvider {
   }
 
 
+  @override
   Future<void> connect(String identifiant, String password) async {
     try {
-    AuthUser authUser=  this.authUserController?.reifyAuthUser(username: identifiant, password: password);
+    AuthUser authUser=  authUserController?.reifyAuthUser(username: identifiant, password: password);
       __isAuthenticated =
-      (await this.authUserController?.authenticator?.authenticate(authUser))!;
+      (await authUserController?.authenticator?.authenticate(authUser))!;
     }
     catch (e) {
-      debugPrint("AuthProvider, Connexion error : ${e}");
+      debugPrint("AuthProvider, Connexion error : $e");
       if (kIsWeb) {
-        LogSystemBDD().error("AuthProvider, Connexion error : ${e}",
+        LogSystemBDD().error("AuthProvider, Connexion error : $e",
             stackTrace: StackTrace.current.toString());
       }
       else {
-        LogSystem().error("AuthProvider, Connexion error : ${e}",
+        LogSystem().error("AuthProvider, Connexion error : $e",
             stackTrace: StackTrace.current.toString());
       }
 
       notifyListeners();
     }
   }
-    Future<AuthUser?> disconnect() async {
+    @override
+  Future<AuthUser?> disconnect() async {
       bool res = false;
 
       try {
-        res = (await this.authUserController?.authenticator?.deconnect());
+        res = (await authUserController?.authenticator?.deconnect());
       } catch (e) {
-        debugPrint("AuthProvider, Disconnetion error : ${e}");
+        debugPrint("AuthProvider, Disconnetion error : $e");
         if (kIsWeb) {
-          LogSystemBDD().error("AuthProvider, Disconnetion error : ${e}",
+          LogSystemBDD().error("AuthProvider, Disconnetion error : $e",
               stackTrace: StackTrace.current.toString());
         }
         else {
-          LogSystem().error("AuthProvider, Disconnetion error : ${e}",
+          LogSystem().error("AuthProvider, Disconnetion error : $e",
               stackTrace: StackTrace.current.toString());
         }
 
@@ -72,13 +73,14 @@ class AuthProvider extends ChangeNotifier implements AbstractAuthProvider {
         }
         notifyListeners();
       }
+      return null;
     }
 
 
 
 
   @override
-  AuthUser? get currentUser => _currentUser != null ? _currentUser : authUserController?.authUser;
+  AuthUser? get currentUser => _currentUser ?? authUserController?.authUser;
 
 
 

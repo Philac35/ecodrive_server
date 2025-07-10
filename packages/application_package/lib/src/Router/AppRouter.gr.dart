@@ -10,14 +10,14 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i8;
-import 'package:ecodrive_server/src/Modules/Authentication/View/Page/ConnexionModalPage.dart'
+import 'package:application_package/src/Modules/Authentication/View/Page/ConnexionModalPage.dart'
     as _i4;
-import 'package:ecodrive_server/src/Views/Accueil.dart' as _i1;
-import 'package:ecodrive_server/src/Views/Administrateur.dart' as _i2;
-import 'package:ecodrive_server/src/Views/Connexion.dart' as _i3;
-import 'package:ecodrive_server/src/Views/Contact.dart' as _i5;
-import 'package:ecodrive_server/src/Views/Credits.dart' as _i6;
-import 'package:ecodrive_server/src/Views/Employe.dart' as _i7;
+import 'package:application_package/src/Views/Accueil.dart' as _i1;
+import 'package:application_package/src/Views/Administrateur.dart' as _i2;
+import 'package:application_package/src/Views/Connexion.dart' as _i3;
+import 'package:application_package/src/Views/Contact.dart' as _i5;
+import 'package:application_package/src/Views/Credits.dart' as _i6;
+import 'package:application_package/src/Views/Employe.dart' as _i7;
 import 'package:flutter/cupertino.dart' as _i9;
 
 /// generated route for

@@ -1,11 +1,8 @@
-import 'dart:io';
 
-import 'package:shared_package/Modules/Authentication/View/Form/Validator/FormConnexionValidator.dart';
+import 'package:application_package/src/Modules/Authentication/View/Form/Validator/FormConnexionValidator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:typed_data';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:shared_package/Modules/Authentication/View/Form/Controller/ControllerFormInterface.dart';
+import 'package:application_package/src/Modules/Authentication/View/Form/Controller/ControllerFormInterface.dart';
 import '../Controller/ConnexionFormController.dart';
 
 
@@ -20,6 +17,7 @@ class FTextField extends StatefulWidget {
   late int? maxLine;
   late int? minLine;
 
+  @override
   late Key key;
 
   FTextField({this.name,this.text,this.type,this.textValidator,this.placeholder,this.minLine,this.maxLine,required this.key, bool? isVisible}):super(key:key);
@@ -49,17 +47,17 @@ class FTextFieldState extends State<FTextField> {
     super.initState();
 
 
-    if(widget!.type== 'password'){ isPasswordField=true;}
-    if(widget!.type== 'password' && widget!.isVisible ==true){_isVisible=true;}
-    else if( widget!.type== 'password' && widget!.isVisible ==false){_isVisible=false;}
-    else if(widget!.type== 'password'){_isVisible=false;}
+    if(widget.type== 'password'){ isPasswordField=true;}
+    if(widget.type== 'password' && widget.isVisible ==true){_isVisible=true;}
+    else if( widget.type== 'password' && widget.isVisible ==false){_isVisible=false;}
+    else if(widget.type== 'password'){_isVisible=false;}
     else{ _isVisible= true;}
 
 
     //if used in Connexion/CreateAccount
     controller = Get.find<ConnexionFormController>();
     // Register field
-    controller.registerField(widget.key!, widget.text!);
+    controller.registerField(widget.key, widget.text!);
 
     textEditing = TextEditingController();
 
@@ -89,7 +87,7 @@ class FTextFieldState extends State<FTextField> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
         controller.clearField.value = false;
         });
-      };
+      }
       return TextFormField(
         controller: textEditing,
         obscureText: !_isVisible,
@@ -97,8 +95,8 @@ class FTextFieldState extends State<FTextField> {
         minLines: widget.minLine ?? 1,
 
         decoration: InputDecoration(
-          labelText: widget!.text,
-          hintText: widget!.placeholder,
+          labelText: widget.text,
+          hintText: widget.placeholder,
           suffixIcon: isPasswordField? IconButton(
             icon: Icon(
               _isVisible ? Icons.visibility : Icons.visibility_off,
@@ -126,7 +124,7 @@ class FTextFieldState extends State<FTextField> {
             widget.type!, textEditing.value.toString()),
         onChanged: (value) {
 
-          controller.updateField(widget.key!, value);
+          controller.updateField(widget.key, value);
           debugPrint('FTextField L81,onChanged called: $value');
           debugPrint(
               'FTextField L82,Field values in onChanged: ${controller.fieldValues.entries.toString()}');

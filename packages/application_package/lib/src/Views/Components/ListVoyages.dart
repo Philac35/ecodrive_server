@@ -1,29 +1,23 @@
 
-import 'dart:typed_data';
 
-import 'package:angel3_framework/angel3_framework.dart';
-import 'package:auto_route/auto_route.dart';
 
-import 'package:ecodrive_server/src/Repository/Repository.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:shared_package/Repository/Repository.dart';
 import 'package:flutter/material.dart';
-import 'package:ecodrive_server/src/Controller/Controller.dart';
 
-import 'package:http/http.dart';
 
-import '../../BDD/Model/Abstract/PersonEntity.dart';
-import '../../BDD/Model/AbstractModels/ItineraryEntity.dart';
-import '../../BDD/Model/AbstractModels/TravelEntity.dart';
-import '../../BDD/Model/AbstractModels/UserEntity.dart';
-import '../../BDD/Model/AbstractModels/VehiculeEntity.dart';
-import '../../BDD/Model/AbstractModels/DriverEntity.dart' as driver;
-import '../../Router/AppRouter.gr.dart' show VoyageDetails;
+import 'package:shared_package/BDD/Model/Abstract/PersonEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/ItineraryEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/TravelEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/UserEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/DriverEntity.dart' as driver;
 
-import '../../BDD/Model/AbstractModels/AddressEntity.dart' as a;
+import 'package:shared_package/BDD/Model/AbstractModels/AddressEntity.dart' as a;
 //import 'package:ecodrive_server/src/Services/HTMLService/HTMLFetchEntityService.dart'; TODO this must manager intern
 
 
 class ListVoyages extends StatefulWidget {
+  const ListVoyages({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return ListVoyagesState();
@@ -57,9 +51,7 @@ class ListVoyagesState extends State<ListVoyages> {
       createdAt: DateTime(2025,5,9));
     setState(() {
       travels=[example];
-      if(fetchedTravels!=null){
-      travels .addAll(fetchedTravels);}
-    });
+    travels .addAll(fetchedTravels);    });
   }
 
   @override

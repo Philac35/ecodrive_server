@@ -6,10 +6,14 @@ import '../../Interface/NodeInterface.dart';
 
 class Node implements NodeInterface{
 
+  @override
   final int id;
+  @override
   final double latitude;
+  @override
   final double longitude;
-   List<Node> successors;
+   @override
+  List<Node> successors;
    List<Node> parents;
   double f = 0;   // Cost Total  f(n)= s(n) +h(n)
   double s = 0;   // Cost to come s(n)
@@ -28,6 +32,7 @@ class Node implements NodeInterface{
         parents = parents ?? []
   ;
 
+  @override
   Map<String, dynamic> toJson() => {
     'id': id,
     'latitude': latitude,

@@ -1,13 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import '../Controller/AccountCreationController.dart';
 import '../Controller/ControllerFormInterface.dart';
 
 class FGenderRadio extends StatefulWidget{
 
   late String? name;
+  @override
   late Key key;
   FGenderRadio({this.name,required this.key}):super(key:key);
 
@@ -61,7 +60,7 @@ class FGenderRadioState extends State<FGenderRadio> {
             setState(() {
 
 
-                controller.updateField(widget.key!, value!);
+                controller.updateField(widget.key, value!);
               _selectedGender = value;
             });
           },

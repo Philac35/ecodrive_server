@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CustomElevatedButton extends StatefulWidget {
@@ -6,7 +5,7 @@ class CustomElevatedButton extends StatefulWidget {
   final Widget child;
   final ButtonStyle? style;
 
-  const CustomElevatedButton({Key? key, required this.onPressed, required this.child, this.style}) : super(key: key);
+  const CustomElevatedButton({super.key, required this.onPressed, required this.child, this.style});
 
   @override
   _CustomElevatedButtonState createState() => _CustomElevatedButtonState();

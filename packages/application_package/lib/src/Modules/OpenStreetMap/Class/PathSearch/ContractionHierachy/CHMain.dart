@@ -162,36 +162,34 @@ class CHMain {
 
   addWays(List<Way>ways) {
     for (var way in ways) {
-      if(way !=null){
-      for (int i = 0; i < way.nodeIds.length - 1; i++) {
-        int from = way.nodeIds[i];
-        int to = way.nodeIds[i + 1];
+    for (int i = 0; i < way.nodeIds.length - 1; i++) {
+      int from = way.nodeIds[i];
+      int to = way.nodeIds[i + 1];
 
-        // Calculate weight using GeoDistance (e.g., Haversine formula)
-        var fromNode = nodes[from];
-        var toNode = nodes[to];
+      // Calculate weight using GeoDistance (e.g., Haversine formula)
+      var fromNode = nodes[from];
+      var toNode = nodes[to];
 
 
-        if (fromNode == null || toNode == null) {
-          debugPrint('Error: fromNode or toNode is null');
-          debugPrint('from: $from, to: $to');
-          debugPrint('fromNode: $fromNode, toNode: $toNode');
-          // Handle the error appropriately, e.g., return an error value or throw an exception
-          return;
-        }
-
-        double weight = GeoDistance().calculateHaversineDistanceNode(
-            fromNode!, toNode!);
-
-        this.addEdge(from, to, weight);
-        // Only add the reverse edge if the way is NOT one-way
-        if (!way.oneway) {
-          this.addEdge(to, from, weight);
-        }
+      if (fromNode == null || toNode == null) {
+        debugPrint('Error: fromNode or toNode is null');
+        debugPrint('from: $from, to: $to');
+        debugPrint('fromNode: $fromNode, toNode: $toNode');
+        // Handle the error appropriately, e.g., return an error value or throw an exception
+        return;
       }
 
-      }else{debugPrint("CHMain L102, addWays, There is no datat in Way here!" );}
+      double weight = GeoDistance().calculateHaversineDistanceNode(
+          fromNode, toNode);
+
+      addEdge(from, to, weight);
+      // Only add the reverse edge if the way is NOT one-way
+      if (!way.oneway) {
+        addEdge(to, from, weight);
+      }
     }
+
+        }
   }
 
 void main() {

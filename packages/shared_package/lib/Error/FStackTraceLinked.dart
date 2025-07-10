@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stack_trace/stack_trace.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'Actions/IHM element/StackTraceWidget.dart';
 import 'Entity/StackFrame.dart';
 import 'Actions/Class/ParseStackTrace.dart';
@@ -9,7 +7,7 @@ import 'Actions/Class/ParseStackTrace.dart';
 class StackTrackLinkedWidget extends StatelessWidget {
   final FlutterErrorDetails errorDetails;
 
-  StackTrackLinkedWidget({required this.errorDetails});
+  const StackTrackLinkedWidget({super.key, required this.errorDetails});
 
   @override
   Widget build(BuildContext context) {

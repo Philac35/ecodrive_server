@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 
-import 'package:ecodrive_server/src/Services/Parser/Interface/ParserJsonInterface.dart';
+import 'package:shared_package/Services/Parser/Interface/ParserJsonInterface.dart';
 
 import '../../BDD/Interface/entityInterface.dart';
 
@@ -17,7 +17,7 @@ class ParserEntityJson<T extends EntityInterface> implements ParserJsonInterface
   }
 
   @override
-  Map<String, dynamic>? encode(dynamic? objectJson) {
+  Map<String, dynamic>? encode(dynamic objectJson) {
     if (objectJson != null && objectJson is EntityInterface) {
       return objectJson.toJson();
     }

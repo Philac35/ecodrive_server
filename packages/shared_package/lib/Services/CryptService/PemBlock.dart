@@ -26,7 +26,7 @@ Future<RSAPrivateKey> parsePrivateKeyFromPem(String pemString) async {
   try {
     final pemBlock = PemBlock(pemString);
     final privateKeyDER = pemBlock.getContentBytes();
-    final asn1Parser = ASN1Parser(privateKeyDER as Uint8List);
+    final asn1Parser = ASN1Parser(privateKeyDER);
 
     // Assuming privateKeyDER is a PrivateKeyInfo ASN.1 structure
     final privateKeyInfo = asn1Parser.nextObject();

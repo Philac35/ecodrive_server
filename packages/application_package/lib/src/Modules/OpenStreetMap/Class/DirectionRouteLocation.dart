@@ -1,32 +1,22 @@
-import 'dart:convert';
-import 'dart:math';
 
-import 'package:shared_package/Modules/OpenStreetMap/Class/Observer/GeoPointObserver.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Class/PathSearch/BellmanFord/BellmanFord.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Class/PathSearch/ContractionHierachy/CHMainv2.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Class/PathSearch/MapDataFromOverpass.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/FMapController.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Class/Observer/GeoPointObserver.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Class/PathSearch/BellmanFord/BellmanFord.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Class/PathSearch/ContractionHierachy/CHMainv2.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Class/PathSearch/MapDataFromOverpass.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Controller/FMapController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'package:http/http.dart' as http;
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/MapControllerInterface.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Controller/MapControllerInterface.dart';
 
-import 'package:shared_package/Modules/OpenStreetMap/Controller/FBaseMapController.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Class/PathSearch/AStarAlgo/Class/Node.dart';
 
 import 'GeoDistance.dart';
-import 'PathSearch/AStarAlgo/AStarSM.dart';
 import 'PathSearch/AStarAlgo/Class/Node.dart' as astar;
-import 'PathSearch/ContractionHierachy/CHMain.dart';
 import 'PathSearch/ContractionHierachy/Class/GraphBuilder.dart';
 import 'PathSearch/ContractionHierachy/Class/Node.dart' as chnode;
 import 'PathSearch/ContractionHierachy/Class/PathResult.dart';
 import 'PathSearch/ContractionHierachy/Class/Way.dart';
 import 'PathSearch/Interface/NodeInterface.dart';
-import 'PathSearch/MapData.dart';
-import 'PathSearch/MapDataFromOverpass.dart';
 
 //Manage Route Creation
 class DirectionRouteLocation extends StatelessWidget {
@@ -99,7 +89,7 @@ class DirectionRouteLocation extends StatelessWidget {
   void createRouteWithAStarMS() async {
     debugPrint("Direction Route L88 - It passes by createRouteWithInnerAlgo");
     GeoPointObserver observer =
-        await (controller! as FMapController)!.searchGeopointsObs;
+        (controller as FMapController).searchGeopointsObs;
     print("Existance Controller L91: ${controller.toString()}");
     observer.searchedGeopoints.addListener(() async {
       print("Updated GeoPoints: ${observer.searchedGeopoints.value}");
@@ -110,8 +100,8 @@ class DirectionRouteLocation extends StatelessWidget {
           observer.getGeoPoint(1) != GeoPoint(latitude: 0, longitude: 0)) {
         GeoPoint start = observer.getGeoPoint(0);
         GeoPoint end = observer.getGeoPoint(1);
-        debugPrint("DirectionRouteLocation : " + start.toString());
-        debugPrint('DirectionRouteLocation : ' + end.toString());
+        debugPrint("DirectionRouteLocation : $start");
+        debugPrint('DirectionRouteLocation : $end');
 
         // TODO implement avoide GoePoints when ways are blocked.
         // We need to preview geopoints before making call to the api.
@@ -138,17 +128,16 @@ class DirectionRouteLocation extends StatelessWidget {
         }
         //change these node to GeoPoint
 
-        debugPrint('Geopoints List L139, DirectionRouteLocation : ' +
-            geoPointList.toString());
+        debugPrint('Geopoints List L139, DirectionRouteLocation : $geoPointList');
         if (geoPointList.isNotEmpty) {
           //DrawRoad
-          roadInfo = await (controller as FMapController)!.drawRoad(start, end,
+          roadInfo = await (controller as FMapController).drawRoad(start, end,
               roadType: RoadType.car, //RoadType.bike, .foot
-              intersectPoint: geoPointList.sublist(1, geoPointList.length - 1)!,
+              intersectPoint: geoPointList.sublist(1, geoPointList.length - 1),
               roadOption: RoadOption(
                   roadWidth: 10, roadColor: Colors.deepPurple, zoomInto: true));
 
-          this.duration = roadInfo!.duration! / 3600;
+          duration = roadInfo!.duration! / 3600;
           durationToString();
           distanceToString();
           instructionToString();
@@ -185,7 +174,7 @@ class DirectionRouteLocation extends StatelessWidget {
     debugPrint(
         "Direction Route L160 - It passes by createRouteWithContractionHierarchy");
     GeoPointObserver observer =
-        await (controller! as FMapController)!.searchGeopointsObs;
+        (controller as FMapController).searchGeopointsObs;
     print("Existance Controller L91: ${controller.toString()}");
     observer.searchedGeopoints.addListener(() async {
       print("Updated GeoPoints: ${observer.searchedGeopoints.value}");
@@ -196,8 +185,8 @@ class DirectionRouteLocation extends StatelessWidget {
           observer.getGeoPoint(1) != GeoPoint(latitude: 0, longitude: 0)) {
         GeoPoint start = observer.getGeoPoint(0);
         GeoPoint end = observer.getGeoPoint(1);
-        debugPrint("DirectionRouteLocation : " + start.toString());
-        debugPrint('DirectionRouteLocation : ' + end.toString());
+        debugPrint("DirectionRouteLocation : $start");
+        debugPrint('DirectionRouteLocation : $end');
 
         // TODO implement avoide GoePoints when ways are blocked.
         // We need to preview geopoints before making call to the api.
@@ -223,7 +212,7 @@ class DirectionRouteLocation extends StatelessWidget {
 
           final rawEdgesMap = result['edges'] as Map<int, Edge>? ?? {};
         } catch (error) {
-          debugPrint("DirectionRouteLocation L226, Error: ${error}");
+          debugPrint("DirectionRouteLocation L226, Error: $error");
         }
 
         //Cast Node to chnode.Node
@@ -254,7 +243,7 @@ class DirectionRouteLocation extends StatelessWidget {
             'DirectionRouteLocation L253, edges is not empty');
             debugPrint("Number of edges built: ${edges.length}");
         }
-        ch.edges=edges!;
+        ch.edges=edges;
 
 
         ch.preprocess();
@@ -312,16 +301,15 @@ class DirectionRouteLocation extends StatelessWidget {
 
         // DrawRoad
         if (geoPointList.isNotEmpty) {
-          debugPrint('Geopoints List L129, DirectionRouteLocation : ' +
-              geoPointList.toString());
+          debugPrint('Geopoints List L129, DirectionRouteLocation : $geoPointList');
 
-          roadInfo = await (controller as FMapController)!.drawRoad(start, end,
+          roadInfo = await (controller as FMapController).drawRoad(start, end,
               roadType: RoadType.car, //RoadType.bike, .foot
               intersectPoint: geoPointList.sublist(1, geoPointList.length - 1),
               roadOption: RoadOption(
                   roadWidth: 10, roadColor: Colors.deepPurple, zoomInto: true));
 
-          this.duration = roadInfo!.duration! / 3600;
+          duration = roadInfo!.duration! / 3600;
           durationToString();
           distanceToString();
           instructionToString();
@@ -351,29 +339,25 @@ class DirectionRouteLocation extends StatelessWidget {
 
   void printEdgeWeights(List<Way> ways, Map<int, chnode.Node> nodes) {
     for (var way in ways) {
-      if (way != null) {
-        for (int i = 0; i < way.nodeIds.length - 1; i++) {
-          int from = way.nodeIds[i];
-          int to = way.nodeIds[i + 1];
+      for (int i = 0; i < way.nodeIds.length - 1; i++) {
+        int from = way.nodeIds[i];
+        int to = way.nodeIds[i + 1];
 
-          var fromNode = nodes[from];
-          var toNode = nodes[to];
+        var fromNode = nodes[from];
+        var toNode = nodes[to];
 
-          if (fromNode == null || toNode == null) {
-            print('Error: fromNode or toNode is null');
-            print('from: $from, to: $to');
-            print('fromNode: $fromNode, toNode: $toNode');
-            return;
-          }
-
-          double weight =
-              GeoDistance().calculateHaversineDistanceNode(fromNode, toNode);
-          print('Edge from $from to $to: weight=$weight');
+        if (fromNode == null || toNode == null) {
+          print('Error: fromNode or toNode is null');
+          print('from: $from, to: $to');
+          print('fromNode: $fromNode, toNode: $toNode');
+          return;
         }
-      } else {
-        print("There is no data in Way here!");
+
+        double weight =
+            GeoDistance().calculateHaversineDistanceNode(fromNode, toNode);
+        print('Edge from $from to $to: weight=$weight');
       }
-    }
+        }
   }
 
   /*
@@ -384,7 +368,7 @@ class DirectionRouteLocation extends StatelessWidget {
   void createRoute() async {
     debugPrint("Direction Route L98 - It passes by Route  ");
     GeoPointObserver observer =
-        await (controller! as FMapController)!.searchGeopointsObs;
+        (controller as FMapController).searchGeopointsObs;
     observer.searchedGeopoints.addListener(() async {
       print("Updated GeoPoints: ${observer.searchedGeopoints.value}");
 
@@ -394,21 +378,21 @@ class DirectionRouteLocation extends StatelessWidget {
           observer.getGeoPoint(1) != GeoPoint(latitude: 0, longitude: 0)) {
         GeoPoint start = observer.getGeoPoint(0);
         GeoPoint end = observer.getGeoPoint(1);
-        debugPrint("DirectionRouteLocation : " + start.toString());
-        debugPrint('DirectionRouteLocation : ' + end.toString());
+        debugPrint("DirectionRouteLocation : $start");
+        debugPrint('DirectionRouteLocation : $end');
 
         // TODO implement avoide GoePoints when ways are blocked.
         // We need to preview geopoints before making call to the api.
         // Most of the time, signaled routes are not obstructed.
 
         //DrawRoad
-        roadInfo = await (controller as FMapController)!.drawRoad(start, end,
+        roadInfo = await (controller as FMapController).drawRoad(start, end,
             roadType: RoadType.car, //RoadType.bike, .foot
             //intersectPoint:
             roadOption: RoadOption(
                 roadWidth: 10, roadColor: Colors.deepPurple, zoomInto: true));
 
-        this.duration = roadInfo!.duration! / 3600;
+        duration = roadInfo!.duration! / 3600;
         durationToString();
         distanceToString();
         instructionToString();
@@ -422,17 +406,18 @@ class DirectionRouteLocation extends StatelessWidget {
 
   double? get duration {
     () {
-      this._duration ??
+      _duration ??
           (roadInfo?.duration != null ? roadInfo!.duration! / 3600 : 0);
     };
+    return null;
   }
 
   set duration(value) {
-    this._duration = value;
+    _duration = value;
   }
 
   durationToString() {
-    print("Duration: ${this._duration != null ? this._duration : 0} heures");
+    print("Duration: ${_duration ?? 0} heures");
   }
 
   distanceToString() {
@@ -456,9 +441,9 @@ class DirectionRouteLocation extends StatelessWidget {
       GeoPoint end = routePoints[1];
 
       debugPrint(
-          "DirectionRouteLocation L140 depart:" + routePoints.toString());
-      debugPrint("DirectionRouteLocation L141 depart:" + start.toString());
-      debugPrint("DirectionRouteLocation L142 arrivée" + end.toString());
+          "DirectionRouteLocation L140 depart:$routePoints");
+      debugPrint("DirectionRouteLocation L141 depart:$start");
+      debugPrint("DirectionRouteLocation L142 arrivée$end");
 
       // Not really needed roadInfo cop with the display on map
       // I keep it here to get an exemple, It could be interesting for further or custom API

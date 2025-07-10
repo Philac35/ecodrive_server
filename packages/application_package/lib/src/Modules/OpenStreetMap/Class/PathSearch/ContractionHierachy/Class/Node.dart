@@ -1,11 +1,15 @@
-import 'package:shared_package/Modules/OpenStreetMap/Class/PathSearch/Interface/NodeInterface.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Class/PathSearch/Interface/NodeInterface.dart';
 
 import 'Edge.dart';
 class Node implements NodeInterface{
+  @override
   final int id;
+  @override
+  @override
   final double latitude, longitude;
   int level = 0; // CH level, higher = contracted later
   List<Edge> parents = [];
+  @override
   List<Edge> successors = [];
 // ...other fields as needed
 
@@ -20,6 +24,7 @@ Node( {required this.id,
 
 
 
+  @override
   Map<String, dynamic> toJson() => {
     'id': id,
     'latitude': latitude,

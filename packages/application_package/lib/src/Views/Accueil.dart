@@ -1,16 +1,11 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:io';
 import 'package:flutter_html/flutter_html.dart';
-import '../Modules/Authentication/View/Form/Connexion/ConnexionForm.dart';
-import 'package:ecodrive_server/src/Router/AppRouter.gr.dart';
-import '../Services/Parser/CSSParser.dart';
-import 'HTML/TextEffect/OnMouseHoverSubmenuButton.dart';
+import 'package:application_package/src/Modules/Authentication/View/Form/Connexion/ConnexionForm.dart';
+import 'package:application_package/src/Services/Parser/CSSParser.dart';
 
-import 'package:auto_route/auto_route.dart';
 
 import 'Structure/Footer/Footer.dart';
 import 'Structure/Header/Header.dart';
@@ -19,7 +14,7 @@ import 'Structure/Menu/FMenu.dart';
 
 @RoutePage()
 class Accueil extends StatefulWidget {
-  const Accueil({Key? key}) : super(key: key);
+  const Accueil({super.key});
 
 
   @override
@@ -39,7 +34,7 @@ class _AccueilState extends State<Accueil> {
   void initState() {
     super.initState();
     loadCSS();
-    this.connexionForm= ConnexionForm();
+    connexionForm= ConnexionForm();
   }
 
   Future<void> loadCSS() async {
@@ -57,7 +52,7 @@ class _AccueilState extends State<Accueil> {
 
   @override
   Widget build(BuildContext context) {
-    var cssfile = CSSParser().parseDeclarations(this._stylecss);
+    var cssfile = CSSParser().parseDeclarations(_stylecss);
 
     return Scaffold(
       body: Stack(
@@ -112,7 +107,7 @@ class _AccueilState extends State<Accueil> {
                           flex: 2,
                           child: Html(
                             data: "<p>Nouveautés : Nous développons nos services, et mettons à votre disposition partout en France des bornes de recharge à proximité de nos bureaux et aux endroits stratégiques tels que gares, gares maritimes, aéroports.</p>",
-                            style: CSSParser().parseDeclarations(this._stylecss),
+                            style: CSSParser().parseDeclarations(_stylecss),
                           ),
                         ),
                         SizedBox(width: 20),

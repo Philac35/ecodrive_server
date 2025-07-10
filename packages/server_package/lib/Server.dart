@@ -2,10 +2,11 @@
 import 'dart:io';
 import 'dart:io' as io;
 import 'dart:math';
-import 'dart:io' show ProcessUtils;
 
 
-import './Router/Router.dart';
+import 'package:shared_package/Loader/EnvironmentLoader.dart';
+
+import '../Router/Router.dart';
 import 'package:shelf/shelf_io.dart' as io;
 //import '../Services/HTMLService/HTMLService.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -17,10 +18,7 @@ class Server {
   static final Server  _instance = Server._internal();
 
   static Server get instance {
-    if (_instance == null) {
-      throw Exception('server_package not initialized!');
-    }
-    return _instance!;
+    return _instance;
   }
 
   late int id;
@@ -37,7 +35,7 @@ class Server {
 
   Server._internal() {
 
-    id=this.getId();
+    id=getId();
 
 
      getConfiguration();
@@ -48,11 +46,11 @@ class Server {
     createServer();
     Future.delayed(Duration(seconds: 60));
     setServerHeader();
-    this._server?.autoCompress=compress;
+    _server?.autoCompress=compress;
   }
 
   createServer() async {
-    var context;
+    SecurityContext context;
     try {
 
        if(configuration!["USE_TLS"] ==true){
@@ -67,20 +65,19 @@ class Server {
          context.usePrivateKey('key.pem');
        }
        var route=frouter.router;
-        _server = await io.serve(route, 'localhost', 8080,securityContext:context);
+        _server = await io.serve(route.call, 'localhost', 8080,securityContext:context);
         print("SERVER STARTED");
         print('server_package running on http://${_server?.address.host}:${_server?.port}');
 
-    } catch (error, stack) {
-        print("Router.dart server_package fail to start, Error : ${error} ");
+    } catch (error) {
+        print("Router.dart server_package fail to start, Error : $error ");
     }
   }
 
 
  static Future startServer() async{
     Server();
-    pidwrite();
-
+    pidwrite() ;
  }
 
   static Future<dynamic> stopServer() async {
@@ -88,7 +85,7 @@ class Server {
     final killed = Process.killPid(pidNum!['pid'] as int);
     if (killed) {
       print('server_package process $pidNum killed.');
-      (pidNum?['file'] as File).deleteSync();
+      (pidNum['file'] as File).deleteSync();
     } else {
       print('Failed to kill process $pidNum. It may not be running.');
     }
@@ -96,28 +93,11 @@ class Server {
 
   }
 
+   getConfiguration()async{
+     EnvironmentLoader loader=EnvironmentLoader();
+     configuration =( loader.gnlConfigurationf())!;
+   }
 
-
-
-
-
-
-  getConfiguration() async {
-    // If you use environments variables
-    // configuration?.addAll({'Env':String.fromEnvironment('Env'),
-    //   'USE_TLS':String.fromEnvironment('USE_TLS') } as Map<String, String>);
-
-    File conf= File('./ConfigurationServer.env');
-        List<String> line=await conf.readAsLines();
-        for(var l in line  ){
-          List<String> keyvalue=l.split('=');
-         configuration?.addAll({keyvalue[0]:keyvalue[1]});
-    }
-
-
-
-    print("server_package L98, configuration : $configuration!");
-  }
 
   /*
   Future<void> getStatus() async {
@@ -142,22 +122,18 @@ class Server {
 
   }*/
 
-  /**
-   * Function setServerHeader
-   */
+  /// Function setServerHeader
  setServerHeader(){
-   this._server?.serverHeader= 'EcodriveServer/1.0';
+   _server?.serverHeader= 'EcodriveServer/1.0';
  }
 
   timeOut({int timeout=144000}){
-    this._server?.sessionTimeout=timeout;
+    _server?.sessionTimeout=timeout;
   }
 
 
-  /**
-   * Function cliMenu
-   * TODO watch how to use the cli
-   */
+  /// Function cliMenu
+  /// TODO watch how to use the cli
   static cliMenu(List<String>args){
   //print (args);
     for(String arg in args) {
@@ -191,10 +167,8 @@ class Server {
     return randomNumber;
   }
 
-   /**
-    * Function pidwrite
-    * Fetch current server_package pid and save it in file
-    */
+   /// Function pidwrite
+   /// Fetch current server_package pid and save it in file
   static pidwrite(){
     final pidFile = File('server.pid');
     pidFile.writeAsStringSync(io.pid.toString());}

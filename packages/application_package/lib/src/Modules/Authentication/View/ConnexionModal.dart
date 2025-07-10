@@ -1,12 +1,11 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'Form/Connexion/ConnexionForm.dart';
 
 //The page
 class ConnexionModal extends StatefulWidget implements AutoRouteWrapper {
-  const ConnexionModal({Key? key}) : super(key: key);
+  const ConnexionModal({super.key});
 
   static AutoRoutePage<dynamic> page(RouteData routeData) {
     return AutoRoutePage(

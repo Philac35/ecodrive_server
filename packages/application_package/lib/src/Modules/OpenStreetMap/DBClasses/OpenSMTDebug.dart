@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Components/DBClasses/SearchInMapSimplify.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Components/DBClasses/SearchInMapSimplify.dart';
 
 class OpenSMTraffic extends StatefulWidget {
+  const OpenSMTraffic({super.key});
+
   @override
   OpenSMTrafficState createState() => OpenSMTrafficState();
 }
@@ -57,7 +59,7 @@ class OpenSMTrafficState extends State<OpenSMTraffic> {
   @override
   Widget build(BuildContext context) {
     debugPrint("OpenSMTDebug I pass on l 58");
-    debugPrint ("Kay departure : "+searchInMapKeyDeparture.toString() );
+    debugPrint ("Kay departure : $searchInMapKeyDeparture" );
     final topPadding = MediaQuery.maybeOf(context)?.viewPadding.top ?? 26.0;
 
     return Scaffold(

@@ -48,7 +48,7 @@ class XMLTrafficParser {
     //debugPrint("XMLTrafficParser, Document xml"+document.toString());
     // Find all situationRecord elements
     //compute create an isolate to fetch data in background and the map state fluid.
-    return await (compute (this.parse,result!) ?? Future.value([]));
+    return await (compute (parse,result!) ?? Future.value([]));
 
 
     }
@@ -75,22 +75,10 @@ class XMLTrafficParser {
       //debugPrint("XLMTraficParser L65 xmlContent: "+xmlContent);
       final document = XmlDocument.parse(xmlContent);
       final soapEnvelope = document.findAllElements('soap:Envelope').first;
-      if (soapEnvelope == null) {
-        print('soap:Envelope not found');
-        return Future.value([]);
-      }
 
       final soapBody = soapEnvelope.findAllElements('soap:Body').first;
-      if (soapBody == null) {
-        print('soap:Body not found');
-        return Future.value([]);;
-      }
 
       final d2LogicalModel = soapBody.findAllElements('d2LogicalModel').first;
-      if (d2LogicalModel == null) {
-        print('d2LogicalModel not found');
-        return Future.value([]);;
-      }
 
       final exchange = d2LogicalModel.findAllElements('exchange', namespace: ns2).firstOrNull;
       String operatingMode = 'Unknown';
@@ -102,50 +90,33 @@ class XMLTrafficParser {
       if (exchange != null) {
         try {
           final supplierIdentification = exchange.findAllElements('supplierIdentification', namespace: ns2).first;
-          if (supplierIdentification == null) {
-            print('ns2:supplierIdentification not found');
-          } else {
+          final country = supplierIdentification.findAllElements('country', namespace: ns2).first.text;
+          final nationalIdentifier = supplierIdentification.findAllElements('nationalIdentifier', namespace: ns2).first.text;
 
-            final country = supplierIdentification.findAllElements('country', namespace: ns2).first?.text;
-            final nationalIdentifier = supplierIdentification.findAllElements('nationalIdentifier', namespace: ns2).first?.text;
-
-            if (country == null || nationalIdentifier == null) {
-              print('Country or National Identifier not found');
-            } else {
-           //   debugPrint('Country: ${country}');
-             // debugPrint('National Identifier: ${nationalIdentifier}');
-            }
-          }
-
+       //   debugPrint('Country: ${country}');
+         // debugPrint('National Identifier: ${nationalIdentifier}');
+                
           final subscription = exchange.findAllElements('subscription', namespace: ns2).first;
-          if (subscription == null) {
-            print('ns2:subscription not found');
-          } else {
-            operatingMode = subscription.findAllElements('operatingMode', namespace: ns2).first!.text ?? 'Unknown';
-            final subscriptionStartTimeElement = subscription.findAllElements('subscriptionStartTime', namespace: ns2).first;
-            subscriptionStartTime = subscriptionStartTimeElement != null ? DateTime.parse(subscriptionStartTimeElement.text) : DateTime.now();
-            subscriptionState = subscription.findAllElements('subscriptionState', namespace: ns2).first?.text ?? 'Unknown';
-            final subscriptionStopTimeElement = subscription.findAllElements('subscriptionStopTime', namespace: ns2).first;
-            subscriptionStopTime = subscriptionStopTimeElement != null ? DateTime.parse(subscriptionStopTimeElement.text) : DateTime.now();
-            updateMethod = subscription.findAllElements('updateMethod', namespace: ns2).first?.text ?? 'Unknown';
+          operatingMode = subscription.findAllElements('operatingMode', namespace: ns2).first.text ?? 'Unknown';
+          final subscriptionStartTimeElement = subscription.findAllElements('subscriptionStartTime', namespace: ns2).first;
+          subscriptionStartTime = subscriptionStartTimeElement != null ? DateTime.parse(subscriptionStartTimeElement.text) : DateTime.now();
+          subscriptionState = subscription.findAllElements('subscriptionState', namespace: ns2).first.text ?? 'Unknown';
+          final subscriptionStopTimeElement = subscription.findAllElements('subscriptionStopTime', namespace: ns2).first;
+          subscriptionStopTime = subscriptionStopTimeElement != null ? DateTime.parse(subscriptionStopTimeElement.text) : DateTime.now();
+          updateMethod = subscription.findAllElements('updateMethod', namespace: ns2).first.text ?? 'Unknown';
 /*
-            print('Operating Mode: ${operatingMode}');
-            print('Subscription Start Time: ${subscriptionStartTime}');
-            print('Subscription State: ${subscriptionState}');
-            print('Subscription Stop Time: ${subscriptionStopTime}');
-            print('Update Method: ${updateMethod}');
-  */
-          }
-        } catch (e) {
-          print('Error parsing exchange: ${e}');
+          print('Operating Mode: ${operatingMode}');
+          print('Subscription Start Time: ${subscriptionStartTime}');
+          print('Subscription State: ${subscriptionState}');
+          print('Subscription Stop Time: ${subscriptionStopTime}');
+          print('Update Method: ${updateMethod}');
+*/
+                } catch (e) {
+          print('Error parsing exchange: $e');
         }
       }
 
       final payloadPublication = d2LogicalModel.findAllElements('payloadPublication', namespace: ns2).first;
-      if (payloadPublication == null) {
-        print('ns2:payloadPublication not found');
-        return Future.value([]);;
-      }
 
       try {
         final situations = payloadPublication.findAllElements('situation', namespace: ns2);
@@ -155,12 +126,12 @@ class XMLTrafficParser {
           try {
             final situationId = situation.getAttribute('id') ?? 'Unknown';
             final overallSeverityElement = situation.findAllElements('overallSeverity', namespace: ns2).first;
-            final overallSeverity = overallSeverityElement?.text;
+            final overallSeverity = overallSeverityElement.text;
             final situationVersionTimeElement = situation.findAllElements('situationVersionTime', namespace: ns2).first;
             final situationVersionTime = situationVersionTimeElement != null ? DateTime.parse(situationVersionTimeElement.text) : null;
             final situationRecord = situation.findAllElements('situationRecord', namespace: ns2).first;
 
-            if (overallSeverity == null || situationVersionTime == null || situationRecord == null) {
+            if (situationVersionTime == null) {
               print('Overall Severity, Situation Version Time, or Situation Record not found');
               continue;
             }
@@ -172,25 +143,20 @@ class XMLTrafficParser {
             final situationRecordVersionTimeElement = situationRecord.findAllElements('situationRecordVersionTime', namespace: ns2).first;
             final situationRecordVersionTime = situationRecordVersionTimeElement != null ? DateTime.parse(situationRecordVersionTimeElement.text) : null;
             final probabilityOfOccurrenceElement = situationRecord.findAllElements('probabilityOfOccurrence', namespace: ns2).first;
-            final probabilityOfOccurrence = probabilityOfOccurrenceElement?.text;
+            final probabilityOfOccurrence = probabilityOfOccurrenceElement.text;
             final source = situationRecord.findAllElements('source', namespace: ns2).first;
 
-            if (situationRecordCreationTime == null || situationRecordObservationTime == null || situationRecordVersionTime == null || probabilityOfOccurrence == null || source == null) {
+            if (situationRecordCreationTime == null || situationRecordObservationTime == null || situationRecordVersionTime == null) {
               print('Situation Record details not found');
               continue;
             }
 
             final sourceIdentificationElement = source.findAllElements('sourceIdentification', namespace: ns2).first;
-            final sourceIdentification = sourceIdentificationElement?.text;
-            final sourceNameElement = source.findAllElements('sourceName', namespace: ns2).first?.findAllElements('value', namespace: ns2).first;
-            final sourceName = sourceNameElement?.text;
+            final sourceIdentification = sourceIdentificationElement.text;
+            final sourceNameElement = source.findAllElements('sourceName', namespace: ns2).first.findAllElements('value', namespace: ns2).first;
+            final sourceName = sourceNameElement.text;
             final reliableElement = source.findAllElements('reliable', namespace: ns2).first;
-            final reliable = reliableElement?.text;
-
-            if (sourceIdentification == null || sourceName == null || reliable == null) {
-              print('Source details not found');
-              continue;
-            }
+            final reliable = reliableElement.text;
 
 /*
             print("");
@@ -207,16 +173,8 @@ class XMLTrafficParser {
             print('Reliable: ${reliable}');
 */
             final validity = situationRecord.findAllElements('validity', namespace: ns2).first;
-            if (validity == null) {
-              print('ns2:validity not found in situationRecord');
-              continue;
-            }
 
             final validityTimeSpecification = validity.findAllElements('validityTimeSpecification', namespace: ns2).first;
-            if (validityTimeSpecification == null) {
-              print('Validity Time Specification not found');
-              continue;
-            }
 
             final overallStartTimeElement = validityTimeSpecification.findAllElements('overallStartTime', namespace: ns2).first;
             final overallStartTime = overallStartTimeElement != null ? DateTime.parse(overallStartTimeElement.text) : null;
@@ -229,44 +187,31 @@ class XMLTrafficParser {
             }
 
             final groupOfLocations = situationRecord.findAllElements('groupOfLocations', namespace: ns2).first;
-            if (groupOfLocations == null) {
-              print('ns2:groupOfLocations not found in situationRecord');
-              continue;
-            }
 
             final tpegLinearLocation = groupOfLocations.findAllElements('tpegLinearLocation', namespace: ns2).first;
-            if (tpegLinearLocation == null) {
-              print('ns2:tpegLinearLocation not found in groupOfLocations');
-              continue;
-            }
 
             final tpegDirectionElement = tpegLinearLocation.findAllElements('tpegDirection', namespace: ns2).first;
-            final tpegDirection = tpegDirectionElement?.text;
+            final tpegDirection = tpegDirectionElement.text;
             final tpegLinearLocationTypeElement = tpegLinearLocation.findAllElements('tpegLinearLocationType', namespace: ns2).first;
-            final tpegLinearLocationType = tpegLinearLocationTypeElement?.text;
+            final tpegLinearLocationType = tpegLinearLocationTypeElement.text;
             final fromPoint = tpegLinearLocation.findAllElements('from', namespace: ns2).first;
             final toPoint = tpegLinearLocation.findAllElements('to', namespace: ns2).first;
-
-            if (tpegDirection == null || tpegLinearLocationType == null || fromPoint == null || toPoint == null) {
-              print('TPEG Linear Location details not found');
-              continue;
-            }
 
             final fromLatitudeElement = fromPoint.findAllElements('latitude', namespace: ns2).first;
             final fromLatitude = fromLatitudeElement != null ? double.tryParse(fromLatitudeElement.text) : null;
             final fromLongitudeElement = fromPoint.findAllElements('longitude', namespace: ns2).first;
             final fromLongitude = fromLongitudeElement != null ? double.tryParse(fromLongitudeElement.text) : null;
-            final fromNameElement = fromPoint.findAllElements('name', namespace: ns2).first?.findAllElements('value', namespace: ns2).first;
-            final fromName = fromNameElement?.text;
+            final fromNameElement = fromPoint.findAllElements('name', namespace: ns2).first.findAllElements('value', namespace: ns2).first;
+            final fromName = fromNameElement.text;
 
             final toLatitudeElement = toPoint.findAllElements('latitude', namespace: ns2).first;
             final toLatitude = toLatitudeElement != null ? double.tryParse(toLatitudeElement.text) : null;
             final toLongitudeElement = toPoint.findAllElements('longitude', namespace: ns2).first;
             final toLongitude = toLongitudeElement != null ? double.tryParse(toLongitudeElement.text) : null;
-            final toNameElement = toPoint.findAllElements('name', namespace: ns2).first?.findAllElements('value', namespace: ns2).first;
-            final toName = toNameElement?.text;
+            final toNameElement = toPoint.findAllElements('name', namespace: ns2).first.findAllElements('value', namespace: ns2).first;
+            final toName = toNameElement.text;
 
-            if (fromLatitude == null || fromLongitude == null || toLatitude == null || toLongitude == null || fromName == null || toName == null) {
+            if (fromLatitude == null || fromLongitude == null || toLatitude == null || toLongitude == null) {
               print('Latitude, Longitude, or Name not found');
               continue;
             }
@@ -284,12 +229,10 @@ class XMLTrafficParser {
             String description = 'No description';
             for (final comment in generalPublicComments) {
               final commentValueElement = comment.findAllElements('value', namespace: ns2).first;
-              final commentValue = commentValueElement?.text;
-              if (commentValue != null) {
-                description = commentValue;
-                break;
-              }
-            }
+              final commentValue = commentValueElement.text;
+              description = commentValue;
+              break;
+                        }
 
             // Create a TrafficEvent object with the parsed data
             final event = TrafficEvent(
@@ -329,17 +272,17 @@ class XMLTrafficParser {
             listTraffic.add(event);
 
           } catch (e) {
-            print('Error parsing situation: ${e}');
+            print('Error parsing situation: $e');
           }
         }
 
       //  return listTraffic;
       } catch (e) {
-        print('Error parsing payloadPublication: ${e}');
+        print('Error parsing payloadPublication: $e');
       }
     } catch (e, stack) {
-      print('Error parsing XML: ${e}');
-      print('Stacktrace: ${stack}');
+      print('Error parsing XML: $e');
+      print('Stacktrace: $stack');
     }
     return listTraffic;
   }
@@ -525,7 +468,7 @@ class XMLTrafficParser {
 
  */
     if (overallEndTime != null) {
-      print('Overall End Time: ${overallEndTime}');
+      print('Overall End Time: $overallEndTime');
     }
 
     final generalPublicComments = situationRecord.findAllElements(
@@ -539,8 +482,8 @@ class XMLTrafficParser {
           .findAllElements('commentType',namespace: ns2)
           .first
           .text;
-      print('Comment: ${commentValue}');
-      print('Comment Type: ${commentType}');
+      print('Comment: $commentValue');
+      print('Comment Type: $commentType');
     }
 
     final groupOfLocations = situationRecord

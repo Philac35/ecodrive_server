@@ -2,26 +2,24 @@
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
-import 'dart:typed_data';
 
 
-import 'package:ecodrive_server/src/Services/LogSystem/LogSystem.dart';
-import 'package:ecodrive_server/src/Services/LogSystem/LogSystemBDD.dart';
+import 'package:shared_package/Services/LogSystem/LogSystem.dart';
+import 'package:shared_package/Services/LogSystem/LogSystemBDD.dart';
 import 'package:flutter/foundation.dart';
-import 'package:pointycastle/pointycastle.dart';
 
 import 'dart:convert';
 
-import 'package:ecodrive_server/src/Services/Interface/Service.dart';
+import 'package:shared_package/Services/Interface/Service.dart';
 import 'package:pointycastle/export.dart';
-import 'package:ecodrive_server/src/Library/CryptageLibrary/CryptageLibrary.dart';
+import 'package:shared_package/Library/CryptageLibrary/CryptageLibrary.dart';
 
 
 //ToDo Debug this class else use EncryptService which is fonctionnal
 class CryptService implements Service {
 
   File privateKeyFile = File(
-      "package:ecodrive_server/src/Configuration/.Securite/Certificate/HTMLCryptage/private/privateKey.key");
+      "package:shared_package/Configuration/.Securite/Certificate/HTMLCryptage/private/privateKey.key");
   File publicKeyFile = File(
       "/src/Configuration/.Securite/Certificate/HTMLCryptage/public/publicKey.key");
 
@@ -34,14 +32,14 @@ late RSAPublicKey publicKey;
  late CryptageLibrary criptageLib;
 
   CryptService(){
-    this.criptageLib= CryptageLibrary();
+    criptageLib= CryptageLibrary();
     init();  }
 
   List<bool> init() {
     List<bool> exit = [false, false];
 
     try {
-      this.privateKey = privateKeyFile.readAsString() as RSAPrivateKey;
+      privateKey = privateKeyFile.readAsString() as RSAPrivateKey;
       exit[0] = true;
     }
     catch (e) {
@@ -59,7 +57,7 @@ late RSAPublicKey publicKey;
     }
 
     try {
-      this.publicKey = publicKeyFile.readAsString() as RSAPublicKey;
+      publicKey = publicKeyFile.readAsString() as RSAPublicKey;
       exit[1] = true;
     }
     catch (e2) {
@@ -86,8 +84,9 @@ late RSAPublicKey publicKey;
   //Functions de Cryptage
   Future<Uint8List> rsaEncryptStr({required String dataToEncrypt, RSAPublicKey? publicKey}) async {
     Uint8List stringBytes = utf8.encode(dataToEncrypt);
-    if(publicKey!=null)    return this.rsaEncrypt(publicKey, stringBytes);
-        else { return this.rsaEncrypt(this.publicKey, stringBytes);}
+    if(publicKey!=null) {
+      return rsaEncrypt(publicKey, stringBytes);
+    } else { return rsaEncrypt(this.publicKey, stringBytes);}
 
   }
 
@@ -104,7 +103,7 @@ late RSAPublicKey publicKey;
 //Functions de Decryptage
   Future<Uint8List> rsaDecryptStr(RSAPrivateKey privateKey, String dataToEncrypt) async {
     Uint8List stringBytes = utf8.encode(dataToEncrypt);
-    return this.rsaDecrypt(privateKey, stringBytes);
+    return rsaDecrypt(privateKey, stringBytes);
   }
 
  /*
@@ -177,22 +176,20 @@ late RSAPublicKey publicKey;
    * Use a new Isolate to Generate and Record KeyPair in File
    */
   Future<void> generateKeyPair() async {
-    this.keyPair =
+    keyPair =
         await Isolate.run(() => generateRSAKeyPair(_getSecureRandom()));
 
     //Write pairs in Files :
     try {
-      this.privateKeyFile.writeAsString(keyPair?.privateKey as String);
+      privateKeyFile.writeAsString(keyPair.privateKey as String);
     } catch (e) {
-      print("TokenService L18, Pb to generate privateKey, error : ${e}");
+      print("TokenService L18, Pb to generate privateKey, error : $e");
     }
-    ;
     try {
-      this.publicKeyFile.writeAsString(keyPair?.publicKey as String);
+      publicKeyFile.writeAsString(keyPair.publicKey as String);
     } catch (e) {
-      print("TokenService L18, Pb to generate publicKey, error : ${e}");
+      print("TokenService L18, Pb to generate publicKey, error : $e");
     }
-    ;
   }
 
   /*

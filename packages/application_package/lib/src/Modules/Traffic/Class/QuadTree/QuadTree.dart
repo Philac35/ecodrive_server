@@ -1,8 +1,6 @@
-import 'package:shared_package/Modules/Traffic/Component/StreetMarker/StreetMarker.dart';
-import 'package:shared_package/Modules/Traffic/Class/QuadTree/BoundingBox.dart' as bd;
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:application_package/src/Modules/Traffic/Component/StreetMarker/StreetMarker.dart';
+import 'package:application_package/src/Modules/Traffic/Class/QuadTree/BoundingBox.dart' as bd;
 
-import '../../Component/StreetMarker/StreetMarker.dart';
 
 class QuadTree {
   final bd.BoundingBox boundary;

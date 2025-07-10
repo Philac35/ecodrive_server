@@ -1,12 +1,9 @@
-import '../../../GeoDistance.dart';
-import 'Node.dart';
 
 
-/**
- *  A Way in OSM is an ordered list of nodes.
- *  It represents a polyline: a road, street, path, or boundary.
- *  Example: A way might have nodes [n1, n2, n3, n4] and represent a stretch of road.
- */
+///  A Way in OSM is an ordered list of nodes.
+///  It represents a polyline: a road, street, path, or boundary.
+///  Example: A way might have nodes [n1, n2, n3, n4] and represent a stretch of road.
+library;
 
 class Way {
   final int id;

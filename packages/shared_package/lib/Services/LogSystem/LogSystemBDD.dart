@@ -1,7 +1,6 @@
 import 'dart:math';
 
-import 'package:ecodrive_server/src/Services/Interface/Service.dart';
-import 'package:hive/hive.dart';
+import 'package:shared_package/Services/Interface/Service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class LogSystemBDD implements Service {
@@ -12,7 +11,7 @@ class LogSystemBDD implements Service {
 
   //Private constructor
   LogSystemBDD._internal(){
-    this.id=this.getId();
+    id=getId();
   }
 
   // Factory constructor to return the singleton instance
@@ -52,7 +51,7 @@ class LogSystemBDD implements Service {
 
      final timestamp = DateTime.now().toIso8601String();
      var logEntry="";
-     stackTrace! != null  ? logEntry = "${type}: ${timestamp}; ${message} StackTrace: ${stackTrace}" :  logEntry = "${type}: ${timestamp}; ${message} ";
+     stackTrace! != null  ? logEntry = "$type: $timestamp; $message StackTrace: $stackTrace" :  logEntry = "$type: $timestamp; $message ";
 
 
      // Retrieve existing logs

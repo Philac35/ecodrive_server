@@ -1,23 +1,16 @@
 //import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 
-import 'package:shared_package/Modules/Traffic/Class/QuadTree/BoundingBox.dart'
+import 'package:application_package/src/Modules/Traffic/Class/QuadTree/BoundingBox.dart'
     as myBond;
-import 'package:shared_package/Modules/Traffic/Class/QuadTree/QuadTree.dart';
-import 'package:shared_package/Modules/Traffic/Component/MapWithTraffic.dart';
-import 'package:shared_package/Modules/Traffic/Component/StreetMarker/StreetMarkerRender.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:application_package/src/Modules/Traffic/Component/StreetMarker/StreetMarkerRender.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 
-import 'package:shared_package/Modules/Traffic/Component/StreetMarker/StreetMarker.dart';
-import 'package:shared_package/Modules/Traffic/Class/Cluster/Cluster.dart';
+import 'package:application_package/src/Modules/Traffic/Component/StreetMarker/StreetMarker.dart';
+import 'package:application_package/src/Modules/Traffic/Class/Cluster/Cluster.dart';
 import '../../../OpenStreetMap/Controller/MapControllerInterface.dart';
-import '../../Component/StreetMarker/StreetMarkerRender.dart';
-import '../QuadTree/BoundingBox.dart';
 import '../TrafficGeolocator.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/MapControllerInterface.dart' ;
-import 'package:shared_package/Modules/Traffic/Class/QuadTree/QuadTree.dart' as quadtree;
-import 'Cluster.dart';
+import 'package:application_package/src/Modules/Traffic/Class/QuadTree/QuadTree.dart' as quadtree;
 
 class ClusterRender {
   late quadtree.QuadTree quadTree;
@@ -49,7 +42,7 @@ class ClusterRender {
       double maxLon, double zoomLevel) {
     myBond.BoundingBox visibleRegion =
         myBond.BoundingBox(minLat, maxLat, minLon, maxLon);
-    quadTree = new quadtree.QuadTree(visibleRegion, capacity);
+    quadTree = quadtree.QuadTree(visibleRegion, capacity);
     List<StreetMarker> visibleMarkers = quadTree.query(visibleRegion);
     double distance = calculateDistance(zoomLevel);
     List<Cluster> clusters = calculateClusters(visibleMarkers, distance);
@@ -64,7 +57,7 @@ class ClusterRender {
       } else {
         // Add individual StreetMarker
         var streetMarker = cluster.streetMarkers.first;
-         streetMarkerRender?.addStreetMarker(streetMarker);
+         streetMarkerRender.addStreetMarker(streetMarker);
       }
     }
   }
@@ -128,7 +121,7 @@ class ClusterRender {
         zoomLevel < 10 ? 1000 : 200; // Adjust distance threshold
 
     List<Cluster> clusteredMarkersCluster =
-        await calculateClusters(allMarkers, maxDistance);
+        calculateClusters(allMarkers, maxDistance);
 
    // controller.clearMarkers(); // Clear existing markers
 
@@ -187,8 +180,9 @@ class ClusterRender {
   void addStreetMarkerCluster(Cluster cluster) {
 
     GeoPoint centroid = cluster.centroid;
-    for(StreetMarker streetMarker in cluster.streetMarkers)
-     streetMarkerRender?. addStreetMarker( streetMarker);
+    for(StreetMarker streetMarker in cluster.streetMarkers) {
+      streetMarkerRender. addStreetMarker( streetMarker);
+    }
     // this.addMarker(centroid,markerIcon: cluster.streetMarkers.markerIcon)
 
   }

@@ -1,0 +1,6 @@
+services:
+  ecodriveserver:
+    image: ecodriveserver
+    build:
+      context: .
+      dockerfile: ./Dockerfile

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 

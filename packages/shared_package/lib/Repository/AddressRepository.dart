@@ -6,7 +6,9 @@ import '../BDD/Model/AbstractModels/AddressEntity.dart'  ;
 class AddressRepository extends Repository<Address>{
 
 
-  AddressRepository({required super.fromJson, required super.executor,  required super.queryFactory, required super.entity});
+  AddressRepository({required super.fromJson,
+    //required super.executor,
+    required super.queryFactory, required super.entity, required super.connexion});
 
   findOne(){
     AddressQuery().select(['address']);

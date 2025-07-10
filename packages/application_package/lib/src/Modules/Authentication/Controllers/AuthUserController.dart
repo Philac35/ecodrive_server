@@ -2,15 +2,13 @@ import 'dart:convert';
 
 import 'package:shared_package/Services/CryptService/TokenService.dart';
 import 'package:shared_package/Services/LogSystem/LogSystem.dart';
-import 'package:http/http.dart';
-import 'package:json_annotation/json_annotation.dart';
 
-import '../../../BDD/Model/AbstractModels/UserEntity.dart';
-import '../../../Controller/Controller.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/UserEntity.dart';
+import 'package:shared_package/Controller/Controller.dart';
 
-import '../../../Controller/DriverController.dart';
-import '../../../Controller/UserController.dart';
-import '../../../Services/LogSystem/LogSystemBDD.dart';
+import 'package:shared_package/Controller/DriverController.dart';
+import 'package:shared_package/Controller/UserController.dart';
+import 'package:shared_package/Services/LogSystem/LogSystemBDD.dart';
 import '../Authenticator.dart';
 import '../Entities/AuthUser.dart';
 
@@ -56,9 +54,9 @@ class AuthUserController<T extends User> {  //Lorsque l'on cree un AuthUser on c
 
   Future<bool> authenticateAuthUser(AuthUser? authUser) async {
     if (authUser != null) {
-      return  (await authenticator)!.authenticate(authUser as AuthUser);
+      return  (authenticator)!.authenticate(authUser);
     } else if (this.authUser != null) {
-      return (await authenticator)!.authenticate(this.authUser!);
+      return (authenticator)!.authenticate(this.authUser!);
     } else {
       debugPrint(
           "AuthUserController authenticateUser L33 : authUser doesn't exist or is null");
@@ -81,7 +79,7 @@ class AuthUserController<T extends User> {  //Lorsque l'on cree un AuthUser on c
 
   deconnect() {
     try {
-      this.tokenService?.deleteToken();
+      this.tokenService.deleteToken();
       isConnected = authenticator?.deconnect();
 
       debugPrint('AuthUserController L105, deconnect : User was deconnected');
@@ -120,19 +118,16 @@ class AuthUserController<T extends User> {  //Lorsque l'on cree un AuthUser on c
       final Map<String, dynamic> userData = jsonDecode(userJson);
       final User user = User.fromJson(userData) ;
       String role = user.authUser?.role as String;
-      if (role == null) {
-        throw Exception("Role of user not found");
-      }
 
       // Create the appropriate controller based on the role
       switch (role) {
         case 'driver':
           this.controller = DriverController() as Controller<T>;
-          await this.controller?.create(user as Map<String, dynamic>);
+          await this.controller.create(user as Map<Symbol, dynamic>);
           break;
         default:
           this.controller = UserController() as Controller<T> ;
-          await this.controller?.create(user as Map<String, dynamic>);
+          await this.controller.create(user as Map<Symbol, dynamic>);
           break;
       }
     } catch (e) {
@@ -171,10 +166,13 @@ class AuthUserController<T extends User> {  //Lorsque l'on cree un AuthUser on c
   Future<bool> save(entity)async {
     bool exit=false;
     try {
+
       var a=   await repository?.persist(entity.toJson() as AuthUser);
       exit = true; // Creation successful
     } catch (e) {
-      print('Error creating entity: $e');
+
+
+      print('AuthUserController L180:Error creating entity: $e');
     }
     return exit;
   }

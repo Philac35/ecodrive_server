@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import './FormElement/FTextField.dart';
 
 class VoyageFormInitial extends StatefulWidget{
+  const VoyageFormInitial({super.key});
+
   @override
   State<StatefulWidget> createState() {
    return VoyageFormInitialState();

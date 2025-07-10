@@ -1,5 +1,4 @@
 
-import 'package:shared_package/Modules/Traffic/Component/MapWithTraffic.dart';
 import 'package:flutter/cupertino.dart';
 
 
@@ -12,9 +11,9 @@ class FMapWithTraffic extends InheritedWidget{
 
 
    FMapWithTraffic(  {
-    Key? key,
-    required Widget child,
-  }) : super(key: key, child: child);
+    super.key,
+    required super.child,
+  });
 
 
 

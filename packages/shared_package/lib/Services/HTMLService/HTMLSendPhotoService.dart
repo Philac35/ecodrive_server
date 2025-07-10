@@ -1,8 +1,7 @@
 import 'dart:math';
 
-import 'package:ecodrive_server/src/Services/HTMLService/HTMLService.dart';
-import 'package:ecodrive_server/src/Services/Interface/Service.dart';
-import 'package:http/http.dart' as http;
+import 'package:shared_package/Services/HTMLService/HTMLService.dart';
+import 'package:shared_package/Services/Interface/Service.dart';
 
 import '../../BDD/Model/AbstractModels/PhotoEntity.dart';
 
@@ -14,7 +13,7 @@ class HTMLSendPhotoService implements Service{
   late HTMLService htmlService;
 
   HTMLSendPhotoService(){
-    this.htmlService=  HTMLService();
+    htmlService=  HTMLService();
 
   }
 
@@ -28,14 +27,11 @@ class HTMLSendPhotoService implements Service{
 
 
   void _sendImage() async {
-    if (photo != null) {
-
-     var  data=photo.toJson();
-      this.htmlService.send(htmlRequest:'api/photo/upload',method:'POST',data:data);
+   var  data=photo.toJson();
+    htmlService.send(htmlRequest:'api/photo/upload',method:'POST',data:data);
 
 
     }
-  }
 
 }
 

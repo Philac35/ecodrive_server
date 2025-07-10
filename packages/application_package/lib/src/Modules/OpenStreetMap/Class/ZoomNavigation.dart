@@ -2,16 +2,11 @@
 * ZoomNavigation
 * This class provide and animate the 2 zoom buttons of the map
 */
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'package:flutter/rendering.dart';
-import "package:hovering/hovering.dart";
 import '../Components/Elements/CustomButton.dart';
-import '../Components/Elements/CustomElevatedButton.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/MapControllerInterface.dart' ;
+import 'package:application_package/src/Modules/OpenStreetMap/Controller/MapControllerInterface.dart' ;
 
-import 'package:shared_package/Modules/OpenStreetMap/Controller/FBaseMapController.dart';
 
 
 class ZoomNavigation extends StatelessWidget {
@@ -41,13 +36,13 @@ class ZoomNavigation extends StatelessWidget {
               backgroundColor: Colors.white,
               padding: EdgeInsets.zero,
             ),
+            onPressed: isMapReady ? () =>
+            debugPrint('Button ZoomIn Pressed'): (){_handleZoomIn();
+             // debugPrint('Map is not ready neither Button!');  //TODO: Revoir isMapReady. Informations are not transmitted as preview.
+                  },
             child: const Center(
               child: Icon(Icons.add),
             ),
-            onPressed: isMapReady ? () =>
-            debugPrint('Button ZoomIn Pressed'): (){this._handleZoomIn();
-             // debugPrint('Map is not ready neither Button!');  //TODO: Revoir isMapReady. Informations are not transmitted as preview.
-                  },
           )),
       const SizedBox(
         height: 16,
@@ -65,14 +60,14 @@ class ZoomNavigation extends StatelessWidget {
             backgroundColor: Colors.white,
             padding: EdgeInsets.zero,
           ),
-          child: const Center(
-            child: Icon(Icons.remove),
-          ),
           onPressed: isMapReady
               ?(){}
               : () async {
             _handleZoomOut();
           },
+          child: const Center(
+            child: Icon(Icons.remove),
+          ),
 
         ),
       ),
@@ -81,8 +76,8 @@ class ZoomNavigation extends StatelessWidget {
 
   void _handleZoomIn()async {
     //if (isMapReady) {
-      debugPrint('ZoomNavigation L84, Get controller Runtime Type'+controller.runtimeType.toString());
-      (  await controller as MapController)!.zoomIn().then((_) {
+      debugPrint('ZoomNavigation L84, Get controller Runtime Type${controller.runtimeType}');
+      (  controller as MapController).zoomIn().then((_) {
         print("Zoom in successful");
       }).catchError((e) {
         print("Error zooming in: $e");
@@ -92,8 +87,8 @@ class ZoomNavigation extends StatelessWidget {
 
   void _handleZoomOut()async {
     //if (isMapReady) {
-    debugPrint('ZoomNavigation L95, Get controller Runtime Type'+controller.runtimeType.toString());
-    (  await controller as MapController)!.zoomOut().then((_) {
+    debugPrint('ZoomNavigation L95, Get controller Runtime Type${controller.runtimeType}');
+    (  controller as MapController).zoomOut().then((_) {
       print("Zoom in successful");
     }).catchError((e) {
       print("Error zooming out: $e");

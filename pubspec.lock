@@ -42,7 +42,7 @@ packages:
     source: hosted
     version: "8.3.0"
   angel3_migration:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: angel3_migration
       sha256: de7180ce8e48b0fe551c0b96cc83d0cafdcb71de3c75e13b0b08c3fdaf9df351
@@ -50,7 +50,7 @@ packages:
     source: hosted
     version: "8.4.0"
   angel3_migration_runner:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: angel3_migration_runner
       sha256: "30596dd82471dcddd35afb8b245c1dd56c8c53bdf77dee5e131c353e37e05f9b"
@@ -90,7 +90,7 @@ packages:
     source: hosted
     version: "8.4.1"
   angel3_orm_mysql:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: angel3_orm_mysql
       sha256: "63e7a6c36a0e492b89b4677bec9f79042d098063bbecb920705ab60d4415a3c6"
@@ -98,7 +98,7 @@ packages:
     source: hosted
     version: "8.3.1"
   angel3_orm_postgres:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: angel3_orm_postgres
       sha256: "7ecaec40b62b8d573ee72b1694f97353be4b6581b4da847d4bfe857f2540bd29"
@@ -138,7 +138,7 @@ packages:
     source: hosted
     version: "2.7.0"
   asn1lib:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: asn1lib
       sha256: "0511d6be23b007e95105ae023db599aea731df604608978dada7f9faf2637623"
@@ -154,7 +154,7 @@ packages:
     source: hosted
     version: "2.12.0"
   auto_route:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: auto_route
       sha256: "89bc5d17d8c575399891194b8cd02b39f52a8512c730052f17ebe443cdcb9109"
@@ -162,7 +162,7 @@ packages:
     source: hosted
     version: "10.0.1"
   auto_route_generator:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: auto_route_generator
       sha256: "8e622d26dc6be4bf496d47969e3e9ba555c3abcf2290da6abfa43cbd4f57fa52"
@@ -170,7 +170,7 @@ packages:
     source: hosted
     version: "10.0.1"
   basic_utils:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: basic_utils
       sha256: "2064b21d3c41ed7654bc82cc476fd65542e04d60059b74d5eed490a4da08fc6c"
@@ -290,7 +290,7 @@ packages:
     source: hosted
     version: "8.9.5"
   camera:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: camera
       sha256: "413d2b34fe28496c35c69ede5b232fb9dd5ca2c3a4cb606b14efc1c7546cc8cb"
@@ -449,8 +449,16 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  dotenv:
+    dependency: transitive
+    description:
+      name: dotenv
+      sha256: "379e64b6fc82d3df29461d349a1796ecd2c436c480d4653f3af6872eccbc90e1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.0"
   encrypt:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: encrypt
       sha256: "62d9aa4670cc2a8798bab89b39fc71b6dfbacf615de6cf5001fb39f7e4a996a2"
@@ -458,7 +466,7 @@ packages:
     source: hosted
     version: "5.0.3"
   envied:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: envied
       sha256: a4e2b1d0caa479b5d61332ae516518c175a6d09328a35a0bc0a53894cc5d7e4d
@@ -535,7 +543,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_dotenv:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_dotenv
       sha256: b7c7be5cd9f6ef7a78429cabd2774d3c4af50e79cb2b7593e3d5d763ef95c61b
@@ -543,7 +551,7 @@ packages:
     source: hosted
     version: "5.2.1"
   flutter_hooks:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_hooks
       sha256: b772e710d16d7a20c0740c4f855095026b31c7eb5ba3ab67d2bd52021cd9461d
@@ -567,7 +575,7 @@ packages:
     source: hosted
     version: "5.0.0"
   flutter_lite_camera:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_lite_camera
       sha256: "40b03b0eabbb3faf2f92ee3e314fe038209713dbf182730c7dda09a3000d4f88"
@@ -575,7 +583,7 @@ packages:
     source: hosted
     version: "0.0.1"
   flutter_map:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_map
       sha256: f7d0379477274f323c3f3bc12d369a2b42eb86d1e7bd2970ae1ea3cff782449a
@@ -591,7 +599,7 @@ packages:
     source: hosted
     version: "1.3.2"
   flutter_osm_plugin:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_osm_plugin
       sha256: a35b76082818d457c750eaf071d9dbbbb49ee3a0092be6bf7ddcd0c345396b86
@@ -615,7 +623,7 @@ packages:
     source: hosted
     version: "2.0.28"
   flutter_secure_storage:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_secure_storage
       sha256: "9f3dd2ac3b6875b0fde5b04734789c3ef35ba3965c18e99dd564a7a2f8056df6"
@@ -641,7 +649,7 @@ packages:
     source: hosted
     version: "4.0.0"
   geolocator:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: geolocator
       sha256: e7ebfa04ce451daf39b5499108c973189a71a919aa53c1204effda1c5b93b822
@@ -689,7 +697,7 @@ packages:
     source: hosted
     version: "0.2.5"
   get:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: get
       sha256: c79eeb4339f1f3deffd9ec912f8a923834bec55f7b49c9e882b8fef2c139d425
@@ -721,7 +729,7 @@ packages:
     source: hosted
     version: "2.3.2"
   hive:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: hive
       sha256: "8dcf6db979d7933da8217edcec84e9df1bdb4e4edc7fc77dbd5aa74356d6d941"
@@ -729,7 +737,7 @@ packages:
     source: hosted
     version: "2.2.3"
   hive_flutter:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: hive_flutter
       sha256: dca1da446b1d808a51689fb5d0c6c9510c0a2ba01e22805d492c73b68e33eecc
@@ -737,7 +745,7 @@ packages:
     source: hosted
     version: "1.1.0"
   hovering:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: hovering
       sha256: "0df77800487be6d29c8687fb775f53e1b308988c6e63a6a9c579cec701fbfe76"
@@ -769,7 +777,7 @@ packages:
     source: hosted
     version: "2.3.1"
   http_interceptor:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: http_interceptor
       sha256: "288c6ded4a2c66de2730a16b30cbd29d05d042a5e61304d9b4be0e16378f4082"
@@ -801,7 +809,7 @@ packages:
     source: hosted
     version: "4.1.2"
   image_picker:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: image_picker
       sha256: "021834d9c0c3de46bf0fe40341fa07168407f694d9b2bb18d532dc1261867f7a"
@@ -897,7 +905,7 @@ packages:
     source: hosted
     version: "0.7.2"
   json_annotation:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: json_annotation
       sha256: "1ce844379ca14835a50d2f019a3099f419082cfdd231cd86a142af94dd5c6bb1"
@@ -1033,7 +1041,7 @@ packages:
     source: hosted
     version: "0.20.0"
   mysql_client:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: mysql_client
       sha256: "6a0fdcbe3e0721c637f97ad24649be2f70dbce2b21ede8f962910e640f753fc2"
@@ -1073,7 +1081,7 @@ packages:
     source: hosted
     version: "1.9.1"
   path_provider:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: path_provider
       sha256: "50c5dd5b6e1aaf6fb3a78b33f6aa3afca52bf903a8a5298f53101fdaee55bbcd"
@@ -1121,7 +1129,7 @@ packages:
     source: hosted
     version: "2.3.0"
   pem:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: pem
       sha256: "3dfb24524f805ad694ba3cdbb6387ab31ab661fdb8ea873052ed88487fcfef86"
@@ -1201,7 +1209,7 @@ packages:
     source: hosted
     version: "2.1.8"
   pointer_interceptor:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: pointer_interceptor
       sha256: "57210410680379aea8b1b7ed6ae0c3ad349bfd56fe845b8ea934a53344b9d523"
@@ -1233,7 +1241,7 @@ packages:
     source: hosted
     version: "0.10.2+1"
   pointycastle:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: pointycastle
       sha256: "4be0097fcf3fd3e8449e53730c631200ebc7b88016acecab2b0da2f0149222fe"
@@ -1257,7 +1265,7 @@ packages:
     source: hosted
     version: "1.5.1"
   postgres:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: postgres
       sha256: "9aaa6f4872956adef653535a4e2133b167465c1a68c22b9bd0744ef1244e9393"
@@ -1312,6 +1320,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.5"
+  runtime_type:
+    dependency: "direct main"
+    description:
+      name: runtime_type
+      sha256: "00e431718064e4512012a46e74ed94977ea4d86d83ae416e635092c50ad1397e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   sasl_scram:
     dependency: transitive
     description:
@@ -1654,5 +1670,5 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.7.0 <4.0.0"
+  dart: ">=3.7.2 <4.0.0"
   flutter: ">=3.27.0"

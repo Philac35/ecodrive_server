@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'package:osm_flutter_hooks/osm_flutter_hooks.dart';
 
 
 

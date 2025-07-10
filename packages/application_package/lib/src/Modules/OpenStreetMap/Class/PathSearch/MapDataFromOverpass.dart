@@ -1,14 +1,13 @@
 import 'dart:convert';
 
-import 'package:shared_package/Modules/OpenStreetMap/Class/PathSearch/Interface/MapDataInterface.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Class/PathSearch/Interface/NodeInterface.dart';
+import 'package:application_package/src//Modules/OpenStreetMap/Class/PathSearch/Interface/MapDataInterface.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Class/PathSearch/Interface/NodeInterface.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import '../../Controller/MapControllerInterface.dart';
 import '../FBoundingBox.dart';
 import 'ContractionHierachy/Class/Way.dart';
-import 'Interface/NodeInterface.dart';
 
 class MapDataFromOverpass<T extends NodeInterface> implements MapDataInterface {
 
@@ -74,7 +73,7 @@ try{
         'ways': ways,
       };
     } catch (e){
-           debugPrint("MapDataFromOverpass L60, Error : ${e}");
+           debugPrint("MapDataFromOverpass L60, Error : $e");
     }
 
     return {

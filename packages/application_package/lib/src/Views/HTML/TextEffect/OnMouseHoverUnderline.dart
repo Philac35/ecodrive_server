@@ -5,7 +5,7 @@ class Onmouserhoverunderline extends StatefulWidget {
   final String text;
   final String url;
 
-  Onmouserhoverunderline({required this.text, required this.url});
+  const Onmouserhoverunderline({super.key, required this.text, required this.url});
 
   @override
   _HoverUnderlineTextState createState() => _HoverUnderlineTextState();

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -9,7 +8,7 @@ import 'package:http/http.dart' as http;
 * https://developer.tomtom.com/pricing
 */
 class TrafficMap extends StatefulWidget {
-  const TrafficMap({Key? key}) : super(key: key);
+  const TrafficMap({super.key});
 
   @override
   State<TrafficMap> createState() => _TrafficMapState();

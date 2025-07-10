@@ -1,15 +1,13 @@
-import 'package:shared_package/Modules/Authentication/View/Form/Controller/AccountCreationController.dart';
-import 'package:shared_package/Services/LogSystem/LogSystemBDD.dart';
+import 'package:application_package/src/Modules/Authentication/View/Form/Controller/AccountCreationController.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 
 
-import '../../../../../Services/HTMLService/HTMLService.dart';
+import 'package:shared_package/Services/HTMLService/HTMLService.dart';
 import '../FormElement/FGenderRadio.dart';
 import '../FormElement/FPhotoUploadField.dart';
 import '../FormElement/FTextField.dart';
@@ -34,7 +32,7 @@ class AccountCreationFormState extends State<AccountCreationForm> {
   // not a GlobalKey<MyCustomFormState>.
   late GlobalKey<FormState>  _formKey ;
    late AccountCreationController accountCreationController;
-   bool _passwordVisible =false;
+   final bool _passwordVisible =false;
 
   late HTMLService htmlService;
 
@@ -63,7 +61,7 @@ class AccountCreationFormState extends State<AccountCreationForm> {
     }
     // Build a Form widget using the _formKey created above.
     return Form(
-      key: this._formKey,
+      key: _formKey,
       child: Column(
         children: <Widget>[
 
@@ -126,12 +124,12 @@ class AccountCreationFormState extends State<AccountCreationForm> {
 
                               if (_formKey.currentState!.validate()) { //Check is form's informations are valid
 
-                                Future<bool> isSend= accountCreationController!.send();
+                                Future<bool> isSend= accountCreationController.send();
                                 if(await isSend){
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(content: Text('Send Acount Creation Informations')),
                                   );}else{ ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Account Creation Informations wasn\'t sent'), )); };
+                                    const SnackBar(content: Text('Account Creation Informations wasn\'t sent'), )); }
                               }
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Processing Data')),

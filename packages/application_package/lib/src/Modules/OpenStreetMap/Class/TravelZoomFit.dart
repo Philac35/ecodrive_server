@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:shared_package/Modules/OpenStreetMap/Class/FBoundingBox.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Class/FBoundingBox.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 
 class TravelZoomFit {

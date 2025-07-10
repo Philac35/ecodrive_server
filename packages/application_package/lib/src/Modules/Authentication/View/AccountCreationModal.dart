@@ -1,14 +1,11 @@
-import 'package:shared_package/Router/AppRouter.gr.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../ImageCamera/ImageCameraLite.dart';
 import 'Form/AccountCreation/AccountCreationForm.dart';
-import 'Form/Connexion/ConnexionForm.dart';
 
 class AccountCreationModal extends StatefulWidget{
 
 
-  AccountCreationModal();
+  const AccountCreationModal({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -23,7 +20,7 @@ class AccountCreationModalState extends State<AccountCreationModal> {
   Widget build(BuildContext context) {
     return    AlertDialog(
       title: Text("Création de compte"),
-      content:Container(
+      content:SizedBox(
         width:double.maxFinite,
         child:SingleChildScrollView(
           child:Column(

@@ -1,4 +1,4 @@
-import 'package:shared_package/Modules/Traffic/Entities/TrafficEvent.dart';
+import 'package:application_package/src/Modules/Traffic/Entities/TrafficEvent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -9,6 +9,8 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
  * Here the marker is set on the map and when you click on it the Geopoint is printed
  */
 class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
+
   @override
   _MapScreenState createState() => _MapScreenState();
 }

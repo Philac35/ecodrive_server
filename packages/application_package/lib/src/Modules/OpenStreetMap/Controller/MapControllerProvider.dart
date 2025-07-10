@@ -66,19 +66,19 @@ class MapControllerProviderState extends State<MapControllerProvider> {
 
   Future<MapControllerInterface<dynamic>?> createMapController()async{
     try {
-      _controller = await FMapController(
+      _controller = FMapController(
         initPosition: initialPoint,
         useExternalTracking: disableMapControlUserTracking.value,
       );
 
       if (_controller != null) {
-        debugPrint("MapContollerProvider ${_controller} was  instanciated !");
+        debugPrint("MapContollerProvider $_controller was  instanciated !");
         return _controller;
       } else {
         debugPrint(
-            "MapContollerProvider  ${_controller} was not instanciated !");
+            "MapContollerProvider  $_controller was not instanciated !");
         return null;
-      };
+      }
     } catch(error,stack){
             debugPrint("MapControllerProvider error: $error\n$stack");
              return null;
@@ -118,10 +118,9 @@ class _InheritedMapController extends InheritedWidget {
   final MapControllerProviderState data;
 
   const _InheritedMapController({
-    Key? key,
     required this.data,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   @override
   bool updateShouldNotify(_InheritedMapController oldWidget) {

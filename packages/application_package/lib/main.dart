@@ -1,15 +1,14 @@
-import 'package:ecodrive_server/src/Modules/Authentication/Provider/Listenable/AuthProvider.dart';
-import 'package:ecodrive_server/src/Modules/Authentication/View/Form/Controller/AccountCreationController.dart';
-import 'package:ecodrive_server/src/Modules/Authentication/View/Form/Controller/ConnexionFormController.dart';
-import 'package:ecodrive_server/src/Modules/Authentication/View/Form/Controller/ControllerFormInterface.dart';
-import 'package:ecodrive_server/src/Router/AppRouter.dart';
-import 'package:ecodrive_server/src/Router/lib/src/Observer/NavigationObserver.dart';
-import 'package:ecodrive_server/src/server_package/server_package.dart';
-import 'package:ecodrive_server/src/Views/Forms/Controler/ContactFormController.dart';
-import 'package:ecodrive_server/src/Views/Graphisme/CustomColors.dart';
+import 'package:application_package/src/Modules/Authentication/Provider/Listenable/AuthProvider.dart';
+import 'package:application_package/src/Modules/Authentication/View/Form/Controller/AccountCreationController.dart';
+import 'package:application_package/src/Modules/Authentication/View/Form/Controller/ConnexionFormController.dart';
+import 'package:application_package/src/Modules/Authentication/View/Form/Controller/ControllerFormInterface.dart';
+import 'package:application_package/src/Router/AppRouter.dart';
+import 'package:application_package/src/Router/lib/src/Observer/NavigationObserver.dart';
+
+import 'package:application_package/src/Views/Forms/Controler/ContactFormController.dart';
+import 'package:application_package/src/Views/Graphisme/CustomColors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +30,7 @@ class MyApp extends StatelessWidget {
   final ColorScheme colorScheme = ColorScheme.light(
     primary: Color(0xFF0051C1),
     secondary: Color(0xFFC3D0F0),
-    tertiary: Color(0xFFE86A),
+    tertiary: Color(0x00ffe86a),
   );
   final _appRouter = AppRouter(); //Router Autoroute
 

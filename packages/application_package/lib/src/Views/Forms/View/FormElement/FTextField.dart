@@ -1,14 +1,11 @@
 
-import 'dart:io';
 
-import 'package:ecodrive_server/src/Views/Forms/Validator/FormContactValidator.dart';
+import 'package:application_package/src/Views/Forms/Validator/FormContactValidator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:typed_data';
 
-import 'package:get/get_core/src/get_main.dart';
 
-import 'package:ecodrive_server/src/Views/Forms/Controler/ContactFormController.dart';
+import 'package:application_package/src/Views/Forms/Controler/ContactFormController.dart';
 
 class FTextField extends StatefulWidget {
 
@@ -23,7 +20,7 @@ class FTextField extends StatefulWidget {
   
 
 
-  FTextField({this.name,this.text,this.type,this.textValidator,this.placeholder,bool? isVisible,this.minLine,this.maxLine,Key? key}):isVisible=true,super(key:key);
+  FTextField({this.name,this.text,this.type,this.textValidator,this.placeholder,bool? isVisible,this.minLine,this.maxLine,super.key}):isVisible=true;
 
   @override
   FTextFieldState createState() { 
@@ -85,7 +82,7 @@ class FTextFieldState extends State<FTextField> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           contactFormController.clearField.value = false;
         });
-      };
+      }
       return TextFormField(
         controller: textEditing,
         maxLines: widget.maxLine ?? 1,
@@ -114,7 +111,7 @@ class FTextFieldState extends State<FTextField> {
           debugPrint('FTextField L105,onChanged called: $value');
           debugPrint(
               'FTextField L107,Field values in onChanged: ${contactFormController
-                  !.fieldValues.entries.toString()}');
+                  .fieldValues.entries.toString()}');
           //Obx(() => Text(controller.fieldValues[widget.key]?.value ?? ''));
         },
       );

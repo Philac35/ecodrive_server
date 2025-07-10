@@ -1,17 +1,15 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 
 import '../../Entity/StackFrame.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:io';
 import 'package:flutter/gestures.dart';
 // Example StackFrame class
 
 class StackTraceWidget extends StatelessWidget {
   final List<StackFrame> frames;
-  const StackTraceWidget({Key? key, required this.frames}) : super(key: key);
+  const StackTraceWidget({super.key, required this.frames});
 
   Future<void> openInVSCode(String filePath, int line, int column) async {
     await Process.run('code', ['--goto', '$filePath:$line:$column']);

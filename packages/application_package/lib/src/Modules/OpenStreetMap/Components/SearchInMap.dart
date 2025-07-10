@@ -1,15 +1,12 @@
 import 'dart:convert';
 
-import 'package:shared_package/Modules/OpenStreetMap/Controller/FMapController.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/MapControllerProvider.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Controller/FMapController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:http/http.dart' as http;
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/MapControllerInterface.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/FBaseMapController.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Class/Debouncer.dart'
+import 'package:application_package/src/Modules/OpenStreetMap/Controller/MapControllerInterface.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Class/Debouncer.dart'
     as deb;
 import '../Class/DirectionRouteLocation.dart';
 
@@ -20,7 +17,7 @@ class SearchInMap extends StatefulWidget {
   final String? hintText;
   final bool? isDeparture;
 
-  SearchInMap(
+  const SearchInMap(
       {super.key,
       required this.searchFocusNode,
       required this.onSearch,
@@ -50,10 +47,10 @@ class _SearchInMapState extends State<SearchInMap> {
 
   late final deb.Debouncer _debouncer;
    set debouncer(deb.Debouncer debouncer) {
-     this._debouncer = debouncer;
+     _debouncer = debouncer;
    } // Ensure the point is added to the controller's geopoints list
 
-   deb.Debouncer get debouncer => this._debouncer;
+   deb.Debouncer get debouncer => _debouncer;
 
   get isDeparture => widget.isDeparture;
 
@@ -67,10 +64,10 @@ class _SearchInMapState extends State<SearchInMap> {
   void didChangeDependencies(){
     super.didChangeDependencies();
 
-     controller=widget.controller! as FMapController;
-    controller != null  ?    debugPrint("${controller} was  instanciated !"): debugPrint("${controller} was not instanciated !");
+     controller=widget.controller as FMapController;
+    controller != null  ?    debugPrint("$controller was  instanciated !"): debugPrint("$controller was not instanciated !");
 
-    this.debouncer = deb.Debouncer(delay: Duration(milliseconds: 500));
+    debouncer = deb.Debouncer(delay: Duration(milliseconds: 500));
     textController.addListener(onTextChanged);
     textController.addListener(_onSearchChanged);
 
@@ -123,7 +120,7 @@ class _SearchInMapState extends State<SearchInMap> {
                 contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                 filled: false,
                 isDense: true,
-                hintText: widget.hintText != null ? widget.hintText : 'search',
+                hintText: widget.hintText ?? 'search',
                 prefixIcon: const Icon(
                   Icons.search,
                   size: 22,
@@ -226,10 +223,8 @@ class _SearchInMapState extends State<SearchInMap> {
        if(isDeparture== true){
          searchLocationDepartureArrival(textController.text, isDeparture: isDeparture);}   //ne pas mettre textController.value.toString(), it can work but sometime it return all the textController
        else{ searchLocationDepartureArrival(textController.text, isDeparture: false);}
-       if (controller!.searchGeopointsObs.getGeoPoint(0) != null && controller!.searchGeopointsObs.getGeoPoint(1) != null) {
-         isReady = true;
-       }
-     }
+       isReady = true;
+          }
      );
 }
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
@@ -11,9 +10,9 @@ class CustomButton extends StatefulWidget {
   final Widget child;
 
 
-  CustomButton({required this.nameId, this.text,
+  const CustomButton({required this.nameId, this.text,
     //this.icon,
-    required this.onPressed, required this.child,  ButtonStyle? style, Key? key}) : super(key: key);
+    required this.onPressed, required this.child,  ButtonStyle? style, super.key});
 
   @override
   _CustomButtonState createState() => _CustomButtonState();
@@ -55,7 +54,7 @@ class _CustomButtonState extends State<CustomButton> {
                   //            widget!.icon!,
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(widget!.text!),
+                      child: Text(widget.text!),
                     )]) ,
             ),
           ),

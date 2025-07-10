@@ -1,13 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import '../../Entities/TrafficEvent.dart';
-import 'package:shared_package/Modules/Traffic/Component/MapWithTraffic.dart';
 
-import '../Icones/VisualElement.dart';
 
 
 
@@ -17,14 +14,13 @@ class StreetMarker extends StatefulWidget implements Marker {
   Icon? icone;
   GeoPoint geoPoint;
 
-  StreetMarker({Key? key,
+  StreetMarker({super.key,
     required this.event,
     MarkerIcon? markerIcone,
     GeoPoint? geoPoint})
-      : this.geoPoint = geoPoint ??
+      : geoPoint = geoPoint ??
       GeoPoint(latitude: event.latitude, longitude: event.longitude),
-        this.markerIcone = markerIcone,
-        super(key: key);
+        markerIcone = markerIcone;
 
   @override
   _StreetMarkerState createState() => _StreetMarkerState();
@@ -97,7 +93,7 @@ class _StreetMarkerState extends State<StreetMarker> {
           },
           onTap: () {
             debugPrint("StreetMarker L63, onTap debug");
-            this.showMarkerDescription(widget.event);
+            showMarkerDescription(widget.event);
           },
           child: IgnorePointer(
               child: Container(

@@ -1,13 +1,9 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 import 'dart:core' show Map ;
-import 'dart:typed_data';
 
-import 'package:basic_utils/basic_utils.dart';
 import 'package:camera/camera.dart';
 
-import 'package:flutter/src/foundation/key.dart';
 import 'package:get/get.dart';
 
 import 'package:shared_package/Controller/Controller.dart';
@@ -17,10 +13,9 @@ import 'package:shared_package/BDD/Model/AbstractModels/PhotoEntity.dart';
 import 'package:shared_package/Services/HTMLService/HTMLService.dart';
 
 
-import '../../../../../Controller/DriverController.dart';
-import '../../../../../Controller/UserController.dart';
+import 'package:shared_package/Controller/DriverController.dart';
+import 'package:shared_package/Controller/UserController.dart';
 import '../../../Controllers/AuthUserController.dart';
-import '../../../Entities/AuthUser.dart';
 import 'ControllerFormInterface.dart';
 import 'package:flutter/foundation.dart';
 
@@ -34,6 +29,7 @@ class AccountCreationController extends GetxController implements ControllerForm
 
   Controller<Driver>? driverController;
   Controller<User>? userController;
+  @override
   late  Map<Key, RxString> fieldValues = <Key, RxString>{}.obs;
   late HTMLService htmlService;
    String backgroundAddress='';
@@ -47,6 +43,7 @@ class AccountCreationController extends GetxController implements ControllerForm
   }
 
   //TODO Test if this function work cf. sub entities :  photos and address
+  @override
   Future<Map<String, dynamic>> processInformations() async {
     Map<String, dynamic> res = {};
 
@@ -76,7 +73,7 @@ class AccountCreationController extends GetxController implements ControllerForm
     switch (role) {
       case 'driver':
         driverController = DriverController();
-        isCreated =  driverController?.create(entityMap) ;
+        isCreated =  driverController?.create(entityMap.cast<Symbol, dynamic >()) ;
         if(isCreated==true){
           Driver  user = await  userController?.repository?.findLast() as Driver ;
           entityId=  int.parse( user.id!) ;}
@@ -84,7 +81,7 @@ class AccountCreationController extends GetxController implements ControllerForm
 
       case 'passenger':
         userController = UserController();
-        isCreated = userController?.create(entityMap) ;
+        isCreated = userController?.create(entityMap.cast<Symbol, dynamic>()) ;
         if(isCreated==true){
           User  user = await  userController?.repository?.findLast() as User ;
           entityId=  int.parse( user.id!) ;}
@@ -92,7 +89,7 @@ class AccountCreationController extends GetxController implements ControllerForm
 
       case 'passenger-driver' || 'driver-passenger':
         driverController = DriverController();
-        isCreated =driverController?.create(entityMap) ;
+        isCreated =driverController?.create(entityMap.cast<Symbol,dynamic >()) ;
         if(isCreated==true){
           Driver  user = await  userController?.repository?.findLast() as Driver ;
           entityId=   int.parse(user.id! );}
@@ -101,7 +98,7 @@ class AccountCreationController extends GetxController implements ControllerForm
 
       default:
         userController = UserController();
-        isCreated = userController?.create(entityMap); //Here when you create the Entities they are automatically persisted
+        isCreated = userController?.create(entityMap.cast<Symbol,dynamic >()); //Here when you create the Entities they are automatically persisted
         if(isCreated == true){
             User  user = await  userController?.repository?.findLast() as User ;
           entityId=   int.parse(user.id!) ;}
@@ -143,12 +140,14 @@ class AccountCreationController extends GetxController implements ControllerForm
  * Function registerField
  * Use to bind field to ContactFormController
  */
+  @override
   void registerField(Key key, String initialValue) {
     fieldValues[key] = initialValue.obs;
     debugPrint('Field registered: $key with initial value: $initialValue');
 
   }
 
+  @override
   void updateField(Key key, String value) {
     if (fieldValues.containsKey(key)) {
       fieldValues[key]!.value = value;
@@ -184,7 +183,7 @@ class AccountCreationController extends GetxController implements ControllerForm
     Future<bool> isSent= Future<bool>(()=>false) ;
     var formInfo=processInformations();
    String informations=jsonEncode(formInfo);
-      isSent= htmlService.send(htmlRequest:backgroundAddress+'/api/accountCreation',method:'POST',data:informations);
+      isSent= htmlService.send(htmlRequest:'$backgroundAddress/api/accountCreation',method:'POST',data:informations);
     return isSent;
   }
 

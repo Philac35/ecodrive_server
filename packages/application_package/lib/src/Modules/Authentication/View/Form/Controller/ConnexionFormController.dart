@@ -1,15 +1,9 @@
-import 'dart:convert';
-import 'dart:typed_data';
 
-import 'package:shared_package/Services/CryptService/CryptService.dart';
 import 'package:shared_package/Services/HTMLService/HTMLService.dart';
-import 'package:shared_package/Modules/Authentication/Entities/AuthUser.dart';
-import 'package:flutter/src/foundation/key.dart';
 import 'package:get/get.dart';
-import 'package:convert/convert.dart';
 
 
-import '../../../../../BDD/Model/AbstractModels/UserEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/UserEntity.dart';
 import '../../../Controllers/AuthUserController.dart';
 import 'ControllerFormInterface.dart';
 import 'package:flutter/foundation.dart';
@@ -17,6 +11,7 @@ import 'package:flutter/foundation.dart';
 class ConnexionFormController  extends GetxController implements ControllerFormInterface {
 
 
+  @override
   late Map<Key, RxString> fieldValues = <Key, RxString>{}.obs;
   late HTMLService htmlService;
   late AuthUserController authController;
@@ -43,12 +38,14 @@ class ConnexionFormController  extends GetxController implements ControllerFormI
  * Function registerField
  * Use to bind field to ContactFormController
  */
+  @override
   void registerField(Key key, String initialValue) {
     fieldValues[key] = initialValue.obs;
     debugPrint('Field registered: $key with initial value: $initialValue');
 
   }
 
+  @override
   void updateField(Key key, String value) {
     if (fieldValues.containsKey(key)) {
       fieldValues[key]!.value = value;
@@ -89,7 +86,8 @@ class ConnexionFormController  extends GetxController implements ControllerFormI
 
 
 
- Future< Map<String, dynamic>> processInformations() async {
+ @override
+  Future< Map<String, dynamic>> processInformations() async {
     Iterable<RxString> rXvalues = fieldValues.values;
  //   debugPrint("ConnexionFormController L88 rXvalues identifiant: "+rXvalues.elementAt(0).toString());
    authController.reifyAuthUser(username:rXvalues.elementAt(0).toString(), password:rXvalues.elementAt(1).toString() );

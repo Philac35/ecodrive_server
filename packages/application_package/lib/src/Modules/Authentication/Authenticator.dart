@@ -1,21 +1,8 @@
 
-import 'dart:convert';
-import 'dart:typed_data';
 
 
-import 'package:shared_package/Modules/Authentication/Controllers/AuthUserController.dart';
+import 'package:application_package/src/Modules/Authentication/Controllers/AuthUserController.dart';
 import 'package:shared_package/Services/CryptService/EncryptService.dart';
-import 'package:shared_package/Services/CryptService/TokenService.dart';
-import 'package:shared_package/Services/HTMLService/HTMLService.dart';
-import 'package:shared_package/Services/LogSystem/LogSystem.dart';
-import 'package:shared_package/Services/LogSystem/LogSystemBDD.dart';
-import 'package:shared_package/Services/Parser/ParserEntityJson.dart';
-
-
-import '../../Controller/Controller.dart';
-
-
-import '../../Controller/UserController.dart';
 import 'Entities/AuthUser.dart';
 
 

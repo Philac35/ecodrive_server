@@ -1,9 +1,7 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:shared_package/Router/AppRouter.gr.dart';
+import 'package:application_package/src/Router/AppRouter.gr.dart';
 
-import '../Authentication/View/ConnexionModal.dart';
 import '../Authentication/Provider/Listenable/AuthProvider.dart';
-import '../Authentication/View/Page/ConnexionModalPage.dart';
 
 class AuthGuard extends AutoRouteGuard {
   late final AuthProvider authProvider;
@@ -16,7 +14,7 @@ class AuthGuard extends AutoRouteGuard {
   @override
   void onNavigation(NavigationResolver resolver, StackRouter router) {
     // Check if the user is authenticated
-    if (this.authProvider.isAuthenticated) {
+    if (authProvider.isAuthenticated) {
       // User is logged in, allow navigation
       resolver.next(true);
     } else {

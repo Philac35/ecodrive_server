@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:ecodrive_server/src/Services/HTMLService/Abstract/AbstractHTMLService.dart';
+import 'package:shared_package/Services/HTMLService/Abstract/AbstractHTMLService.dart';
 
 class HTMLFetchPhotoService extends AbstractHTMLService{
 

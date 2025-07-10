@@ -1,6 +1,5 @@
-import 'dart:collection';
 
-import 'package:shared_package/Modules/OpenStreetMap/Class/PathSearch/AStarAlgo/Class/Priorityqueue.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Class/PathSearch/AStarAlgo/Class/Priorityqueue.dart';
 
 //import 'package:flutter/foundation.dart';
 import 'Class/Node.dart';

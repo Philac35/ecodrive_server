@@ -13,7 +13,8 @@ abstract interface class NodeInterface{
   }
 
 
-   String toString() ;
+   @override
+  String toString() ;
 
 
 

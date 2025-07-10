@@ -1,11 +1,7 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
-import '../Modules/Authentication/View/Form/Connexion/ConnexionForm.dart';
-import 'package:ecodrive_server/src/Router/AppRouter.gr.dart';
-import '../Modules/Authentication/View/Modal/CustomModalRoute.dart';
+import 'package:application_package/src/Modules/Authentication/View/Form/Connexion/ConnexionForm.dart';
 
 import 'Structure/Footer/Footer.dart';
 import 'Structure/Header/Header.dart';
@@ -17,10 +13,10 @@ class Connexion extends StatelessWidget {
 
 
 
-    Connexion({Key? key}) : super(key: key);
-    Connexion.initialize({Key? key}) : super(key: key){
+    Connexion({super.key});
+    Connexion.initialize({super.key}){
       {
-        this.connexionForm= ConnexionForm();
+        connexionForm= ConnexionForm();
 
       }
     }

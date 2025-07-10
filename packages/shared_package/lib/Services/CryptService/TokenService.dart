@@ -4,22 +4,19 @@ import "dart:math";
 
 import "package:asn1lib/asn1lib.dart";
 import 'package:basic_utils/basic_utils.dart';
-import "package:ecodrive_server/src/Services/Interface/Service.dart";
+import "package:shared_package/Services/Interface/Service.dart";
 import 'package:pointycastle/export.dart';
 
-import "package:ecodrive_server/src/Library/CryptageLibrary/CryptageLibrary.dart";
-import "package:ecodrive_server/src/Services/LogSystem/LogSystem.dart";
-import "package:ecodrive_server/src/Services/LogSystem/LogSystemBDD.dart";
+import "package:shared_package/Library/CryptageLibrary/CryptageLibrary.dart";
+import "package:shared_package/Services/LogSystem/LogSystem.dart";
+import "package:shared_package/Services/LogSystem/LogSystemBDD.dart";
 import "package:pointycastle/api.dart" as pointycasteldapi;
-import "package:pointycastle/asymmetric/api.dart";
 import 'package:flutter/foundation.dart';
-import "package:pointycastle/digests/sha256.dart";
 
-import "package:pointycastle/random/fortuna_random.dart";
 import "package:pointycastle/signers/rsa_signer.dart" as pointycastelsigner;
 
 //Intern Dependences
-import "package:ecodrive_server/src/Services/CryptService/SignToken.dart";
+import "package:shared_package/Services/CryptService/SignToken.dart";
 import "../EmbededBdd/SecureStorage.dart";
 import "EncryptService.dart";
 
@@ -27,7 +24,7 @@ class TokenService implements Service {
   CryptageLibrary? cryptageLibrary;
   late EncryptService encryptService;
   File privateKeyFile = File(
-      "package:ecodrive_server/src/Configuration/.Securite/Certificate/Authentication/private/privateKey.key");
+      "package:shared_package/Configuration/.Securite/Certificate/Authentication/private/privateKey.key");
   File publicKeyFile = File(
       "/src/Configuration/.Securite/Certificate/Authentication/public/publicKey.key");
 
@@ -36,7 +33,7 @@ class TokenService implements Service {
 
   TokenService() {
     // cryptageLibrary = CryptageLibrary();
-    this.encryptService = EncryptService();
+    encryptService = EncryptService();
   }
 
   ASN1Sequence _createPrivateKeyASN1Sequence(RSAPrivateKey privateKey) {
@@ -79,9 +76,7 @@ class TokenService implements Service {
 
       // Encode to DER
       final der = privateKeyInfo.encodedBytes;
-      final pem = "-----BEGIN PRIVATE KEY-----\n" +
-          base64.encode(der) +
-          "\n-----END PRIVATE KEY-----";
+      final pem = "-----BEGIN PRIVATE KEY-----\n${base64.encode(der)}\n-----END PRIVATE KEY-----";
 
       return pem;
     } else {
@@ -104,9 +99,7 @@ class TokenService implements Service {
 
       // Encode to DER
       final der = topLevel.encodedBytes;
-      final pem = "-----BEGIN RSA PRIVATE KEY-----\n" +
-          base64.encode(der) +
-          "\n-----END RSA PRIVATE KEY-----";
+      final pem = "-----BEGIN RSA PRIVATE KEY-----\n${base64.encode(der)}\n-----END RSA PRIVATE KEY-----";
 
       return pem;
     }
@@ -135,9 +128,7 @@ class TokenService implements Service {
 
       // Encode to DER and then to PEM
       final der = subjectPublicKeyInfo.encodedBytes;
-      final pem = "-----BEGIN PUBLIC KEY-----\n" +
-          base64.encode(der) +
-          "\n-----END PUBLIC KEY-----";
+      final pem = "-----BEGIN PUBLIC KEY-----\n${base64.encode(der)}\n-----END PUBLIC KEY-----";
 
       return pem;
     } else {
@@ -148,9 +139,7 @@ class TokenService implements Service {
 
       // Encode to DER and then to PEM
       final der = publicKeyASN1.encodedBytes;
-      final pem = "-----BEGIN RSA PUBLIC KEY-----\n" +
-          base64.encode(der) +
-          "\n-----END RSA PUBLIC KEY-----";
+      final pem = "-----BEGIN RSA PUBLIC KEY-----\n${base64.encode(der)}\n-----END RSA PUBLIC KEY-----";
 
       return pem;
     }
@@ -165,49 +154,46 @@ class TokenService implements Service {
     final keyPair =
         encryptService.generateRSAKeyPair(encryptService.getSecureRandom());
 
-    final myPublic = keyPair.publicKey as RSAPublicKey;
-    final myPrivate = keyPair.privateKey as RSAPrivateKey;
+    final myPublic = keyPair.publicKey;
+    final myPrivate = keyPair.privateKey;
 
     final privateKeyPEM = encodePrivateKeyToPEM(myPrivate, usePKCS8: usePKCS8);
     final publicKeyPEM = encodePublicKeyToPEM(myPublic, usePKCS8: usePKCS8);
 
     try {
-      print(this.privateKeyFile.path);
-      File writedfile = await this.privateKeyFile.writeAsString(privateKeyPEM);
+      print(privateKeyFile.path);
+      File writedfile = await privateKeyFile.writeAsString(privateKeyPEM);
       if (writedfile.existsSync()) {
         print('privateKey wrote  in file successfully');
       } else {
         print("privateKey wasn't wrote in file");
       }
-      ;
       //  File writedfile = privateKeyFile.writeAsStringSync(privateKeyPEM);
       // if( writedfile.existsSync()){print('privateKey wrote  in file successfully');};
     } catch (e) {
-      debugPrint("TokenService L109, Pb to generate privateKey, error : ${e}");
+      debugPrint("TokenService L109, Pb to generate privateKey, error : $e");
       debugPrint("Error writing private key: $e");
     }
-    ;
 
     try {
       File writedpublickeyfile =
-          await this.publicKeyFile.writeAsString(publicKeyPEM);
+          await publicKeyFile.writeAsString(publicKeyPEM);
       if (writedpublickeyfile.existsSync()) {
         print('publicKey wrote  in file successfully');
       } else {
         print("publicKey wasn't wrote in file");
       }
-      ;
     } catch (e) {
       if (kIsWeb) {
         LogSystemBDD().error(
-            "TokenService L118, Pb to generate publicKey, error : ${e}",
+            "TokenService L118, Pb to generate publicKey, error : $e",
             stackTrace: StackTrace.current.toString());
       } else {
         LogSystem().error(
-          "TokenService L118, Pb to generate publicKey, error : ${e}",
+          "TokenService L118, Pb to generate publicKey, error : $e",
         );
       }
-      debugPrint("TokenService L118, Pb to generate publicKey, error : ${e}");
+      debugPrint("TokenService L118, Pb to generate publicKey, error : $e");
       debugPrint("Error writing public key: $e");
     }
   }
@@ -215,15 +201,12 @@ class TokenService implements Service {
 //Is it PKCS1 or PKCS2 ?
   Future<RSAPrivateKey> generateAndValidateRSAKeyPair() async {
     final secureRandom = encryptService.getSecureRandom();
-    if (secureRandom == null) {
-      throw Exception('Secure random is null');
-    }
 
     try {
       final keyPair =
-          await this.encryptService!.generateRSAKeyPair(secureRandom);
+          encryptService.generateRSAKeyPair(secureRandom);
 
-      final privateKey = keyPair.privateKey as RSAPrivateKey;
+      final privateKey = keyPair.privateKey;
       final modulus = privateKey.modulus;
       final p = privateKey.p;
       final q = privateKey.q;
@@ -266,12 +249,12 @@ class TokenService implements Service {
   Future<String> generateJWT(
       String privateKey, Map<String, dynamic> payload) async {
     RSAPrivateKey? privateRSAKey =
-        await encryptService?.safeRSAPrivateKeyParse(privateKey);
+        await encryptService.safeRSAPrivateKeyParse(privateKey);
 
     // Convert RSA private key to PEM format
     String pemPrivateKey;
     try {
-      pemPrivateKey = _encodePrivateKeyToPem(privateRSAKey!);
+      pemPrivateKey = _encodePrivateKeyToPem(privateRSAKey);
 
       print('PEM private key generated successfully');
     } catch (e) {
@@ -284,12 +267,6 @@ class TokenService implements Service {
       final header = {'alg': 'RS256', 'typ': 'JWT'};
       final headerBase64 = base64Url.encode(json.encode(header).codeUnits);
       final payloadBase64 = base64Url.encode(json.encode(payload).codeUnits);
-      if (pemPrivateKey == null) {
-        throw Exception('PEM private key is null');
-      }
-      if (headerBase64 == null || payloadBase64 == null) {
-        throw Exception('Header or payload is null');
-      }
       List<int> signature;
       try {
         signature = await SignToken()
@@ -415,15 +392,15 @@ class TokenService implements Service {
     // 7. exponent2 (ASN1Integer)
     // 8. coefficient (ASN1Integer)
 
-    final version = topLevelSeq.elements?[0] as ASN1Integer;
-    final n = topLevelSeq.elements?[1] as ASN1Integer;
-    final e = topLevelSeq.elements?[2] as ASN1Integer;
-    final d = topLevelSeq.elements?[3] as ASN1Integer;
-    final p = topLevelSeq.elements?[4] as ASN1Integer;
-    final q = topLevelSeq.elements?[5] as ASN1Integer;
-    final exp1 = topLevelSeq.elements?[6] as ASN1Integer;
-    final exp2 = topLevelSeq.elements?[7] as ASN1Integer;
-    final coeff = topLevelSeq.elements?[8] as ASN1Integer;
+    final version = topLevelSeq.elements[0] as ASN1Integer;
+    final n = topLevelSeq.elements[1] as ASN1Integer;
+    final e = topLevelSeq.elements[2] as ASN1Integer;
+    final d = topLevelSeq.elements[3] as ASN1Integer;
+    final p = topLevelSeq.elements[4] as ASN1Integer;
+    final q = topLevelSeq.elements[5] as ASN1Integer;
+    final exp1 = topLevelSeq.elements[6] as ASN1Integer;
+    final exp2 = topLevelSeq.elements[7] as ASN1Integer;
+    final coeff = topLevelSeq.elements[8] as ASN1Integer;
 
     return RSAPrivateKey(
       n.valueAsBigInteger,
@@ -455,12 +432,12 @@ class TokenService implements Service {
     // 7. exponent2 (ASN1Integer)
     // 8. coefficient (ASN1Integer)
 
-    final version = topLevelSeq.elements?[0] as ASN1Integer;
-    final n = topLevelSeq.elements?[1] as ASN1Integer;
-    final e = topLevelSeq.elements?[2] as ASN1Integer;
-    final d = topLevelSeq.elements?[3] as ASN1Integer;
-    final p = topLevelSeq.elements?[4] as ASN1Integer;
-    final q = topLevelSeq.elements?[5] as ASN1Integer;
+    final version = topLevelSeq.elements[0] as ASN1Integer;
+    final n = topLevelSeq.elements[1] as ASN1Integer;
+    final e = topLevelSeq.elements[2] as ASN1Integer;
+    final d = topLevelSeq.elements[3] as ASN1Integer;
+    final p = topLevelSeq.elements[4] as ASN1Integer;
+    final q = topLevelSeq.elements[5] as ASN1Integer;
 
     return RSAPrivateKey(
       n.valueAsBigInteger,
@@ -540,16 +517,16 @@ class TokenService implements Service {
   Future<String> createToken(String issuer) async {
     // try {
     // Parse the private key from the PEM file
-    final privateKeyContent = await readFileAsString(this.privateKeyFile);
+    final privateKeyContent = await readFileAsString(privateKeyFile);
     // Parse the private key from the PEM file content
     final privateKeyObject = await parsePrivateKeyFromPem(privateKeyContent);
 
     // Extract the RSA private key components
-    final RSAPrivateKey privateKey = privateKeyObject as RSAPrivateKey;
+    final RSAPrivateKey privateKey = privateKeyObject;
 
     // Create the JWT payload
     final payload = {
-      'iss': issuer != null ? issuer : 'Ecodrive',
+      'iss': issuer ?? 'Ecodrive',
       'sub': 'authentication token',
       'iat': DateTime.now().millisecondsSinceEpoch ~/ 1000,
       'exp':
@@ -557,7 +534,7 @@ class TokenService implements Service {
     };
 
     // Generate the JWT token
-    return this.token = await generateJWT(
+    return token = await generateJWT(
         encodePrivateKeyToPEM(privateKey, usePKCS8: false), payload);
     //} catch (e) {
     // Handle any errors that occur during the token generation process
@@ -567,10 +544,10 @@ class TokenService implements Service {
 
   persist() {
     try {
-      SecureStorage().record('token', this.token!);
+      SecureStorage().record('token', token!);
     } catch (e) {
       debugPrint(
-          "TokenService L85, There was an issue with token record in EmbededBDD : ${e}");
+          "TokenService L85, There was an issue with token record in EmbededBDD : $e");
     }
   }
 
@@ -606,16 +583,16 @@ class TokenService implements Service {
         base64Decode(pemString.replaceAll('\n', '').split('-----')[2]);
     final asn1Parser = ASN1Parser(bytes);
     final topLevelSeq = asn1Parser.nextObject() as ASN1Sequence;
-    final publicKeyBitString = topLevelSeq.elements?[1];
+    final publicKeyBitString = topLevelSeq.elements[1];
     final publicKeyAsn =
-        ASN1Parser(publicKeyBitString?.valueBytes! as Uint8List);
+        ASN1Parser(publicKeyBitString.valueBytes as Uint8List);
     final publicKeySeq = publicKeyAsn.nextObject() as ASN1Sequence;
-    final modulus = publicKeySeq.elements?[0] as ASN1Integer;
-    final exponent = publicKeySeq.elements?[1] as ASN1Integer;
+    final modulus = publicKeySeq.elements[0] as ASN1Integer;
+    final exponent = publicKeySeq.elements[1] as ASN1Integer;
 
     return RSAPublicKey(
-      (modulus as ASN1Integer).valueAsBigInteger,
-      (exponent as ASN1Integer).valueAsBigInteger,
+      (modulus).valueAsBigInteger,
+      (exponent).valueAsBigInteger,
     );
   }
 

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class StackTraceDeleteButton extends StatelessWidget {
   final String filePath;
 
-  const StackTraceDeleteButton({Key? key, required this.filePath}) : super(key: key);
+  const StackTraceDeleteButton({super.key, required this.filePath});
 
   void deleteFile(BuildContext context) async {
     final file = File(filePath);

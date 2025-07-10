@@ -1,0 +1,41 @@
+name: shared_package
+description: "ECF Ecodrive 2025 - Shared Package"
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.1
+
+resolution: workspace
+
+dependencies:
+  angel3_framework: ^8.5.0
+  angel3_orm: ^8.3.1
+  angel3_orm_mysql: ^8.3.1
+  angel3_orm_postgres: ^8.3.1
+  angel3_migration: ^8.4.0
+  angel3_migration_runner: ^8.4.1
+  angel3_serialize: ^8.3.0
+  asn1lib: ^1.5.9
+  basic_utils: ^5.7.0
+  dotenv: ^4.2.0
+  encrypt: ^5.0.3
+  envied: ^1.1.1
+  get: ^4.7.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  http_interceptor: ^2.0.0
+  json_annotation: ^4.9.0
+  mysql_client: ^0.0.27
+  path_provider: ^2.1.5
+  pem: ^2.0.5
+  pointycastle: ^3.9.1
+  postgres: ^3.5.6
+  flutter_secure_storage: ^4.2.1
+  server_package:
+    path: '../server_package'
+  universal_html: ^2.2.4
+  universal_platform: ^1.1.0
+  url_launcher: ^6.3.1

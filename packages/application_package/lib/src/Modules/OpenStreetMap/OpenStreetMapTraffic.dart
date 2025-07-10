@@ -1,23 +1,16 @@
-import 'package:shared_package/Modules/OpenStreetMap/Controller/MapControllerProvider.dart';
-import 'package:shared_package/Modules/OpenStreetMap/OpenStreetMap.dart';
-import 'package:shared_package/Modules/Traffic/Class/Cluster/ClusterRender.dart';
-import 'package:shared_package/Modules/Traffic/Component/StreetMarker/StreetMarker.dart';
-import 'package:shared_package/Modules/Traffic/Component/StreetMarker/StreetMarkerRender.dart';
-import 'package:shared_package/Modules/Traffic/Entities/TrafficEvent.dart';
-import 'package:shared_package/Modules/Traffic/Service/XMLTrafficParser.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Controller/MapControllerProvider.dart';
+import 'package:application_package/src/Modules/Traffic/Class/Cluster/ClusterRender.dart';
+import 'package:application_package/src/Modules/Traffic/Component/StreetMarker/StreetMarker.dart';
+import 'package:application_package/src/Modules/Traffic/Component/StreetMarker/StreetMarkerRender.dart';
+import 'package:application_package/src/Modules/Traffic/Entities/TrafficEvent.dart';
+import 'package:application_package/src/Modules/Traffic/Service/XMLTrafficParser.dart';
 import 'package:shared_package/Services/EmbededBdd/HiveService.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Components/SearchInMap.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/MapControllerInterface.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Components/SearchInMap.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Controller/MapControllerInterface.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/diagnostics.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_osm_interface/src/types/geo_point.dart';
-import 'package:flutter_osm_interface/src/types/marker.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/FBaseMapController.dart';
-import 'package:http/http.dart' as http;
 
 //import 'package:flutter_osm_plugin/src/controller/map_controller.dart';
 
@@ -25,7 +18,6 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:intl/intl.dart';
 
-import 'dart:js_interop' as js;
 import 'package:universal_html/js.dart' as js;
 //import '../Traffic/Component/MapWithTraffic.dart';
 import '../Traffic/Component/StreetMarker/StreetMarkerFactory.dart';
@@ -33,14 +25,12 @@ import '../Traffic/Component/StreetMarker/StreetMarkerFactory.dart';
 //It is possible to load 2 library with the same alias without conflict!!!
 
 
-import 'package:shared_package/Modules/OpenStreetMap/Class/DirectionRouteLocation.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Class/TravelZoomFit.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Class/ZoomNavigation.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Class/Debouncer.dart'  as deb;
+import 'package:application_package/src/Modules/OpenStreetMap/Class/TravelZoomFit.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Class/ZoomNavigation.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Class/Debouncer.dart'  as deb;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ui';
 
 import 'Controller/FMapController.dart';
 
@@ -170,7 +160,6 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
         TileURLs(url: "https://c.tile.openstreetmap.org/"),
       ],
     );
-    ;
 
     // Add observer
    // mapController.addObserver(this as OSMMixinObserver);
@@ -212,7 +201,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
 
   Future<void> _initializeMapController() async {
     try {
-      var mapController = MapControllerProvider.of(context as BuildContext)?.controller;
+      var mapController = MapControllerProvider.of(context)?.controller;
       if (mapController == null) {
          throw('OpenStreetMapTraffic L249 - mapController was not initialized');
       }
@@ -277,10 +266,8 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
 
     final topPadding = MediaQuery.maybeOf(context)?.viewPadding.top ?? 26.0;
     print('Building OpenStreetMapTraffic');
-    if (SearchInMap != null) {
-      debugPrint('SearchInMap exists and the component takes care of it');
-    }
-
+    debugPrint('SearchInMap exists and the component takes care of it');
+  
 
     return Scaffold(
       appBar: AppBar(title: Text('Traffic Events Map')),
@@ -301,7 +288,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
                 //System to display description (cause it doesn't work StreetMarker)
                 final trafficEvent = geoPointToEventMap[geoPoint];
                 if (trafficEvent != null) {
-                  this.showMarkerDescription(context, trafficEvent);
+                  showMarkerDescription(context, trafficEvent);
                   debugPrint('GeoPoint clicked: $geoPoint');
                   debugPrint('Associated Traffic Event: ${trafficEvent.type}');
                   debugPrint(
@@ -356,14 +343,9 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
                   await Future.delayed(Duration(milliseconds: 500));
 
                   try {
-                    if (MapControllerProvider.of(context)! != null) {
-                      // Call the getIframe function to perform the necessary checks
-                      getIframeContent();
-                    } else {
-                      print(
-                          'MapWithTraffic L234 : Map controller is not initialized');
-                    }
-
+                    // Call the getIframe function to perform the necessary checks
+                    getIframeContent();
+                  
                     // Mark map as ready
                     isMapReady = true;
                     mapReadyCompleter.complete();
@@ -374,7 +356,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
                     print("Zoom level set to $initZoomLevel");
 
                     // Zoom to a specific region (bounding box)
-                    this.zoomToRegion( mapController!);
+                    zoomToRegion( mapController!);
                     print("Zoomed to region");
 
                     // Clear static positions if any
@@ -401,7 +383,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
               left: 15,
               child: ZoomNavigation(
                 controller:  mapController!,
-                isMapReady: _isMapReady!,
+                isMapReady: _isMapReady,
               ),
             )
             //]
@@ -425,8 +407,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
                     key: Key('departureSearchInMap'),
                     child: SearchInMap(
                         searchFocusNode: searchDepartureFocusNode,
-                        controller: mapController!
-                            as MapControllerInterface<dynamic>,
+                        controller: mapController!,
                         hintText: 'Departure',
                         isDeparture: true,
                         onSearch: (String query) {
@@ -487,7 +468,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
 
   Future<void> _onMapReady() async {
     try {
-      await MapControllerProvider.of(context as BuildContext)!.controller?.moveTo(
+      await MapControllerProvider.of(context)!.controller?.moveTo(
         widget.initialPoint,
         animate: true,
       );
@@ -507,7 +488,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
       await Future.delayed(Duration(seconds: 20)); // Add a delay
       // Now you can safely call methods on mapController
       try {
-        await MapControllerProvider.of(context as BuildContext)!!.controller?.moveTo(
+        MapControllerProvider.of(context)!.controller?.moveTo(
           widget.initialPoint,
           animate: true,
         );
@@ -519,8 +500,8 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
     //Add Listener
     trackingNotifier.addListener(() async {
       if (userLocationNotifier.value != null && !trackingNotifier.value) {
-        await MapControllerProvider.of(context as BuildContext)!.controller?.removeMarker(userLocationNotifier.value!);
-        await MapControllerProvider.of(context as BuildContext)!!.controller?.removeMarker(userLocationNotifier.value!);
+        await MapControllerProvider.of(context)!.controller?.removeMarker(userLocationNotifier.value!);
+        MapControllerProvider.of(context)!.controller?.removeMarker(userLocationNotifier.value!);
 
         userLocationNotifier.value = null;
       }
@@ -531,8 +512,8 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
   void dispose() {
     searchDepartureFocusNode.dispose();
     searchArrivalFocusNode.dispose();
-    MapControllerProvider.of(context as BuildContext)!.controller!.removeObserver(this);
-    MapControllerProvider.of(context as BuildContext)!.dispose();
+    MapControllerProvider.of(context)!.controller!.removeObserver(this);
+    MapControllerProvider.of(context)!.dispose();
 
     // ... other disposals ...
     super.dispose();
@@ -620,13 +601,13 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
     super.onSingleTap(position);
     Future.microtask(() async {
       if (lastGeoPoint.value != null) {
-        await MapControllerProvider.of(context as BuildContext)!.controller?.changeLocationMarker(
+        await MapControllerProvider.of(context)!.controller?.changeLocationMarker(
           oldLocation: lastGeoPoint.value!,
           newLocation: position,
           //iconAnchor: IconAnchor(anchor: Anchor.top),
         );
-        MapControllerProvider.of(context as BuildContext)!.controller?.removeMarker(lastGeoPoint.value!);
-        await MapControllerProvider.of(context as BuildContext)!.controller?.addMarker(
+        MapControllerProvider.of(context)!.controller?.removeMarker(lastGeoPoint.value!);
+        await MapControllerProvider.of(context)!.controller?.addMarker(
           position,
           markerIcon: const MarkerIcon(
             icon: Icon(
@@ -638,7 +619,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
           //angle: userLocation.angle,
         );
       } else {
-        await MapControllerProvider.of(context as BuildContext)!.controller?.addMarker(
+        await MapControllerProvider.of(context)!.controller?.addMarker(
           position,
           markerIcon: const MarkerIcon(
             icon: Icon(
@@ -681,9 +662,9 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
   void onLocationChanged(UserLocation userLocation) async {
     super.onLocationChanged(userLocation);
     if (disableMapControlUserTracking.value && trackingNotifier.value) {
-      await MapControllerProvider.of(context as BuildContext)!.controller!.moveTo(userLocation);
+      await MapControllerProvider.of(context)!.controller!.moveTo(userLocation);
       if (userLocationNotifier.value == null) {
-        await MapControllerProvider.of(context as BuildContext)!.controller!.addMarker(
+        await MapControllerProvider.of(context)!.controller!.addMarker(
           userLocation,
           markerIcon: const MarkerIcon(
             icon: Icon(Icons.navigation),
@@ -691,7 +672,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
           angle: userLocation.angle,
         );
       } else {
-        await MapControllerProvider.of(context as BuildContext)!.controller!.changeLocationMarker(
+        await MapControllerProvider.of(context)!.controller!.changeLocationMarker(
           oldLocation: userLocationNotifier.value!,
           newLocation: userLocation,
           angle: userLocation.angle,
@@ -700,7 +681,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
       userLocationNotifier.value = userLocation;
     } else {
       if (userLocationNotifier.value != null && !trackingNotifier.value) {
-        await MapControllerProvider.of(context as BuildContext)!.controller!.removeMarker(userLocationNotifier.value!);
+        await MapControllerProvider.of(context)!.controller!.removeMarker(userLocationNotifier.value!);
         userLocationNotifier.value = null;
       }
     }
@@ -735,7 +716,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
     //await mapController.clearStaticPositions();
 
     // Add markers for each event
-    for (var event in trafficDatas!) {
+    for (var event in trafficDatas) {
       //   debugPrint(event.type);
       //  debugPrint(event.description);
 
@@ -753,14 +734,11 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
 
         //This work
         try {
-          if (streetMarkerRender == null) {
-            throw ("MapListener L41, streetMarkerRender is not initialized.");
-          }
           streetMarkerRender.streetMarker = streetMarker;
           streetMarkerRender.addStreetMarker(streetMarker);
         } catch (e) {
           debugPrint(
-              "MapWithTraffic L136 , addTraffic : Error lors de l'affichage des streetMarker avec StreetMarkerRender : ${e}");
+              "MapWithTraffic L136 , addTraffic : Error lors de l'affichage des streetMarker avec StreetMarkerRender : $e");
         }
         // materializeSections(event);
       }
@@ -943,7 +921,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
   Future<void> loadTrafficData() async {
     setState(() => isLoading = true);
     print("Loading traffic data...");
-    var trafficDataBddEntry;
+    Future<List<Map<String, dynamic>>> trafficDataBddEntry;
 
     //Initialisation du Parser
     XMLTrafficParser trafficInfo = XMLTrafficParser(isEncrypted: false);
@@ -952,48 +930,38 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
       String ddate = DateFormat("dd-MM-yyyy").format(DateTime.now());
       try {
         trafficDataBddEntry = fetchFromHive(
-          keyEntry: "trafficData-${ddate}",
+          keyEntry: "trafficData-$ddate",
           boxName: 'trafficBox',
         );
 
         debugPrint('MapWithTraffic L634, Informations are fetched from BDD');
       } catch (error) {
-        debugPrint("There is no entry of the day in HiveBDD ${error}");
+        debugPrint("There is no entry of the day in HiveBDD $error");
       }
-      if (trafficDataBddEntry != null) {
-        try {
-          // Print debug information
-          debugPrint(
-              "Traffic Data BDD Entry: ${trafficDataBddEntry.toString()}");
+      try {
+        // Print debug information
+        debugPrint(
+            "Traffic Data BDD Entry: ${trafficDataBddEntry.toString()}");
 
-          // Decode the data safely
-          if (trafficDataBddEntry.containsKey('data') &&
-              trafficDataBddEntry['data'] != null) {
-            List<Map<String, dynamic>> trafficData =
-                jsonDecode(trafficDataBddEntry['data'])
-                    as List<Map<String, dynamic>>;
-            debugPrint("Decoded Traffic Data: $trafficData");
-            List<TrafficEvent> eventList = [];
-            for (Map<String, dynamic> event in trafficData) {
-              eventList?.add(TrafficEvent.fromJson(event));
-            }
-            trafficEvents = eventList as Future<List<TrafficEvent>>?;
-          } else {
-            debugPrint("Key 'data' does not exist or is null.");
+        // Decode the data safely
+        if (trafficDataBddEntry.containsKey('data') &&
+            trafficDataBddEntry['data'] != null) {
+          List<Map<String, dynamic>> trafficData =
+              jsonDecode(trafficDataBddEntry['data'])
+                  as List<Map<String, dynamic>>;
+          debugPrint("Decoded Traffic Data: $trafficData");
+          List<TrafficEvent> eventList = [];
+          for (Map<String, dynamic> event in trafficData) {
+            eventList.add(TrafficEvent.fromJson(event));
           }
-        } catch (e) {
-          debugPrint("Error decoding traffic data: $e");
+          trafficEvents = eventList as Future<List<TrafficEvent>>?;
+        } else {
+          debugPrint("Key 'data' does not exist or is null.");
         }
-      } else {
-        debugPrint("Traffic Data BDD Entry is null fetch it from web.");
-        await trafficInfo.fetchTrafficEvents(widget.file);
-        //parse It
-        trafficEvents =
-            trafficInfo.parseResult() as Future<List<TrafficEvent>>?;
-        //Persist in BDD
-        persistBddTrafficInfoDatas(widget.file, await trafficEvents);
+      } catch (e) {
+        debugPrint("Error decoding traffic data: $e");
       }
-
+    
     } else {
       debugPrint("Traffic Data BDD Entry is null fetch it from web.");
       await trafficInfo.fetchTrafficEvents(widget.file);
@@ -1017,7 +985,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
    */
   materializeSections(TrafficEvent event) {
     try {
-      var roadInfo = MapControllerProvider.of(context as BuildContext)!.controller!.drawRoad(
+      var roadInfo = MapControllerProvider.of(context)!.controller!.drawRoad(
           GeoPoint(
               latitude: event.latitudeFrom, longitude: event.longitudeFrom),
           GeoPoint(latitude: event.latitudeTo, longitude: event.longitudeTo),
@@ -1031,7 +999,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
       roadInfo.ignore();
     } catch (e) {
       debugPrint(
-          "MapWithTraffic L180, Materialize Traffic Wedge , error: ${e}");
+          "MapWithTraffic L180, Materialize Traffic Wedge , error: $e");
     }
   }
 
@@ -1051,7 +1019,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
     //Manage Persistance Traffic Data in Embeded BDD
 
     //Translation of trafficEvent contained in trafficEvent in Json Map<String, dynamic>
-    for (TrafficEvent trafficEvent in await trafficEventsList!) {
+    for (TrafficEvent trafficEvent in trafficEventsList!) {
       trafficEventlistJson.add(trafficEvent.toJson());
     }
 // Get a Dart List from  trafficEventlistJson
@@ -1064,7 +1032,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
 // Wrap the JSON string inside a Map<String, dynamic> if required by Hive
     Map<String, dynamic> entry = {"data": jsonString};
     isPersisted = await hiveStore.record(
-        entryKey: "trafficData-${ddate}", boxName: "trafficBox", entry: entry);
+        entryKey: "trafficData-$ddate", boxName: "trafficBox", entry: entry);
     if (isPersisted) {
       debugPrint(
           "MapWithTraffic L554, persistBddTrafficInfoDatas , Traffic data recorded in Hive");
@@ -1124,7 +1092,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
         south: widget.initialPoint.latitude, // Southern latitude
         west: widget.initialPoint.longitude, // Western longitude
       );
-      mcontroller = await MapControllerProvider.of(context as BuildContext)!.controller!;
+      mcontroller = MapControllerProvider.of(context)!.controller!;
       // Zoom to bounding box with padding
       try {
         // Add delay to ensure initialization
@@ -1179,7 +1147,7 @@ extension MapControllerExtensions on FMapController {
   Future<void> addStaticPosition(List<GeoPoint> list, String id,
       {MarkerIcon? customMarker}) async {
     for (var position in list) {
-      await this.addMarker(
+      await addMarker(
         position,
         markerIcon: customMarker ??
             const MarkerIcon(
@@ -1265,7 +1233,7 @@ extension MapControllerExtensions on FMapController {
       print("Zoomed to bounding box.");
 
       // Get current zoom level for debugging purposes
-      double currentZoom = await this.getZoom();
+      double currentZoom = await getZoom();
       print("Current Zoom Level after adjustment: $currentZoom");
     } catch (e, stack) {
       print("Error during zoom operation: $e");

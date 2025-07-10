@@ -1,11 +1,11 @@
 
 
-import 'package:flutter/foundation.dart';
+
 
 import '../Interface/Service.dart';
 import 'dart:math';
 import 'package:logging/logging.dart';
-import 'package:path_provider/path_provider.dart';
+//import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'dart:convert';
 import 'dart:io';
@@ -20,7 +20,7 @@ class LogSystem implements Service{
 
   //Private constructor
   LogSystem._internal(){
-    this.id=this.getId();
+    id=getId();
   }
 
   // Factory constructor to return the singleton instance
@@ -44,7 +44,7 @@ class LogSystem implements Service{
 
 
     final logFilePath=await getLogFilePath();
-    final logFile = File(logFilePath+'/ecodrive_server_error.log');
+    final logFile = File('$logFilePath/ecodrive_server_error.log');
 
     Logger.root.onRecord.listen((record) async {
       await checkLogFileSize(logFile); // Check file size before writing
@@ -53,9 +53,11 @@ class LogSystem implements Service{
       try {
         logFile.writeAsStringSync(
             logMessage, mode: FileMode.append); // Log to file
-      } catch(e){if (kDebugMode) {
-        print("Error in LogSystem.dart L43, writeAsStringSync does not work as needed  : ${e}");
-      } }
+      } catch(e){
+        //if (kDebugMode) {
+        print("Error in LogSystem.dart L43, writeAsStringSync does not work as needed  : $e");
+    //  }
+    }
     });
   }
 
@@ -72,7 +74,9 @@ class LogSystem implements Service{
 
     if (Platform.isAndroid || Platform.isIOS) {
       // Mobile platforms
-      directory = await getApplicationDocumentsDirectory();
+
+      //TODO replace getApplicationDocumentsDirectory
+      // directory = await getApplicationDocumentsDirectory();
     } else {
       // Desktop platforms
       final homeDir = Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
@@ -88,25 +92,25 @@ class LogSystem implements Service{
   }
 
   void all(String message) {
-    Logger(this.ApplicationName).log(parseLevel(LogLevel.all), message);
+    Logger(ApplicationName).log(parseLevel(LogLevel.all), message);
   }
   void error(String message,{String? stackTrace}) {
-    Logger(this.ApplicationName).log(parseLevel(LogLevel.error), message,stackTrace);
+    Logger(ApplicationName).log(parseLevel(LogLevel.error), message,stackTrace);
   }
   void log(String message, Level level) {
-    Logger(this.ApplicationName).log(level, message);
+    Logger(ApplicationName).log(level, message);
   }
   void debug(String message) {
-    Logger(this.ApplicationName).log(parseLevel(LogLevel.debug), message);
+    Logger(ApplicationName).log(parseLevel(LogLevel.debug), message);
   }
   void verbose(String message) {
-    Logger(this.ApplicationName).log(parseLevel(LogLevel.verbose), message);
+    Logger(ApplicationName).log(parseLevel(LogLevel.verbose), message);
   }
   void warning(String message) {
-    Logger(this.ApplicationName).log(parseLevel(LogLevel.warning), message);
+    Logger(ApplicationName).log(parseLevel(LogLevel.warning), message);
   }
   void fatal(String message) {
-    Logger(this.ApplicationName).log(parseLevel(LogLevel.fatal), message);
+    Logger(ApplicationName).log(parseLevel(LogLevel.fatal), message);
   }
 
 

@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:ecodrive_server/src/Views/Structure/Menu/MenuElement/FSubmenuButton.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:application_package/src/Views/Structure/Menu/MenuElement/FSubmenuButton.dart';
 import 'package:flutter/material.dart';
 
 
@@ -8,6 +7,8 @@ import '../../../Router/AppRouter.gr.dart';
 
 
 class FMenu extends StatefulWidget {
+  const FMenu({super.key});
+
   @override
   _FMenuState createState() => _FMenuState();
 }

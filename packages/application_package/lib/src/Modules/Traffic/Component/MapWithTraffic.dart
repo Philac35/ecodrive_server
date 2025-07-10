@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:shared_package/Modules/OpenStreetMap/Controller/MapControllerInterface.dart';
-import 'package:shared_package/Modules/Traffic/Class/Cluster/ClusterRender.dart';
-import 'package:shared_package/Modules/Traffic/Class/Listener/MapListener.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Controller/MapControllerInterface.dart';
+import 'package:application_package/src/Modules/Traffic/Class/Cluster/ClusterRender.dart';
 
-import 'package:shared_package/Modules/Traffic/Component/StreetMarker/StreetMarkerRender.dart';
+import 'package:application_package/src/Modules/Traffic/Component/StreetMarker/StreetMarkerRender.dart';
 import 'package:flutter/foundation.dart' ;
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
@@ -18,9 +17,8 @@ import 'package:universal_html/js_util.dart';
 
 import 'package:shared_package/Services/EmbededBdd/HiveService.dart';
 
-import 'package:shared_package/Modules/Traffic/Class/Cluster/Cluster.dart';
-import 'package:shared_package/Modules/Traffic/Entities/TrafficEvent.dart';
-import 'package:shared_package/Modules/Traffic/Service/XMLTrafficParser.dart';
+import 'package:application_package/src/Modules/Traffic/Entities/TrafficEvent.dart';
+import 'package:application_package/src/Modules/Traffic/Service/XMLTrafficParser.dart';
 import 'MapWithTraffic.dart';
 import 'StreetMarker/StreetMarker.dart';
 import 'StreetMarker/StreetMarkerFactory.dart';
@@ -83,7 +81,7 @@ external JSObject  getBody2(JSObject  document);
   final GeoPoint initialPoint =
   GeoPoint(latitude: 48.8566, longitude: 2.3522); // Paris Hôtel de Ville
 
-  MapWithTraffic({Key? key}) : super(key: key);
+  MapWithTraffic({super.key});
 
   @override
   MapWithTrafficState createState() => MapWithTrafficState();
@@ -129,7 +127,7 @@ class MapWithTrafficState extends State<MapWithTraffic> {
     await mapController.clearStaticPositions();
 
     // Add markers for each event
-    for (var event in trafficDatas!) {
+    for (var event in trafficDatas) {
       //   debugPrint(event.type);
       //  debugPrint(event.description);
 
@@ -149,14 +147,11 @@ class MapWithTrafficState extends State<MapWithTraffic> {
 
         //This work
         try {
-          if (streetMarkerRender == null) {
-            throw ("MapListener L41, streetMarkerRender is not initialized.");
-          }
           streetMarkerRender.streetMarker = streetMarker;
           streetMarkerRender.addStreetMarker(streetMarker);
         } catch (e) {
           debugPrint(
-              "MapWithTraffic L136 , addTraffic : Error lors de l'affichage des streetMarker avec StreetMarkerRender : ${e}");
+              "MapWithTraffic L136 , addTraffic : Error lors de l'affichage des streetMarker avec StreetMarkerRender : $e");
         }
         materializeSections(event);
       }
@@ -185,7 +180,7 @@ class MapWithTrafficState extends State<MapWithTraffic> {
         south: widget.initialPoint.latitude, // Southern latitude
         west: widget.initialPoint.longitude, // Western longitude
       );
-      mcontroller=await mapController;
+      mcontroller=mapController;
       // Zoom to bounding box with padding
       try {
 
@@ -288,7 +283,7 @@ class MapWithTrafficState extends State<MapWithTraffic> {
         // Use JavaScript interop to access the iframe's content
         var contentDocument = getContentDocument(iframe as JSObject);
         if (contentDocument != null) {
-          var body = querySelector((contentDocument as String) + 'body');
+          var body = querySelector('${contentDocument as String}body');
           var firstChild = getProperty(body as Object, 'firstChild');
           if (firstChild != null) {
             // Proceed with your logic
@@ -304,7 +299,7 @@ class MapWithTrafficState extends State<MapWithTraffic> {
       // Check if the iframe content is already loaded
       var contentDocument = getContentDocument(iframe as JSObject);
       if (contentDocument != null) {
-        var body = querySelector((contentDocument as String) + ' body');
+        var body = querySelector('${contentDocument as String} body');
         var firstChild = getProperty(body as Object, 'firstChild');
         if (firstChild != null) {
           // Proceed with your logic
@@ -336,14 +331,10 @@ class MapWithTrafficState extends State<MapWithTraffic> {
    */
   void setMapReady() {
     // Ensure the map controller is initialized
-    if (mapController != null) {
-      // Call the getIframe function to perform if the Frame is well loaded with is content
-      getIframeContent();
-      isMapReady=true;
-    } else {
-      print('Map controller is not initialized');
-    }
-
+    // Call the getIframe function to perform if the Frame is well loaded with is content
+    getIframeContent();
+    isMapReady=true;
+  
     if (!mapReadyCompleter.isCompleted) {
       mapReadyCompleter.complete();
       debugPrint("Map is now ready!");
@@ -438,14 +429,9 @@ class MapWithTrafficState extends State<MapWithTraffic> {
                 await Future.delayed(Duration(milliseconds: 500));
 
                 try {
-                  if (mapController != null) {
-                    // Call the getIframe function to perform the necessary checks
-                    getIframeContent();
-                  } else {
-                    print(
-                        'MapWithTraffic L234 : Map controller is not initialized');
-                  }
-
+                  // Call the getIframe function to perform the necessary checks
+                  getIframeContent();
+                
                   // Mark map as ready
                   isMapReady = true;
                   mapReadyCompleter.complete();
@@ -522,7 +508,7 @@ class MapWithTrafficState extends State<MapWithTraffic> {
   Future<List<Map<String, dynamic>>> fetchFromHive(
       {required String keyEntry, required String boxName}) async {
     // Fetch the record from Hive
-    Map<String, dynamic>? entry = await this.hiveStore.getRecord(
+    Map<String, dynamic>? entry = await hiveStore.getRecord(
       entryKey: keyEntry,
       boxName: "trafficBox",
     );
@@ -588,7 +574,7 @@ class MapWithTrafficState extends State<MapWithTraffic> {
     //Manage Persistance Traffic Data in Embeded BDD
 
     //Translation of trafficEvent contained in trafficEvent in Json Map<String, dynamic>
-    for (TrafficEvent trafficEvent in await trafficEventsList!) {
+    for (TrafficEvent trafficEvent in trafficEventsList!) {
       trafficEventlistJson.add(trafficEvent.toJson());
     }
 // Get a Dart List from  trafficEventlistJson
@@ -601,7 +587,7 @@ class MapWithTrafficState extends State<MapWithTraffic> {
 // Wrap the JSON string inside a Map<String, dynamic> if required by Hive
     Map<String, dynamic> entry = {"data": jsonString};
     isPersisted = await hiveStore.record(
-        entryKey: "trafficData-${ddate}", boxName: "trafficBox", entry: entry);
+        entryKey: "trafficData-$ddate", boxName: "trafficBox", entry: entry);
     if (isPersisted) {
       debugPrint(
           "MapWithTraffic L554, persistBddTrafficInfoDatas , Traffic data recorded in Hive");
@@ -620,7 +606,7 @@ class MapWithTrafficState extends State<MapWithTraffic> {
   Future<void> loadTrafficData() async {
     setState(() => isLoading = true);
     print("Loading traffic data...");
-    var trafficDataBddEntry;
+    Future<List<Map<String, dynamic>>> trafficDataBddEntry;
 
    //Initialisation du Parser
     XMLTrafficParser trafficInfo = XMLTrafficParser(isEncrypted: false);
@@ -630,46 +616,36 @@ class MapWithTrafficState extends State<MapWithTraffic> {
         String ddate = DateFormat("dd-MM-yyyy").format(DateTime.now());
         try {
           trafficDataBddEntry = fetchFromHive(
-            keyEntry: "trafficData-${ddate}", boxName: 'trafficBox',);
+            keyEntry: "trafficData-$ddate", boxName: 'trafficBox',);
 
           debugPrint('MapWithTraffic L634, Informations are fetched from BDD');
 
         } catch (error) {
-          debugPrint("There is no entry of the day in HiveBDD ${error}");
+          debugPrint("There is no entry of the day in HiveBDD $error");
         }
-      if (trafficDataBddEntry != null) {
-        try {
-          // Print debug information
-          debugPrint(
-              "Traffic Data BDD Entry: ${trafficDataBddEntry.toString()}");
+      try {
+        // Print debug information
+        debugPrint(
+            "Traffic Data BDD Entry: ${trafficDataBddEntry.toString()}");
 
-          // Decode the data safely
-          if (trafficDataBddEntry.containsKey('data') &&
-              trafficDataBddEntry['data'] != null) {
-            List<Map<String, dynamic>> trafficData = jsonDecode(
-                trafficDataBddEntry['data']) as List<Map<String, dynamic>>;
-            debugPrint("Decoded Traffic Data: $trafficData");
-            List<TrafficEvent> eventList = [];
-            for (Map<String, dynamic> event in trafficData) {
-              eventList?.add(TrafficEvent.fromJson(event));
-            }
-            trafficEvents = eventList as Future<List<TrafficEvent>>?;
-          } else {
-            debugPrint("Key 'data' does not exist or is null.");
+        // Decode the data safely
+        if (trafficDataBddEntry.containsKey('data') &&
+            trafficDataBddEntry['data'] != null) {
+          List<Map<String, dynamic>> trafficData = jsonDecode(
+              trafficDataBddEntry['data']) as List<Map<String, dynamic>>;
+          debugPrint("Decoded Traffic Data: $trafficData");
+          List<TrafficEvent> eventList = [];
+          for (Map<String, dynamic> event in trafficData) {
+            eventList.add(TrafficEvent.fromJson(event));
           }
-        } catch (e) {
-          debugPrint("Error decoding traffic data: $e");
+          trafficEvents = eventList as Future<List<TrafficEvent>>?;
+        } else {
+          debugPrint("Key 'data' does not exist or is null.");
         }
-      } else {
-        debugPrint("Traffic Data BDD Entry is null fetch it from web.");
-        await trafficInfo.fetchTrafficEvents(widget.file);
-        //parse It
-        trafficEvents =
-        trafficInfo.parseResult() as Future<List<TrafficEvent>>?;
-        //Persist in BDD
-        persistBddTrafficInfoDatas(widget.file, await trafficEvents);
+      } catch (e) {
+        debugPrint("Error decoding traffic data: $e");
       }
-  }else{
+      }else{
 
   debugPrint("Traffic Data BDD Entry is null fetch it from web.");
   await trafficInfo.fetchTrafficEvents(widget.file);
@@ -702,7 +678,7 @@ class MapWithTrafficState extends State<MapWithTraffic> {
                 zoomInto: false));
       } catch (e) {
         debugPrint(
-            "MapWithTraffic L180, Materialize Traffic Wedge , error: ${e}");
+            "MapWithTraffic L180, Materialize Traffic Wedge , error: $e");
       }
     }
 
@@ -793,7 +769,7 @@ extension on html.IFrameElement {
   Future<void> addStaticPosition(List<GeoPoint> list, String id,
       {MarkerIcon? customMarker}) async {
     for (var position in list) {
-      await this.addMarker(
+      await addMarker(
         position,
         markerIcon: customMarker ??
             const MarkerIcon(
@@ -868,7 +844,7 @@ extension on html.IFrameElement {
         }) async {
       try {
         // Ensure map is ready
-        if (!this.isMapReady) {
+        if (!isMapReady) {
           print("MapController is not ready.");
           return;
         }
@@ -881,7 +857,7 @@ extension on html.IFrameElement {
         print("Zoomed to bounding box.");
 
         // Get current zoom level for debugging purposes
-        double currentZoom = await this.getZoom();
+        double currentZoom = await getZoom();
         print("Current Zoom Level after adjustment: $currentZoom");
       } catch (e, stack) {
         print("Error during zoom operation: $e");

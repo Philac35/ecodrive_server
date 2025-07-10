@@ -1,13 +1,11 @@
 import 'package:camera/camera.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../Services/LogSystem/LogSystem.dart';
-import '../../Services/LogSystem/LogSystemBDD.dart';
+import 'package:shared_package/Services/LogSystem/LogSystem.dart';
+import 'package:shared_package/Services/LogSystem/LogSystemBDD.dart';
 import 'Contoller/ImageCameraController.dart';
 
 
@@ -15,6 +13,8 @@ import 'Contoller/ImageCameraController.dart';
 //First goal : Developpement For android and IOS
 //PB with web platform getDeviceList
 class ImageCamera extends StatefulWidget {
+  const ImageCamera({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return ImageCameraState();
@@ -38,15 +38,15 @@ class ImageCameraState extends State<ImageCamera> {
   void initState() {
 
    super.initState();
-   this. cameraDescription = CameraDescription(name: "PhotoCam",lensDirection: CameraLensDirection.external, sensorOrientation: 0);
-    this._cameraController  = Get.put(ImageCameraController( this.cameraDescription!,ResolutionPreset.high));
+    cameraDescription = CameraDescription(name: "PhotoCam",lensDirection: CameraLensDirection.external, sensorOrientation: 0);
+    _cameraController  = Get.put(ImageCameraController( cameraDescription!,ResolutionPreset.high));
    _cameraController.setCameraContParam({
      'enableAudio': false,
      'imageFormatGroup': ImageFormatGroup.jpeg
    });
 
-   this.cameraContParam=  {'cameraDescription': cameraDescription, 'resolution': ResolutionPreset.high,  'enableAudio': false,  'imageFormatGroup': ImageFormatGroup.jpeg };
-   this.initCameraController(cameraContParam) ;
+   cameraContParam=  {'cameraDescription': cameraDescription, 'resolution': ResolutionPreset.high,  'enableAudio': false,  'imageFormatGroup': ImageFormatGroup.jpeg };
+   initCameraController(cameraContParam) ;
   }
 
   ImageCameraState();
@@ -56,36 +56,36 @@ class ImageCameraState extends State<ImageCamera> {
     // Request camera permission
     final status = await Permission.camera.request();
     if (status.isGranted) {
-      print('status camera L57 : ' + status.isGranted.toString());
+      print('status camera L57 : ${status.isGranted}');
       //Initialize camera
       try {
-        this._cameras = await availableCameras();
-        if (this._cameras.isEmpty) {
+        _cameras = await availableCameras();
+        if (_cameras.isEmpty) {
           debugPrint('No cameras available');
         }
       } catch (e) {
         debugPrint("There is a pb with availableCameras()");
       }
       try {
-        this._cameraController = ImageCameraController.init(
+        _cameraController = ImageCameraController.init(
           description:cameraContParam['cameraDescription'],
           resolutionPreset: cameraContParam['resolution'],
           enableAudio:cameraContParam['enableAudio'],
           imageFormatGroup: cameraContParam['imageFormatGroup'],
         ); //    cameraDescription,
 
-        await this._cameraController!.initialize();
+        await _cameraController.initialize();
         debugPrint('Camera intialized successfully');
       } catch (e) {
         if (kDebugMode) {
           debugPrint(
-              "FPhotoUploadField L65 initCamera(): erreur d'initialisation de la camera :${e}");
+              "FPhotoUploadField L65 initCamera(): erreur d'initialisation de la camera :$e");
           if (isSkiaWeb) {
             LogSystemBDD().log(
-                "FPhotoUploadField L68 iniCamera(): erreur d'initialisation de la camera :${e}");
+                "FPhotoUploadField L68 iniCamera(): erreur d'initialisation de la camera :$e");
           } else {
             LogSystem().error(
-                "FPhotoUploadField L71 iniCamera(): erreur d'initialisation de la camera :${e}");
+                "FPhotoUploadField L71 iniCamera(): erreur d'initialisation de la camera :$e");
           }
         }
       }
@@ -106,8 +106,8 @@ class ImageCameraState extends State<ImageCamera> {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final CameraController? cameraController = this._cameraController;
-    if (cameraController == null || !cameraController.value.isInitialized) {
+    final CameraController cameraController = _cameraController;
+    if (!cameraController.value.isInitialized) {
       return;
     }
 
@@ -129,7 +129,7 @@ class ImageCameraState extends State<ImageCamera> {
       future: initCameraController(cameraContParam),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return CameraPreview(this._cameraController!);
+          return CameraPreview(_cameraController);
         } else {
           return Center(child: CircularProgressIndicator());
         }
@@ -137,11 +137,11 @@ class ImageCameraState extends State<ImageCamera> {
     );
   }
 
-  CameraController? get cameraController => this._cameraController;
+  CameraController? get cameraController => _cameraController;
 }
 
 extension on Map<String, dynamic> {
-  CameraDescription get cameraDescription => this.cameraDescription;
+  CameraDescription get cameraDescription => cameraDescription;
 
 
 }

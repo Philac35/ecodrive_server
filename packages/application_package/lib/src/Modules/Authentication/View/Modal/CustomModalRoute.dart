@@ -1,5 +1,3 @@
-import 'package:auto_route/src/router/auto_route_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
@@ -8,8 +6,7 @@ class CustomModalRoute<T extends Widget> extends PageRoute<T> {
   final T child;
 
   CustomModalRoute({required this.child,
-    required RouteSettings? settings})
-      : super(settings: settings);
+    required super.settings});
 
   @override
   Color? get barrierColor => Colors.black54;

@@ -1,17 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
 import 'dart:typed_data';
-
 import 'package:asn1lib/asn1lib.dart';
-import 'package:ecodrive_server/src/Services/CryptService/PemBlock.dart';
-import 'package:ecodrive_server/src/Services/EnvService/EnvService.dart';
-import 'package:ecodrive_server/src/Services/Interface/Service.dart';
+import 'package:shared_package/Services/EnvService/EnvService.dart';
+import 'package:shared_package/Services/Interface/Service.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:encrypt/encrypt_io.dart';
-import 'package:pointycastle/api.dart';
-import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/key_generators/api.dart';
 import 'package:pointycastle/key_generators/rsa_key_generator.dart';
 import 'package:pointycastle/random/fortuna_random.dart';
@@ -20,7 +14,7 @@ import 'package:basic_utils/basic_utils.dart';
 //classe fonctionnelle au 6/03/2025
 class EncryptService implements Service{
   File privateKeyFile = File(
-      "package:ecodrive_server/src/Configuration/.Securite/Certificate/HTMLCryptage/private/privateKey.key");
+      "package:shared_package/Configuration/.Securite/Certificate/HTMLCryptage/private/privateKey.key");
   File publicKeyFile = File(
       "/src/Configuration/.Securite/Certificate/HTMLCryptage/public/publicKey.key");
 
@@ -180,10 +174,8 @@ class EncryptService implements Service{
   }
 
 
-  /**
-   * Function SafeRSAKeyParse
-   * @Param String PKCS1 or PKCS8 privateKey
-   */
+  /// Function SafeRSAKeyParse
+  /// @Param String PKCS1 or PKCS8 privateKey
 
   Future<RSAPrivateKey> safeRSAPrivateKeyParse(String pemPrivateKey) async {
     try {
@@ -757,7 +749,7 @@ Future<RSAPrivateKey> SafeRSAKeyParsePKCS8(String pemPrivateKey) async {
       prime2,
     );
     final publicKey =  generatePublicKey(rsaPrivateKey);
-    print( 'Public Key : '+publicKey.toString());
+    print( 'Public Key : $publicKey');
     print('\nRSA Private Key successfully created!');
     return rsaPrivateKey;
   } catch (e, stackTrace) { 
@@ -835,12 +827,12 @@ Future<String> decryptMessage(String encryptedMessage, RSAPrivateKey privateKey)
 
 
     setPublicKeyFromFile() async {
-    this.publicKey= CryptoUtils.rsaPublicKeyFromPem(EnvService.CRYTOPUBLICKEY);
+    publicKey= CryptoUtils.rsaPublicKeyFromPem(EnvService.CRYTOPUBLICKEY);
     // safeRSAPublicKeyParse algorithm must be review
     // this.publicKey=  await safeRSAPublicKeyParse( await publicKeyFile.readAsString());
   }
   setPrivateKeyFromFile()async{
-    this.privateKey=  await safeRSAPrivateKeyParse(EnvService.CRYTOPRIVATEKEY);
+    privateKey=  await safeRSAPrivateKeyParse(EnvService.CRYTOPRIVATEKEY);
   }
   /*
    *Function getId
@@ -923,7 +915,7 @@ eDBxBhFeeuc15R3ItdJKacvbW8C9x4Lwnv916YvF1upOv/1rwQk=
   //final privateKey1 = await encryptService.advancedKeyDiagnosticPKCS8(pemPrivateKey);
   final privateKey = await encryptService.safeRSAPrivateKeyParse(pemPrivateKeyV1);
   final publicKey = encryptService. generatePublicKey(privateKey);
-  print( 'Public Key : '+publicKey.toString());
+  print( 'Public Key : $publicKey');
 
   final message = 'Hello, World!';
   final encryptedMessage = await encryptService.  encryptMessage(message, publicKey);

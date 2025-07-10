@@ -1,12 +1,11 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FSubmenuButton extends StatefulWidget{
 
   String textMenu;
   PageRouteInfo page;
-  FSubmenuButton(this.page,this.textMenu);
+  FSubmenuButton(this.page,this.textMenu, {super.key});
 
   @override
   State<StatefulWidget> createState() {

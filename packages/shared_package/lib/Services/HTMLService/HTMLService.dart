@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 import 'package:basic_utils/basic_utils.dart';
 import 'package:flutter/foundation.dart';
@@ -22,9 +21,9 @@ class HTMLService extends AbstractHTMLService {
 
 
   HTMLService({Request? request, this.isEncrypted=false}) : super(request){
-    if(this.isEncrypted==true){
-      this.cryptService= EncryptService();
-      this.cryptService.setPublicKeyFromFile();
+    if(isEncrypted==true){
+      cryptService= EncryptService();
+      cryptService.setPublicKeyFromFile();
     }
 
   }
@@ -71,9 +70,9 @@ class HTMLService extends AbstractHTMLService {
     Response?  res=await super.response;
 
       if (res != null && res.statusCode >= 200 && res.statusCode < 300) {
-        var decryptedResponse;
+        Future<String>? decryptedResponse;
         if(isEncrypted!){
-                  decryptedResponse= cryptService?.encryptMessage(res.body,cryptService!.publicKey!);
+                  decryptedResponse= cryptService.encryptMessage(res.body,cryptService.publicKey!);
         }
         // Decode the response body (which is a JSON string)
         return jsonDecode(isEncrypted! ? decryptedResponse as String:res.body);
@@ -106,16 +105,16 @@ class HTMLService extends AbstractHTMLService {
     Uri? uri = Uri.tryParse(htmlRequest);
     http.Response response;
 
-    var dataSend;
+    String dataSend;
     //var encryptedInfo=encryptService?.encryptMessage( authUser.toJson().toString(),EncryptService().publicKey!, );
       //debugPrint("HTMLService L108  isEncrypted:${isEncrypted!.toString()}  this.isEncrypted:${this.isEncrypted!.toString()}");
     //Encrypt body:data
     if(isEncrypted!|| this.isEncrypted!) {
-      RSAPublicKey publicKey=await this.cryptService!.publicKey!;
-      debugPrint('HTMLService L112 key:${publicKey!.toString()}');
-      debugPrint('HTMLService L113 donnees:${await data.toString()}');
-      dataSend = await this.cryptService!.encryptMessage(
-         await data, await this.cryptService!.publicKey!);
+      RSAPublicKey publicKey=cryptService.publicKey!;
+      debugPrint('HTMLService L112 key:${publicKey.toString()}');
+      debugPrint('HTMLService L113 donnees:${data.toString()}');
+      dataSend = await cryptService.encryptMessage(
+         await data, cryptService.publicKey!);
     }
     //TODO to improve 19/02/2025
     //HttpHeaders header
@@ -124,7 +123,7 @@ class HTMLService extends AbstractHTMLService {
       case "POST":(uri) async =>{response= await http.post(uri, body: isEncrypted? dataSend:data)};
       case "PUT":(uri) async =>{response= await http.put(uri)};
       case "PATCH":(uri) async =>{response= await http.patch(uri)};
-      default: ;
+      default: {}
     }
 
 

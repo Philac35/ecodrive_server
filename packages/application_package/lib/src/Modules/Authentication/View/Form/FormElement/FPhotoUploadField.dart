@@ -1,16 +1,10 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
-import 'package:shared_package/Modules/ImageCamera/Contoller/ImageCameraController.dart';
-import 'package:shared_package/Services/LogSystem/LogSystemBDD.dart';
+import 'package:application_package/src/Modules/ImageCamera/Contoller/ImageCameraController.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as path1;
-import '../../../../../Services/LogSystem/LogSystem.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../ImageCamera/ImageCameraLite.dart';
 import '../Controller/AccountCreationController.dart';
@@ -18,6 +12,7 @@ import '../Controller/ControllerFormInterface.dart';
 
 class FPhotoUploadField extends StatefulWidget {
 
+  @override
   Key key;
   FPhotoUploadField({required this.key}):super(key:key);
   @override
@@ -53,11 +48,11 @@ class FPhotoUploadFieldState extends State<FPhotoUploadField> {
       }
       initState() {
       var cameraDescription = CameraDescription(name: "PhotoCam",lensDirection: CameraLensDirection.external, sensorOrientation: 0);
-      this._imageCameraController= Get.put(ImageCameraController(cameraDescription,ResolutionPreset.high));
-        this.imageCamera = ImageCameraLite();
-        this._imageCameraController = ImageCameraController(this._imageCameraController.description,this._imageCameraController.cameraContParam['presetResolution']);
-        this._imageCameraController.initCameraController(this._imageCameraController.cameraContParam as Map<String, dynamic>);
-        debugPrint(this._imageCameraController as String?);
+      _imageCameraController= Get.put(ImageCameraController(cameraDescription,ResolutionPreset.high));
+        imageCamera = ImageCameraLite();
+        _imageCameraController = ImageCameraController(_imageCameraController.description,_imageCameraController.cameraContParam['presetResolution']);
+        _imageCameraController.initCameraController(_imageCameraController.cameraContParam as Map<String, dynamic>);
+        debugPrint(_imageCameraController as String?);
       }
       setState(() {
         if (kIsWeb) {

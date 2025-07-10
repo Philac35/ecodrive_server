@@ -1,6 +1,4 @@
-import 'package:shared_package/Modules/Authentication/View/Form/FormElement/FTextField.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:application_package/src/Modules/Authentication/View/Form/FormElement/FTextField.dart';
 
 class FormConnexionValidator{
   late String value;
@@ -23,7 +21,7 @@ class FormConnexionValidator{
   }
 
 
-  checkDefault(String value){  if (value == null || value.isEmpty) {
+  checkDefault(String value){  if (value.isEmpty) {
     if(component.textValidator!=null || component.textValidator !=''){
       if(value.length<=3){}
       return component.textValidator;
@@ -35,9 +33,9 @@ class FormConnexionValidator{
   }}
 
   checkEmail(String value) {
-    if (value == null || value.isEmpty) {
+    if (value.isEmpty) {
       if(component.textValidator!=null || component.textValidator !=''){
-        var reg=RegExp(".*?@.*?\.[a-z]{2,3}");
+        var reg=RegExp(".*?@.*?.[a-z]{2,3}");
 
         if(value.length<=3){return component.textValidator;}
         else if (value.contains(reg)==false){

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:asn1lib/asn1lib.dart';
 import 'package:pointycastle/export.dart';
 import 'package:basic_utils/basic_utils.dart';
@@ -8,7 +7,7 @@ import "package:pointycastle/api.dart" as pcapi;
 import "package:flutter/foundation.dart";
 
 //Intern dependencies
-import 'package:ecodrive_server/src/Services/CryptService/EncryptService.dart';
+import 'package:shared_package/Services/CryptService/EncryptService.dart';
 
 class SignToken {
 
@@ -52,11 +51,6 @@ MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDWJZL2/+xkX+Xp
   } catch (e) {
     debugPrint("signToken L41 Error parsing RSA private key: $e");
     throw Exception('signToken L42, Error parsing RSA private key: $e');
-  }
-
-
-  if (privateKey == null) {
-    throw Exception('signToken L47, Failed to parse private key');
   }
 
 

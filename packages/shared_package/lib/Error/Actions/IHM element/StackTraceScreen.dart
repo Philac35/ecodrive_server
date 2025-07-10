@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class StackTraceScreen extends StatelessWidget {
   final String stackTrace;
 
-  const StackTraceScreen({Key? key, required this.stackTrace}) : super(key: key);
+  const StackTraceScreen({super.key, required this.stackTrace});
 
   @override
   Widget build(BuildContext context) {

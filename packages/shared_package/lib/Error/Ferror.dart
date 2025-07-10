@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
 class Ferror extends StatelessWidget {
   final FlutterErrorDetails errorDetails;
 
-  Ferror({required this.errorDetails});
+  const Ferror({super.key, required this.errorDetails});
 
   @override
   Widget build(BuildContext context) {

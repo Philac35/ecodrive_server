@@ -34,6 +34,8 @@ class MyApp extends StatelessWidget {
 }
 
 class ImageCameraLite extends StatefulWidget  {
+  const ImageCameraLite({super.key});
+
   @override
   State<ImageCameraLite> createState() => _ImageCameraLiteState();
 }
@@ -44,8 +46,8 @@ class _ImageCameraLiteState extends State<ImageCameraLite> {
   bool _isCapturing = false;
   //int _width = 640;
   //int _height = 480;
-  int _width = 106;
-  int _height = 80;
+  final int _width = 106;
+  final int _height = 80;
   ui.Image? _latestFrame;
   bool _shouldCapture = false;
 
@@ -137,7 +139,7 @@ class _ImageCameraLiteState extends State<ImageCameraLite> {
       return await _flutterLiteCameraPlugin.captureFrame();
     } catch (e) {
       print("Error capturing single frame: $e");
-      throw e;
+      rethrow;
     }
   }
 
@@ -148,7 +150,7 @@ class _ImageCameraLiteState extends State<ImageCameraLite> {
     // Convert the image to a byte buffer
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     if (byteData != null) {
-      final buffer = byteData!.buffer.asUint8List();
+      final buffer = byteData.buffer.asUint8List();
       // Save the buffer to a file or process it further
     }
   }

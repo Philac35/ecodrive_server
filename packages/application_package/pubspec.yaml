@@ -1,0 +1,36 @@
+name: application_package
+description: "ECF Ecodrive 2025 - Application Package"
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.1
+
+resolution: workspace
+
+dependencies:
+    angel3_framework: ^8.5.0
+    auto_route: ^10.0.1
+    auto_route_generator: ^10.0.1
+    camera: ^0.11.1
+    flutter_dotenv: ^5.2.1
+    flutter_hooks: ^0.21.2
+    flutter_html: ^3.0.0
+    flutter_lite_camera: ^0.0.1
+    flutter_map: ^8.1.1
+    flutter_osm_plugin: ^1.3.8
+    hovering: ^1.0.4
+    geolocator: ^14.0.0
+    get: ^4.7.2
+    hive: ^2.2.3
+    hive_flutter: ^1.1.0
+    image_picker: ^1.1.2
+    pointer_interceptor: ^0.10.1+2
+    osm_flutter_hooks: ^1.4.1
+    permission_handler: ^11.3.1+1
+    shared_package:
+      path: '../shared_package'
+    universal_html: ^2.2.4
+    url_launcher: ^6.3.1

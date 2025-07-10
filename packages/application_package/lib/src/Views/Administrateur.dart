@@ -1,30 +1,19 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:universal_html/html.dart';
-import 'dart:io';
 
-import '../Modules/OpenStreetMap/Controller/MapControllerProvider.dart';
-import '../Modules/OpenStreetMap/Example/hookExample.dart';
-import '../Modules/OpenStreetMap/Example/mainExemple.dart';
-import '../Modules/OpenStreetMap/Example/searchExample.dart';
-import '../Modules/OpenStreetMap/OpenStreetMap.dart';
-import '../Modules/Traffic/Component/MapWithTraffic.dart';
-import '../Modules/Traffic/Component/MapScreenDebug.dart';
-import 'package:ecodrive_server/src/Router/AppRouter.gr.dart';
 import 'Components/ListVoyages.dart';
 import 'Structure/Footer/Footer.dart';
 import 'Structure/Header/Header.dart';
 import 'Structure/Menu/FMenu.dart';
 //import '../Router/AppRouter.gr.dart' show VoyageCreation;
 //OpenMap Imports
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+//import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 
 @RoutePage()
 class Administrateur extends StatelessWidget {
-  const Administrateur({Key? key}) : super(key: key);
+  const Administrateur({super.key});
 
 
 

@@ -1,14 +1,12 @@
 import 'dart:convert';
 
-import 'package:shared_package/Modules/OpenStreetMap/Class/FBoundingBox.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/MapControllerInterface.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Controller/MapControllerInterface.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/foundation.dart';
 
 import 'ContractionHierachy/Class/Edge.dart';
-import 'ContractionHierachy/Class/Way.dart';
 import 'Interface/MapDataInterface.dart';
 import 'Interface/NodeInterface.dart';
 
@@ -22,11 +20,12 @@ class MapData<T extends NodeInterface> implements MapDataInterface {
 
 
 
+  @override
   Future<List<NodeInterface>> fetchMapData({Duration timeout = const Duration(seconds: 5)}) async {
     // Access CustomTile from BaseMapController
     List<CustomTile> tiles =[];
 
-    BaseMapController bcontroller=await  this.controller as BaseMapController;
+    BaseMapController bcontroller=this.controller as BaseMapController;
     debugPrint("MapData L22 ${bcontroller.toString()}" );
 
     final stopwatch = Stopwatch()..start();
@@ -46,11 +45,11 @@ class MapData<T extends NodeInterface> implements MapDataInterface {
     debugPrint("MapData L34  CustomTile: ${bcontroller.customTile}");
 
         CustomTile? tile=bcontroller.customTile; // Adjust this according to your FMapController implementation
-    debugPrint("MapData L37 ${tile}" );
+    debugPrint("MapData L37 $tile" );
 
     List<NodeInterface> nodes = [];
     if(tile!=null){
-    tiles.add(tile!);
+    tiles.add(tile);
 
 
     // Extract map data from tiles and convert to graph
@@ -70,7 +69,7 @@ class MapData<T extends NodeInterface> implements MapDataInterface {
               int id = element['id'];
                  node = nodeFactory(id: id, latitude: lat, longitude: lon);
               debugPrint("MapData L24 , Node added to NodeList of General Graph");
-              nodes.add(node as NodeInterface);
+              nodes.add(node);
             }
           } else {
             // Handle the case where the HTTP request fails
@@ -85,8 +84,8 @@ class MapData<T extends NodeInterface> implements MapDataInterface {
 
     // Connect nodes (simplified example)
     for (int i = 0; i < nodes.length - 1; i++) {
-      nodes[i]?.successors.add(nodes[i + 1] as Edge);    //There is an error here
-      nodes[i + 1]?.successors.add(nodes[i] as Edge);
+      nodes[i].successors.add(nodes[i + 1] as Edge);    //There is an error here
+      nodes[i + 1].successors.add(nodes[i] as Edge);
     }
 
     return nodes;

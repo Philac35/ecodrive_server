@@ -1,8 +1,7 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/MapControllerInterface.dart' ;
+import 'package:application_package/src/Modules/OpenStreetMap/Controller/MapControllerInterface.dart' ;
 
 class Map extends StatelessWidget {
   const Map({

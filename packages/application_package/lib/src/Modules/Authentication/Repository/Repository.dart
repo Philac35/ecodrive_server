@@ -1,10 +1,8 @@
 
 
 
-import 'dart:convert';
 
 
-import 'Abstract/AbstractRepository.dart';
 
 import '../Entities/AuthUser.dart' as a;
 
@@ -74,7 +72,7 @@ class Repository<T extends a.AuthUser>  {
     bool exit =false;
     if(id!=null){
       throw UnimplementedError();
-     }else if(entity!=null && entity is T){
+     }else if(entity!=null){
       throw UnimplementedError();
 
     }

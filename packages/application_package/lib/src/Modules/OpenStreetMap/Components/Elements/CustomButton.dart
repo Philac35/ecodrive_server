@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
@@ -7,7 +6,7 @@ class CustomButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final Widget child;
 
-  CustomButton({required this.onPressed, required this.child,  ButtonStyle? style});
+  const CustomButton({super.key, required this.onPressed, required this.child,  ButtonStyle? style});
 
   @override
   _CustomButtonState createState() => _CustomButtonState();

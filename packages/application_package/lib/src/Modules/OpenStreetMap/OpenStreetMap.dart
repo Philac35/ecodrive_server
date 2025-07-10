@@ -1,24 +1,17 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart' show MapController;
-import 'package:http/http.dart' as http;
-import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Controller/MapControllerInterface.dart' ;
+import 'package:application_package/src/Modules/OpenStreetMap/Controller/MapControllerInterface.dart' ;
 
 
-import 'package:shared_package/Modules/OpenStreetMap/Components/SearchInMap.dart';
-import 'package:shared_package/Modules/OpenStreetMap/Components/Map.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Components/SearchInMap.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Components/Map.dart';
 import 'Class/ActivationUserLocation.dart';
 import 'Class/DirectionRouteLocation.dart';
 import 'Class/DrawerMain.dart';
 import 'Class/MapRotation.dart';
-import 'Class/Navigation.dart';
 import 'Class/TravelZoomFit.dart';
 import 'Class/ZoomNavigation.dart';
 
@@ -93,7 +86,6 @@ class _MainState extends State<Main> with OSMMixinObserver {
         TileURLs(url: "https://c.tile.openstreetmap.org/"),
       ],
     );
-    ;
 
     // Add observer
     mapController.addObserver(this);

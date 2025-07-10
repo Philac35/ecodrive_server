@@ -2,24 +2,19 @@ import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 
 //import 'package:ecodrive_server/src/Modules/OpenStreetMap/OpenStreetMap.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:universal_html/html.dart';
-import 'dart:io';
 
 
-import '../Router/AppRouter.gr.dart';
 import 'Components/ListVoyages.dart';
 import 'Structure/Footer/Footer.dart';
 import 'Structure/Header/Header.dart';
 import 'Structure/Menu/FMenu.dart';
 
-//OpenMap Imports
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+
 
 @RoutePage()
 class Employe extends StatelessWidget {
-  const Employe({Key? key}) : super(key: key);
+  const Employe({super.key});
 
 
 

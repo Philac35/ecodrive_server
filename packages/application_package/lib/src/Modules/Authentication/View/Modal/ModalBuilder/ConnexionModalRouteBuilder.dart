@@ -1,11 +1,8 @@
 
 
 import 'package:auto_route/auto_route.dart';
-import 'package:shared_package/Modules/Authentication/View/Page/ConnexionModalPage.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'; 
 
-import '../../../../../Router/AppRouter.gr.dart';
 
 Route<T> connexionModalRouteBuilder<T>(
 

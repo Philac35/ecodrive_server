@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:math';
-import 'package:ecodrive_server/src/Services/Interface/Service.dart';
+import 'package:shared_package/Services/Interface/Service.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../Parser/ParserJson.dart';
 
@@ -14,7 +12,7 @@ class HiveService implements Service {
 
   // Private constructor
   HiveService._internal() {
-    this.id = this.getId();
+    id = getId();
   }
 
   // Factory constructor to return the singleton instance
@@ -39,8 +37,8 @@ class HiveService implements Service {
       throw Exception("Box name cannot be empty.");
     }
     try {
-      final String  box =  boxName != null? boxName!:_defaultBoxName;
-      return await Hive!.openBox<String>(box);
+      final String  box =  boxName ?? _defaultBoxName;
+      return await Hive.openBox<String>(box);
     } catch (e) {
      debugPrint("Failed to open Hive box: $e");
      return Future.value(Hive.box<String>(_defaultBoxName));
@@ -50,7 +48,7 @@ class HiveService implements Service {
 
   Future<bool> record({String? boxName,required String entryKey, required Map<String, dynamic> entry}) async {
     bool isPersisted= false;
-    final box =  boxName != null? await openBox(boxName!):await openBox(_defaultBoxName);
+    final box =  boxName != null? await openBox(boxName):await openBox(_defaultBoxName);
 
     final timestamp = DateTime.now().toIso8601String();
     final tuple = '$timestamp: ${ParserJson(entry).encode(null)}';
@@ -60,7 +58,7 @@ class HiveService implements Service {
        debugPrint(tuple); // Immediate feedback
        isPersisted=true;
      }catch(error, stack){
-       debugPrint("HiveService, record erreur : ${error}");
+       debugPrint("HiveService, record erreur : $error");
        debugPrintStack(stackTrace: stack);
         isPersisted=false;
      }
@@ -68,12 +66,12 @@ class HiveService implements Service {
   }
 
   Future<List<String>> getRecords({String? boxName}) async {
-    final box =  boxName != null? await openBox(boxName!):await openBox(_defaultBoxName);
+    final box =  boxName != null? await openBox(boxName):await openBox(_defaultBoxName);
     return box.values.toList();
   }
 
   Future<String?> getRecordToString({String? boxName,required String entryKey}) async {
-    final box =  boxName != null? await openBox(boxName!):await openBox(_defaultBoxName);
+    final box =  boxName != null? await openBox(boxName):await openBox(_defaultBoxName);
     return box.get(entryKey);
 
   }
@@ -140,16 +138,17 @@ class HiveService implements Service {
       debugPrint("HiveService L140 :${stack.toString()}");
       debugPrint("Failed to retrieve record: $e");
     }
+    return null;
   }
 
 
   Future<void> deleteRecord({String? boxName, required String entryKey}) async {
-    final box =  boxName != null? await openBox(boxName!):await openBox(_defaultBoxName);
+    final box =  boxName != null? await openBox(boxName):await openBox(_defaultBoxName);
     await box.delete(entryKey); // Delete the entry by key
   }
 
   Future<void> clearRecords({String? boxName}) async {
-    final box =  boxName != null? await openBox(boxName!):await openBox(_defaultBoxName);
+    final box =  boxName != null? await openBox(boxName):await openBox(_defaultBoxName);
     await box.clear(); // Clear all records in the specified box
   }
 

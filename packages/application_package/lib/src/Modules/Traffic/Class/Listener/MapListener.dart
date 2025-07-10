@@ -1,11 +1,9 @@
-import 'package:shared_package/Modules/Traffic/Class/Cluster/ClusterRender.dart';
-import 'package:shared_package/Modules/Traffic/Component/StreetMarker/StreetMarkerRender.dart';
+import 'package:application_package/src/Modules/Traffic/Class/Cluster/ClusterRender.dart';
+import 'package:application_package/src/Modules/Traffic/Component/StreetMarker/StreetMarkerRender.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:flutter/foundation.dart';
 import '../../Component/StreetMarker/StreetMarker.dart';
-import '../../Component/StreetMarker/StreetMarkerRender.dart';
 import '../Cluster/Cluster.dart';
-import '../Cluster/ClusterRender.dart';
 
 class MapListener {
   MapController mapController;
@@ -27,14 +25,11 @@ class MapListener {
 
       try {
         double? currentZoom = await mapController.getZoom();
-        if (currentZoom == null) {
-          throw ("MapListener L32, Error accessing zoom level: Zoom is null.");
-        }
         debugPrint("Current Zoom Level: $currentZoom");
 
 
         List<StreetMarker> streetMarkerList = [];
-        for (Cluster cluster in clusterRender.clusters!) {
+        for (Cluster cluster in clusterRender.clusters) {
           streetMarkerList.addAll(cluster.streetMarkers);
         }
 
@@ -46,26 +41,18 @@ class MapListener {
         if (currentZoom < 15) {
           debugPrint("Zoom level < 15: Displaying individual markers.");
            try{
-             if (streetMarkerRender == null) {
-               throw ("MapListener L41, streetMarkerRender is not initialized.");
-             }
              debugPrint("MapListener L45, addListenerMapZoom ,Render Individual Markers");
           streetMarkerRender.renderIndividualMarkers( streetMarkerList);
            }// Replace clusters with individual markers
-          catch(e){throw("MapListener L36, StreetMarkerRender should be initialized or streetMarker are null : ${e}");} 
+          catch(e){throw("MapListener L36, StreetMarkerRender should be initialized or streetMarker are null : $e");} 
         } else {
           debugPrint("Zoom level > 15: addListenerMapZoom :Displaying clusters.");
-          if (clusterRender == null || clusterRender.clusters == null) {
-            throw ("MapListener L54, clusterRender or its clusters are not initialized.");
-          }
-          else{
-            try {
-              clusterRender.renderClusters(clusterRender.clusters!); // Render clusters
-            }catch(e){  debugPrint("MapListener L54, Error rendering clusters: ${e}");
-            return; // Exit early if rendering fails};
-            }}
-      } }catch (e, stack) {
-        debugPrint("MapListener L63, addListenerMapZoom :  ${e}");
+          try {
+            clusterRender.renderClusters(clusterRender.clusters); // Render clusters
+          }catch(e){  debugPrint("MapListener L54, Error rendering clusters: $e");
+          return; // Exit early if rendering fails};
+          }      } }catch (e, stack) {
+        debugPrint("MapListener L63, addListenerMapZoom :  $e");
         debugPrint("Stack trace: $stack");
       }
 

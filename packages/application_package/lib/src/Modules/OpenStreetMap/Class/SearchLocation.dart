@@ -4,7 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:http/http.dart' as http;
@@ -77,7 +76,7 @@ class SearchLocationState extends State<SearchLocation>{
           await widget.controller.setStaticPosition(currentPoints, "route_points");
         }
         if(isDeparture==true){
-          await widget.controller!.moveTo(position, animate: true);}
+          await widget.controller.moveTo(position, animate: true);}
       }
     } else {
       throw Exception('Failed to load location');

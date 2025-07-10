@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import '../../GeoDistance.dart';
 import '../AStarAlgo/AStarSM.dart';
 import '../AStarAlgo/Class/Priorityqueue.dart';  //THis class use Priorityqueue from AStarAlgo
@@ -196,45 +195,43 @@ class CHMainV2 {
   void addWays(List<Way> ways) {
     for (var way in ways) {
       String? highwayType = way.tags['highway'];
-      if (way != null) {
-        for (int i = 0; i < way.nodeIds.length - 1; i++) {
-          int from = way.nodeIds[i];
-          int to = way.nodeIds[i + 1];
+      for (int i = 0; i < way.nodeIds.length - 1; i++) {
+        int from = way.nodeIds[i];
+        int to = way.nodeIds[i + 1];
 
-          var fromNode = nodes[from];
-          var toNode = nodes[to];
+        var fromNode = nodes[from];
+        var toNode = nodes[to];
 
-          if (fromNode == null || toNode == null) {
-            print('Error: fromNode or toNode is null');
-            print('from: $from, to: $to');
-            print('fromNode: $fromNode, toNode: $toNode');
-            return;
-          }
-
-          double weight = geoDistance.calculateHaversineDistanceNode(fromNode, toNode);
-
-          // Penalize certain road types
-          if (highwayType == 'service' || highwayType == 'track') {
-            weight *= 10;
-          }
-
-
-          // Add edge to your graph
-          edges.putIfAbsent(from, () => []).add(
-              Edge(from: from, to: to, weight: weight, nodeMap: nodes)
-          );
-
-          if (!way.oneway) {
-            // If not oneway, add reverse edge
-            if (!way.oneway) {
-              edges.putIfAbsent(to, () => []).add(
-                  Edge(from: to, to: from, weight: weight, nodeMap: nodes)
-              );
-
+        if (fromNode == null || toNode == null) {
+          print('Error: fromNode or toNode is null');
+          print('from: $from, to: $to');
+          print('fromNode: $fromNode, toNode: $toNode');
+          return;
         }
-      } else {
-        print("CHMain L102, addWays, There is no data in Way here!");
+
+        double weight = geoDistance.calculateHaversineDistanceNode(fromNode, toNode);
+
+        // Penalize certain road types
+        if (highwayType == 'service' || highwayType == 'track') {
+          weight *= 10;
+        }
+
+
+        // Add edge to your graph
+        edges.putIfAbsent(from, () => []).add(
+            Edge(from: from, to: to, weight: weight, nodeMap: nodes)
+        );
+
+        if (!way.oneway) {
+          // If not oneway, add reverse edge
+          if (!way.oneway) {
+            edges.putIfAbsent(to, () => []).add(
+                Edge(from: to, to: from, weight: weight, nodeMap: nodes)
+            );
+
       }
+    } else {
+      print("CHMain L102, addWays, There is no data in Way here!");
     }
   }
 }}}

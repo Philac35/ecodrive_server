@@ -1,8 +1,7 @@
-import 'package:shared_package/Modules/OpenStreetMap/Class/GeoDistance.dart';
+import 'package:application_package/src/Modules/OpenStreetMap/Class/GeoDistance.dart';
 
 import 'Edge.dart';
 import 'Way.dart';
-import '../../Interface/NodeInterface.dart';
 
 import 'Node.dart';
 class GraphBuilder {

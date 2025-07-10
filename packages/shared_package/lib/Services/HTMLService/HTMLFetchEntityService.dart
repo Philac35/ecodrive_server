@@ -1,6 +1,5 @@
-import 'dart:convert';
 import 'dart:math';
-import 'package:ecodrive_server/src/Services/Parser/ParserEntityJson.dart';
+import 'package:shared_package/Services/Parser/ParserEntityJson.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 
@@ -51,11 +50,9 @@ class HTMLFetchEntityService<T extends EntityInterface>  extends AbstractHTMLSer
   }
 
   @override
-  /**
-   * Function parseResult
-   * /!\ A Response can Contain Several Entities
-   * @Return Entities
-   */
+  /// Function parseResult
+  /// /!\ A Response can Contain Several Entities
+  /// @Return Entities
   dynamic parseResult()async {
     try {
       // Check if the response status code is successful

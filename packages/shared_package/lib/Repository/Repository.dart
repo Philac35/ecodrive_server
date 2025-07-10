@@ -1,23 +1,15 @@
+import 'dart:async';
 
-
-
-import 'dart:convert';
-
-import 'package:angel3_framework/angel3_framework.dart' ;
-import 'package:angel3_framework/angel3_framework.dart' as angf;
 import 'package:angel3_orm/angel3_orm.dart';
-import 'package:angel3_orm/angel3_orm.dart' as angorm;
-import 'package:ecodrive_server/src/BDD/Connection/MysqlConnection.dart';
-import 'package:ecodrive_server/src/BDD/Executor/SQLExecutor.dart';
-import 'package:ecodrive_server/src/BDD/Interface/ManageBDDInterface.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/DriverEntity.dart';
-import 'package:ecodrive_server/src/BDD/Model/AbstractModels/TravelEntity.dart';
-import 'package:ecodrive_server/src/Repository/Abstract/AbstractRepository.dart';
-import 'package:ecodrive_server/src/Services/HTMLService/HTMLFetchEntityService.dart';
+
+import 'package:mysql_client/mysql_client.dart' ;
+//import 'package:shared_package/BDD/Executor/SQLExecutor.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/Entity_Index.dart';
+import 'package:shared_package/Repository/Abstract/AbstractRepository.dart';
 import 'package:runtime_type/runtime_type.dart';
 import '../BDD/Interface/entityInterface.dart';
-import '../BDD/Model/AbstractModels/Entity_registry.dart';
 
+import 'package:angel3_orm_mysql/angel3_orm_mysql.dart' show MySqlExecutor;  
 
 
 //ToBe sur that the factory return the matched queryClass :
@@ -35,28 +27,51 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 
   T entity;
 
-  final QueryExecutor executor;
+   QueryExecutor? executor;
   //final QueryFactory<T> queryFactory;
-
 
   //final Query<T,dynamic> Function() queryFactory;
   final dynamic Function() queryFactory ;  // /!\ use of dynamic can lead to runtime error!  To avoid it use parent class Type and cast it to child when needed. It is less practical.
   //late HTMLFetchEntityService htmlFetchEntityService ;
   final T Function(Map<String, dynamic>) fromJson;
-
+   MySQLConnection? connexion;
   Repository({
   //  required this.htmlFetchEntityService,
     required this.entity,
-    required this.executor,
+    this.executor,
     required this.queryFactory,
    // required this.queryClass,
     required this.fromJson,
-    Repository<T>? repository,
-  }) : super(repository: repository,
-      queryFactory:Entity_Registry[RuntimeType<T>()!.toString()!]! ,
-      executor: SQLExecutor(connexion: MysqlConnection()));
+    required this.connexion
+
+  })  : super(
+    queryFactory: (() {
+      final typeKey = entity.runtimeType.toString();
+      final registryEntry = Entity_Index[typeKey];
+      if (registryEntry == null) {
+        throw Exception('No registry entry for $typeKey. Available: ${Entity_Index.keys}');
+      }
+      final queryFactory = registryEntry["queryClass"];
+      if (queryFactory == null) {
+        throw Exception('No queryClass for $typeKey. Entry: $registryEntry');
+      }
+      return queryFactory;
+    })(),
+    //executor:  MySqlExecutor( MysqlConnection().connexion)
+  )  {
+
+/*
+    if(connexion==null){
+    initMySqlConnection();}
+    connexion!=null? print("Connexion exit !"):print("Connection doesn't exit !");
+*/
+    //Timer(Duration(seconds:240), ()=>executor=MySqlExecutor(connexion!));
+
+  }
 
 
+
+  @override
   Future<T?> find() {
     // TODO: implement find
     throw UnimplementedError();
@@ -81,9 +96,9 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
       i++;
     });
     final whereClause = whereClauses.isNotEmpty ? 'WHERE ${whereClauses.join(' AND ')}' : '';
-    String rawQuery = "Select * from ${T} where ${whereClause} ;";
+    String rawQuery = "Select * from $T where $whereClause ;";
     String tableName= RuntimeType<T>().toString().toLowerCase();
-     return executor.query(tableName, rawQuery, substitutionValues) as Future<List<T>>;
+     return executor!.query(tableName, rawQuery, substitutionValues) as Future<List<T>>;
 
   }
 
@@ -128,20 +143,52 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 
 
      String tableName= RuntimeType<T>().toString().toLowerCase();
-    return executor.query(tableName, query, substitutionValues!) as Future<List<T>>;
+    return executor!.query(tableName, query, substitutionValues!) as Future<List<T>>;
 
   }
 
 
   @override
   Future<bool>persist(T? entity) async {
+    bool res=false;
     entity = entity?? this.entity;
+
+
+
      Map<String,dynamic> values=entity.toJson();
+     Map<Symbol, dynamic>  namedParams =  { for (var entry in values.entries)  Symbol(entry.key): entry.value ?? ''};    var aentity=Function.apply(fromJson,[namedParams]);
+     print(" Repository L168: Entity fromJson: ${aentity.runtimeType}");
+    //print(" Repository L169: Entity fromJson: ${a.}");
+
+    print("Repository L166 ${values.toString()}");
     final query = queryFactory(); //with factory rendering a dynamic, i get the childclass on wich i can access copyFrom and get the values
     query.values?.copyFrom(entity);
+    print("Repository L169,${query.values.address.toString()}");
+    executor==null?print('Repository, L169 : executor is null'):print('Repository, L169: executor exist');
+    if( connexion ==null){
+      print('Repository, L170: Connexion in repository is null');}
+    else{print('Repository, L170 : Connexion in repository exist');}
 
-    T entityPersisted=(await query.insert(executor)) as T;
-    return entityPersisted!=null;
+    if (connexion!.connected == false) {
+      print('Repository: MySQL connection was closed, reconnecting...');
+      await connexion!.connect();
+      print('Repository: MySQL User reconnected ! ');
+    executor= MySqlExecutor(connexion!);
+    }
+
+    print('Repository L175 : Connexion : $connexion');
+    dynamic a= await query.insert(executor!) ;
+
+    String resType=a.runtimeType.toString();
+
+    if( resType.contains('_Present')) {
+      res= true;
+    } else if(resType.contains('_Absent')) res= false;
+    else {
+      print("Controller L164, resType from database contain an other case :$resType !");
+      res= false;
+    }
+    return res;
   }
 
 
@@ -175,7 +222,7 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 
   }
 
-  @override
+  @override 
   Future<dynamic>update({required Map<String,dynamic> parameters,Map<String,dynamic>? whereClause}) async{
 
     final query = queryFactory();

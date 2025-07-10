@@ -1,6 +1,6 @@
 
 
-import 'package:ecodrive_server/src/Controller/Controller.dart';
+import 'package:shared_package/Controller/Controller.dart';
 import '../../BDD/Interface/entityInterface.dart';
 import '../../Repository/Repository.dart';
 
@@ -10,7 +10,7 @@ import '../../Repository/Repository.dart';
   late Controller<T>? controller;
   late Repository<T>? repository;
 
-  AbstractController({ this.repository});
+  AbstractController({ this.repository, required Function(dynamic map) entityFactory});
   // CRUD Functions
 
   Future<bool> save(T entity);
@@ -25,7 +25,7 @@ import '../../Repository/Repository.dart';
   Future<List<EntityInterface>?> getEntities();
   Future<EntityInterface?>? getEntity(int id);
   Future<EntityInterface?>? getLast();
-  Future<int?>? getLastId();
+  Future<int?> getLastId();
 
   // Serialize
   Map<String, dynamic> toJson(T entity);

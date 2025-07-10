@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:shared_package/Modules/Traffic/Component/Icones/VisualElement.dart';
+import 'package:application_package/src/Modules/Traffic/Component/Icones/VisualElement.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -9,7 +9,7 @@ import '../Service/XMLTrafficParser.dart';
 class MapWithTraffic extends StatefulWidget {
   final GeoPoint initialPoint = GeoPoint(latitude: 48.8566, longitude: 2.3522); // Paris Hôtel de Ville
 
-  MapWithTraffic({Key? key}) : super(key: key);
+  MapWithTraffic({super.key});
 
   @override
   _MapWithTrafficState createState() => _MapWithTrafficState();
@@ -39,7 +39,7 @@ class _MapWithTrafficState extends State<MapWithTraffic> {
         "https://tipi.bison-fute.gouv.fr/bison-fute-ouvert/publicationsDIR/Evenementiel-DIR/grt/RRN/content.xml";
 
     await trafficInfo.fetchTrafficEvents(request);
-    trafficEvents = await trafficInfo.parseResult() as List<TrafficEvent>;
+    trafficEvents = await trafficInfo.parseResult();
 
     setState(() => isLoading = false);
     updateMarkers();
@@ -210,7 +210,7 @@ extension MapControllerExtensions on MapController {
    */
   Future<void> addStaticPosition(List<GeoPoint> list, String id, {MarkerIcon? customMarker}) async {
     for (var position in list) {
-      await this.addMarker(
+      await addMarker(
         position,
         markerIcon: customMarker ??
             const MarkerIcon(

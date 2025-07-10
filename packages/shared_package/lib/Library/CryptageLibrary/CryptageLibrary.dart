@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:isolate';
 import 'dart:math';
 
@@ -6,11 +5,9 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:flutter/foundation.dart';
-import 'package:pointycastle/pointycastle.dart';
 //import 'package:blake2/blake2.dart';
 import 'dart:convert';
 
-import 'package:ecodrive_server/src/Services/Interface/Service.dart';
 import 'package:pointycastle/export.dart';
 
 class CryptageLibrary {
@@ -63,7 +60,7 @@ class CryptageLibrary {
 
 
   Future<void> generateKeyPair() async {
-    this.keyPair =
+    keyPair =
         await Isolate.run(() => generateRSAKeyPair(getSecureRandom()));
   }
 
@@ -197,13 +194,12 @@ class CryptageLibrary {
   // RSA-PSS algorithms
   static Uint8List rsaPSS(
       RSAPrivateKey privateKey, Uint8List message, String algorithm) {
-    final signer = Signer('${algorithm}/PSS');
+    final signer = Signer('$algorithm/PSS');
     final params = ParametersWithRandom<PrivateKeyParameter<RSAPrivateKey>>(
         PrivateKeyParameter<RSAPrivateKey>(privateKey),
         SecureRandom('Fortuna')..seed(KeyParameter(Uint8List(32))));
     signer.init(true, params);
     final signature = signer.generateSignature(message) as RSASignature;
-    ;
     return signature.bytes;
   }
 
@@ -234,10 +230,6 @@ class CryptageLibrary {
       final signature = signer.generateSignature(Uint8List.fromList(utf8.encode(message))) as RSASignature;
       bytesSignature = signature.bytes;
 
-      if (bytesSignature == null) {
-        throw Exception('Failed to generate signature');
-      }
-
       return bytesSignature;
     } catch (e) {
       if (e is FormatException) {
@@ -263,7 +255,7 @@ class CryptageLibrary {
 // RSA-PKCS1-v1_5 algorithms
   static String rsaPKCS1v15(
       RSAPrivateKey privateKey, String message, String algorithm) {
-    final signer = Signer('${algorithm}/PKCS1');
+    final signer = Signer('$algorithm/PKCS1');
     final params = PrivateKeyParameter<RSAPrivateKey>(privateKey);
     signer.init(true, params);
 
@@ -284,7 +276,7 @@ class CryptageLibrary {
   // ECDSA algorithms
   static String ecdsaSign(
       ECPrivateKey privateKey, Uint8List message, String algorithm) {
-    final signer = Signer('${algorithm}/DET-ECDSA');
+    final signer = Signer('$algorithm/DET-ECDSA');
     final params = PrivateKeyParameter<ECPrivateKey>(privateKey);
     signer.init(true, params);
     final signature = signer.generateSignature(message) as ECSignature;

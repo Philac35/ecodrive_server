@@ -1,5 +1,5 @@
-import 'package:ecodrive_server/src/Services/Interface/Service.dart';
-import 'package:ecodrive_server/src/Services/LogSystem/LogSystemBDD.dart';
+import 'package:shared_package/Services/Interface/Service.dart';
+import 'package:shared_package/Services/LogSystem/LogSystemBDD.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:math';
 
@@ -20,8 +20,8 @@ class SecureStorage implements Service {
   }
 
   Future<FlutterSecureStorage> initialize() async {
-    this._store = FlutterSecureStorage();
-    return this._store!;
+    _store = FlutterSecureStorage();
+    return _store!;
   }
 
   Future<void> record(String key, String value) async {
@@ -30,11 +30,11 @@ class SecureStorage implements Service {
     }
    try{
     await _store!.write(key: key, value: value);
-    print('SecureStorage L45, record :${key} was wrote');
-    LogSystemBDD().log('SecureStorage L45,record: ${key} was wrote');
+    print('SecureStorage L45, record :$key was wrote');
+    LogSystemBDD().log('SecureStorage L45,record: $key was wrote');
   }
-   catch(e){debugPrint('SecureStorage L45, record : ${key} wasn\'t wrote');
-   LogSystemBDD().log('SecureStorage L45, record : ${key} wasn\'t wrote');
+   catch(e){debugPrint('SecureStorage L45, record : $key wasn\'t wrote');
+   LogSystemBDD().log('SecureStorage L45, record : $key wasn\'t wrote');
    }
   }
 
@@ -52,11 +52,11 @@ class SecureStorage implements Service {
     }
     try{
     await _store!.delete(key: name);
-    print('SecureStorage L45, delete :${name} was deleted');
-    LogSystemBDD().log('SecureStorage L45, delete :${name} was deleted');
+    print('SecureStorage L45, delete :$name was deleted');
+    LogSystemBDD().log('SecureStorage L45, delete :$name was deleted');
     }
-    catch(e){debugPrint('SecureStorage L45, delete : ${name} wasn\'t deleted');
-    LogSystemBDD().log('SecureStorage L45, delete : ${name} wasn\'t deleted');
+    catch(e){debugPrint('SecureStorage L45, delete : $name wasn\'t deleted');
+    LogSystemBDD().log('SecureStorage L45, delete : $name wasn\'t deleted');
     }
   }
 

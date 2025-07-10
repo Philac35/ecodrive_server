@@ -1,4 +1,4 @@
-import 'package:ecodrive_server/src/Services/Interface/Service.dart';
+import 'package:shared_package/Services/Interface/Service.dart';
 import 'package:http/http.dart' as http;
 
 
