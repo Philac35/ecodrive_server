@@ -14,6 +14,7 @@ import 'package:shared_package/BDD/Model/AbstractModels/EmployeeEntity.dart';
 import 'package:mysql_client/mysql_client.dart';
 
 
+import '../Connection/MysqlConnection.dart';
 import '../Model/AbstractModels/ItineraryEntity.dart';
 import '../Model/AbstractModels/Modules/Authentication/Entities/AuthUserEntity.dart';
 import '../Model/AbstractModels/NoticeEntity.dart';
@@ -24,15 +25,11 @@ import '../Model/AbstractModels/VehiculeEntity.dart';
 
 void main() async {
   MySQLConnection mysqlConn;
-  MySqlMigrationRunner runner;
+  MySqlMigrationRunner? runner;
+  MySQLConnection mysqlConnection;
   try {
-    mysqlConn = await MySQLConnection.createConnection(
-        host: '127.0.0.1',
-        port: 3306,
-        userName: 'partocle',
-        password: '|3Baumann5|',
-        databaseName: 'ecodrive_development',
-        secure: false);
+    mysqlConn=await MysqlConnection().connect();
+
 
     print('Connexion');
 // Actually connect to the database
@@ -90,6 +87,6 @@ void main() async {
     print('run_migration L35, error : $error');
     print('run_migration L32, Stack :$stack');
   } finally {
-    runner.close();
+    runner?.close();
   }
 }

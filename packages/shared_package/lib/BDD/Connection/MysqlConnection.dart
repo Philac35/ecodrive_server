@@ -28,6 +28,8 @@ class MysqlConnection implements ConnectionInterface {
   late Map<String,String> configuration={};
   @override
    MySQLConnection? connexion;
+   MySQLConnectionPool? connexionPool;
+
   late final Logger _log = Logger('orm_mysql');
   late String path;
   EnvironmentLoader? envloader;
@@ -96,6 +98,34 @@ class MysqlConnection implements ConnectionInterface {
   return connexion;
   }
 
+
+  @override
+  MySQLConnectionPool? connectPool({int? timeoutMs}) {
+
+    try {
+
+      connexionPool =  MySQLConnectionPool(
+        host: configuration['HOST'] as String ?? 'localhost',
+        port: int.parse(configuration['PORT']!) ?? 3306,
+        databaseName: configuration['DATABASE'] as String,
+        userName: configuration['USERNAME'] as String,
+        password: configuration['PASSWORD'] as String,
+        // timeZone: configuration['time_zone'] as String ?? 'UTC', // set in example but not suitable with this constructor
+        // timeoutInSeconds: configuration['timeout_in_seconds'] as int ?? 30, // idem
+        secure: bool.parse(configuration['USE_SSL']!)  ?? false,
+        maxConnections: 10,
+        timeoutMs : timeoutMs?? 10000,
+
+        //collation : 'utf8mb4_general_ci'  // not required
+      );
+
+      // print('MysqlConnection L85 ${connexion}');
+      return connexionPool;
+    }catch(error){
+      print("MysqlConnection L86, connect(), Error de connexion to Mysql : $error");
+    }
+
+  }
 
   @override
   Logger get log=>_log;
