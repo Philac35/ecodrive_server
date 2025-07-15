@@ -12,6 +12,7 @@
 .swiftpm/
 migrate_working_dir/
 lib/src/Configuration/
+packages/server_package/lib/Bin/server.pid
 
 # IntelliJ related
 *.iml

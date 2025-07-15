@@ -105,7 +105,7 @@ class HTMLService extends AbstractHTMLService {
     Uri? uri = Uri.tryParse(htmlRequest);
     http.Response response;
 
-    String dataSend;
+    String? dataSend;
     //var encryptedInfo=encryptService?.encryptMessage( authUser.toJson().toString(),EncryptService().publicKey!, );
       //debugPrint("HTMLService L108  isEncrypted:${isEncrypted!.toString()}  this.isEncrypted:${this.isEncrypted!.toString()}");
     //Encrypt body:data

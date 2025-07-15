@@ -50,7 +50,7 @@ class Server {
   }
 
   createServer() async {
-    SecurityContext context;
+    SecurityContext? context;
     try {
 
        if(configuration!["USE_TLS"] ==true){

@@ -606,7 +606,7 @@ class MapWithTrafficState extends State<MapWithTraffic> {
   Future<void> loadTrafficData() async {
     setState(() => isLoading = true);
     print("Loading traffic data...");
-    Future<List<Map<String, dynamic>>> trafficDataBddEntry;
+    var trafficDataBddEntry;
 
    //Initialisation du Parser
     XMLTrafficParser trafficInfo = XMLTrafficParser(isEncrypted: false);
@@ -629,7 +629,7 @@ class MapWithTrafficState extends State<MapWithTraffic> {
             "Traffic Data BDD Entry: ${trafficDataBddEntry.toString()}");
 
         // Decode the data safely
-        if (trafficDataBddEntry.containsKey('data') &&
+        if (trafficDataBddEntry?.containsKey('data') &&
             trafficDataBddEntry['data'] != null) {
           List<Map<String, dynamic>> trafficData = jsonDecode(
               trafficDataBddEntry['data']) as List<Map<String, dynamic>>;

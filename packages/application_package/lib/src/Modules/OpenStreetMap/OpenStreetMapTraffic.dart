@@ -921,7 +921,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
   Future<void> loadTrafficData() async {
     setState(() => isLoading = true);
     print("Loading traffic data...");
-    Future<List<Map<String, dynamic>>> trafficDataBddEntry;
+    var trafficDataBddEntry;
 
     //Initialisation du Parser
     XMLTrafficParser trafficInfo = XMLTrafficParser(isEncrypted: false);
@@ -945,7 +945,7 @@ class OpenStreetMapTrafficState extends State<OpenStreetMapTraffic>
 
         // Decode the data safely
         if (trafficDataBddEntry.containsKey('data') &&
-            trafficDataBddEntry['data'] != null) {
+            trafficDataBddEntry?['data'] != null) {
           List<Map<String, dynamic>> trafficData =
               jsonDecode(trafficDataBddEntry['data'])
                   as List<Map<String, dynamic>>;

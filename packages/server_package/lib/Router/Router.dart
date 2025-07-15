@@ -71,10 +71,10 @@ class FRouter {
         }
 
         routeEntity!.buildGetRoutes();
-        routeEntity.buildPostRoutes();
+        routeEntity!.buildPostRoutes();
 
-         //Class relative
-         print('Entity : ${c.value['type']}');
+         //Print Route form Entity
+        print('Entity : ${c.value['type']}');
          List routes=routeEntity.registeredRoutes;
          for (var route in routes) {
            print(route);
