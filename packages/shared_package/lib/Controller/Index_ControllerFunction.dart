@@ -21,7 +21,7 @@ import 'UserController.dart';
 import 'VehiculeController.dart';
 
 final Map<String, Map<String,Function >> Index_ControllerFunctionMap = {
-  'AddressController':  AddressController().functionMap,
+  'AddressController': AddressController().functionMap,
   'AdministratorController':  AdministratorController().functionMap,
   'AssuranceController':  AssuranceController().functionMap,
   'CommandController':  CommandController().functionMap,

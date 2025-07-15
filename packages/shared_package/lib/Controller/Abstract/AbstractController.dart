@@ -15,7 +15,7 @@ import '../../Repository/Repository.dart';
 
   Future<bool> save(T entity);
   Future<bool> delete(int? id);
-  Future<bool> update(Map<String,dynamic>parameters);
+  Future<bool> update(Map<Symbol,dynamic>parameters);
   static T create<T extends EntityInterface>(Map<String, dynamic> parameters) {
     // TODO: implement create
     throw UnimplementedError();
@@ -23,8 +23,9 @@ import '../../Repository/Repository.dart';
 
   //Fetch Functions
   Future<List<EntityInterface>?> getEntities();
-  Future<EntityInterface?>? getEntity(int id);
-  Future<EntityInterface?>? getLast();
+  //Future<Map<String, dynamic>>
+  Future<EntityInterface?>  getEntity(int id);
+  Future<EntityInterface?>  getLast();
   Future<int?> getLastId();
 
   // Serialize

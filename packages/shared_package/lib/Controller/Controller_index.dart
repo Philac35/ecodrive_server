@@ -25,7 +25,6 @@ final Map<String, dynamic Function()> controllerIndex = {
   'AdministratorController': () => AdministratorController(),
   'AssuranceController': () => AssuranceController(),
   'CommandController': () => CommandController(),
-  //'Controller': () => Controller(),
   'DriverController': () => DriverController(),
   'DrivingLicenceController': () => DrivingLicenceController(),
   'EmployeeController': () => EmployeeController(),
@@ -35,15 +34,6 @@ final Map<String, dynamic Function()> controllerIndex = {
   'TravelController': () => TravelController(),
   'UserController': () => UserController(),
   'VehiculeController': () => VehiculeController(),
-
-  
-
-
-  
-
-
-  
-
 
 
 };

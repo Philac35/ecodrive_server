@@ -381,8 +381,8 @@ class Person extends PersonEntity {
     return 'Person(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email, photo=$photo, authUser=$authUser, user=$user, administrator=$administrator, employee=$employee)';
   }
 
-  Map<String, dynamic> toJson() {
-    return PersonSerializer.toMap(this);
+  Map<String, dynamic>? toJson() {
+    return PersonSerializer?.toMap(this);
   }
 }
 
@@ -396,7 +396,7 @@ class PersonEncoder extends Converter<Person, Map> {
   const PersonEncoder();
 
   @override
-  Map convert(Person model) => PersonSerializer.toMap(model);
+  Map convert(Person model) => PersonSerializer.toMap(model)!;
 }
 
 class PersonDecoder extends Converter<Map, Person> {
@@ -459,9 +459,10 @@ class PersonSerializer extends Codec<Person, Map> {
     );
   }
 
-  static Map<String, dynamic> toMap(PersonEntity? model) {
+  static Map<String, dynamic>? toMap(PersonEntity? model) {
     if (model == null) {
-      throw FormatException("PersonEntity L464,Required field [model] cannot be null");
+      return null;
+      //throw FormatException("PersonEntity L464,Required field [model] cannot be null");
     }
     return {
       'id': model.id,

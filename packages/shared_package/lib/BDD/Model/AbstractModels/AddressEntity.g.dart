@@ -474,7 +474,9 @@ class Address extends AddressEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return AddressSerializer.toMap(this);
+    var a=AddressSerializer.toMap(this);
+    print("Address ${a}");
+    return a;
   }
 }
 
@@ -507,26 +509,8 @@ class AddressSerializer extends Codec<Address, Map> {
   @override
   AddressDecoder get decoder => const AddressDecoder();
 
-//Conversion Symbole to String
-//TODO: find a way to use it with all Entities
-   static String symbolToString(Symbol symbol) {
-    final s = symbol.toString(); // e.g. 'Symbol("foo")'
-    final match = RegExp(r'^Symbol\("(.+)"\)$').firstMatch(s);
-    if (match != null) {
-      return match.group(1)!;
-    }
-    return s; // fallback, maybe 'Symbol("foo")'
-  }
-
- static Map<String, dynamic> symbolMapToStringMap(Map<dynamic, dynamic> map) {
-    return {
-      for (var entry in map.entries)
-        symbolToString(entry.key): entry.value
-    };
-  }
 
   static Address fromMap(Map map) {
-    if(map.keys.runtimeType==Symbol) {map=symbolMapToStringMap(map);}
 
     return Address(
       id: map['id'] as String?,

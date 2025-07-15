@@ -6,41 +6,97 @@ import 'package:mysql_client/mysql_client.dart';
 import 'package:shared_package/BDD/Connection/MysqlConnection.dart';
 import 'package:shared_package/Controller/Abstract/AbstractController.dart';
 import 'package:shared_package/Repository/Repository.dart';
+import '../BDD/Executor/MysqlPoolExecutor.dart';
 import '../BDD/Interface/entityInterface.dart';
 import '../BDD/Model/AbstractModels/Entity_Index.dart';
 
  class Controller<T extends EntityInterface> extends AbstractController{
 
-  MySQLConnection? mySQLConnection;
+  MySQLConnection? mySQLConnection; //Single connection, disconnected regularly
+  MySQLConnectionPool? connexionPool;
+
+
   QueryExecutor? executor;
   @override
   late  Repository<EntityInterface>? repository ;
   T? entity;
   final T Function(Map<String, dynamic>)? entityFactory;
-
-
+  late final Future<void> ready;
+  //bool firstTime= true;
 
   Controller( {
     this.entity,
-    required this.entityFactory,
     this.executor,
+    required this.entityFactory,
+
   })  :
    super(entityFactory: (map)=>Entity_Index['serializerClass'].fromMap(map),){
 //print("Controller L23, entity : ${entity}");
-    initMySqlConnection();
 
-    Timer(Duration(milliseconds:500),(){
-    mySQLConnection!=null? print("Connexion exist !"):print("Connection doesn't exist !");
-      executor= MySqlExecutor(mySQLConnection!);
-    executor==null?print('Controller, L39 executor is null'):print('Controller, L39 executor exist');
-    });
+    initMySqlPoolConnection();
+    ready = initRepository();
 
+  }  
+
+   Future<Controller<T>> getInstance<T extends EntityInterface>({
+    T? entity,
+    required T Function(Map<String, dynamic>) entityFactory,
+    QueryExecutor? executor,
+  }) async {
+    final controller = Controller<T>(
+      entity: entity,
+      executor: executor,
+      entityFactory: entityFactory,
+    );
+    await controller.initRepository();
+    return controller;
   }
+
 
    initMySqlConnection() async {
      MysqlConnection c= MysqlConnection();
      mySQLConnection=await c.connect();
    }
+
+  initMySqlPoolConnection()  {
+
+    MysqlConnection c= MysqlConnection();
+    connexionPool = c.connectPool();
+
+  }
+
+   initRepository() async{
+
+
+       executor= MySqlPoolExecutor( connexionPool!);
+       //executor==null?print('Controller, L39 executor is null'):print('Controller, L39 executor exist');}
+
+       String typeEntry=T.toString();
+       Map<String, dynamic>  indexEntity=Entity_Index[typeEntry];
+      // print("Controller L49 :$indexEntity");
+
+       final fromMap = indexEntity["fromMap"];
+       if (fromMap == null) {
+         throw Exception('No fromMap for $typeEntry');
+       }
+
+       final qClass=indexEntity["queryClass"];
+       if(qClass==null){ throw Exception('No queryClass for $typeEntry');}
+
+       repository= await Repository<T>(entity: entity,
+           executor: executor!,
+           queryFactory: qClass as dynamic Function(),
+           fromJson: fromMap,
+           connexion: mySQLConnection
+       );
+
+      // print("Controller debug L93 :${repository.toString()}");
+
+
+
+   }
+
+
 
   //Conversion Symbole to String
   static String symbolToString(Symbol symbol) {
@@ -71,50 +127,18 @@ import '../BDD/Model/AbstractModels/Entity_Index.dart';
 
   @override
   Future<bool> create(Map<Symbol, dynamic> parameters) async {
-    bool exit=false;
+    Future<bool> ret;
 
     Map<String, dynamic> parameter =convertSymbolKeysToString(parameters);
     parameter['createdAt']=DateTime.now();
     parameter['updatedAt']=DateTime.now();
-    print("Controller L82 ${parameters.toString()}");
+    //print("Controller L82 ${parameters.toString()}");
 
     T entity = entityFactory!(parameter);
 
+    ret= save(entity);
 
-
-    //print("Controller L70 :${entity.runtimeType}");
-   String typeEntry=entity.runtimeType.toString();
-    Map<String, dynamic>  indexEntity=Entity_Index[typeEntry];
-   print("Controller L96 :$indexEntity");
-
-    final fromMap = indexEntity["fromMap"];
-    if (fromMap == null) {
-      throw Exception('No fromMap for $typeEntry');
-    }
-
-
-    final qClass=indexEntity["queryClass"];
-    /*
-    print('indexEntity: $indexEntity');
-    print('Type of indexEntity: ${indexEntity.runtimeType}');
-    print('Keys: ${indexEntity.keys}');
-    print('qClass: $qClass');
-    print('Type of qClass: ${qClass.runtimeType}');*/
-    if(qClass==null){ throw Exception('No queryClass for $typeEntry');}
-    Timer(Duration(milliseconds:800),(){
-        if( executor==null){print('Controller, L112 executor is null')}
-      if( mySQLConnection==null){print('Controller, L112 Connexion is null')}else{print('Controller, L112 Connexion exist')}
-    repository = Repository<T>(entity: entity,
-    executor: executor!,
-    queryFactory: qClass as dynamic Function(),
-    fromJson: fromMap,
-    connexion: mySQLConnection
-    );
-      print("Controller L123 :$repository");
-     save(entity);
-    });
-
-return true;
+      return ret;
   }
 
   @override
@@ -135,19 +159,16 @@ return true;
     bool exit=false;
 
     try {
+      print('Controller L140 debug,Entity : $entity');
 
-
-      print('Controller L129 debug : $entity');
-      print('Controller L130 debug : i pass here');
       var ent=entity.toJson() ;
 
-      print('Controller L133 debug RuntimeType: ${ent.runtimeType}');
-      print('Controller L134 debug : ${ent.toString()}');
+      //print('Controller L144 debug RuntimeType: ${ent.runtimeType}');
+      //print('Controller L145 debug : ${ent.toString()}');
       
-      
-      print('Controller L154 debug Repository : ${repository.toString()}');
-      if( mySQLConnection==null){print('Controller, L156 Connexion is null');}else{print('Controller, L156 Connexion exist');}
-      if( repository?.connexion ==null){print('Controller, L157 Connexion is null');}else{print('Controller, L157 Connexion in repository exist');}
+     // print('Controller L148 debug Repository : ${repository.toString()}');
+    //  if( mySQLConnection==null){print('Controller, L149 Connexion is null');}else{print('Controller, L149 Connexion exist');}
+      if( repository?.connexionPool ==null){print('Controller, L150 ConnexionPool is null');}else{print('Controller, L150 ConnexionPool in repository exist');}
       var a=   await repository?.persist(entity);  //TODO Check if it works
 
       exit = true; // Creation successful
@@ -161,13 +182,15 @@ return true;
 
 
   @override
-  Future<bool> update(Map<String,dynamic>parameters)async {
+  Future<bool> update(Map<Symbol,dynamic>parameters)async {
     bool exit=false;
+    Map<String, dynamic> parameter =convertSymbolKeysToString(parameters);
     try {
-      var a=   await repository?.update( parameters: parameters);  //TODO Check if it works
+
+      var a=   await repository?.update( parameters: parameter,whereClause:{'id':parameter['id']});  //TODO Check if it works
       exit = true; // Creation successful
     } catch (e) {
-      print('Controller L146: Error creating entity: $e');
+      print('Controller L193: Error creating entity: $e');
     }
     return exit;
   }
@@ -195,13 +218,17 @@ return true;
 
 
   @override
-  Future<EntityInterface?>? getEntity(int id) async {
-    return await repository?.findById(id);
+  //Future<Map<String, dynamic>>
+  Future<EntityInterface?> getEntity(int id) async {
+    /*var entity= (await repository?.findById(id)) as T;
+    return {"entity": entity};
+     */
+    return repository?.findById(id);
   }
 
   @override
-  Future<EntityInterface?>? getLast(){
-    return  repository?.findLast();
+  Future<EntityInterface?> getLast()async{
+       return repository?.findLast() ;
   }
 
   @override
