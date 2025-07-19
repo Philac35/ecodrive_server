@@ -13,7 +13,7 @@ import '../../Repository/Repository.dart';
   AbstractController({ this.repository, required Function(dynamic map) entityFactory});
   // CRUD Functions
 
-  Future<bool> save(T entity);
+  Future<EntityInterface?>?  save(T entity);
   Future<bool> delete(int? id);
   Future<bool> update(Map<Symbol,dynamic>parameters);
   static T create<T extends EntityInterface>(Map<String, dynamic> parameters) {
@@ -29,7 +29,7 @@ import '../../Repository/Repository.dart';
   Future<int?> getLastId();
 
   // Serialize
-  Map<String, dynamic> toJson(T entity);
+  Map<String, dynamic>? toJson(T entity);
   T fromJson(Map<String, dynamic> json);
   }
 

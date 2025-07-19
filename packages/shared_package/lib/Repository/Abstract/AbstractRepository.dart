@@ -22,6 +22,6 @@ Future<T?> findLast();
 Future<int?> getLastId();
 Future<dynamic> query(String query,Map<String, dynamic>? substitutionValues);
 Future<dynamic> queries(List<String> queries);
-  Future<bool> persist(T entity);
+  Future<EntityInterface?>?  persist(T entity);
   Future<bool> delete(int? id);
 }

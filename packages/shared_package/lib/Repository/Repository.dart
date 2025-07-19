@@ -5,12 +5,14 @@ import 'package:angel3_orm/angel3_orm.dart';
 
 import 'package:mysql_client/mysql_client.dart' ;
 //import 'package:shared_package/BDD/Executor/SQLExecutor.dart';
-import 'package:shared_package/BDD/Model/AbstractModels/Entity_Index.dart';
+import 'package:shared_package/BDD/Model/Index/Entity_Index.dart';
 import 'package:shared_package/Repository/Abstract/AbstractRepository.dart';
 import 'package:runtime_type/runtime_type.dart';
 import '../BDD/Interface/entityInterface.dart';
+import 'package:optional/optional.dart';
+import 'package:angel3_orm_mysql/angel3_orm_mysql.dart' show MySqlExecutor;
 
-import 'package:angel3_orm_mysql/angel3_orm_mysql.dart' show MySqlExecutor;  
+import '../BDD/ORM/Index/WhereFilter_Index.dart';
 
 
 
@@ -34,9 +36,8 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
     this.executor,
     required this.queryFactory,
     required this.fromJson,
-     this.connexion,
+    this.connexion,
     this.connexionPool
-
   })  : super(
     queryFactory: (() {
       final typeKey = T.toString();
@@ -55,7 +56,6 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 
   @override
   Future<T?> find() {
-
     // TODO: implement find
     throw UnimplementedError();
   }
@@ -67,23 +67,47 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 
   }
 
+  void _applyDynamicFilters(String entityName, dynamic where, Map<String, dynamic> params) {
+    final filter = WhereFilterIndex[entityName];
+    if (filter == null) throw UnimplementedError('No filter for $entityName');
+    print("EntityName : $entityName , where : $where ; params  $params");
+    params.forEach((key, value) {
+      final f = filter[key]!['whereField'];
+      if (f != null) Function.apply(f,null,{#where:where,#value:value});
+    });
+  }
+
   @override
   Future<List<T>> findBy(Map<String, dynamic> parameters) async {
+    var query = queryFactory();
+    final columnNames=query.fields;
 
     //Angel ORM doesn't take care of multiple parameters
-    final whereClauses = <String>[];
-    final substitutionValues = <String, dynamic>{};
-    int i = 0;
-    parameters.forEach((key, value) {
-      final paramName = 'param$i';
-      whereClauses.add('$key = @$paramName');
-      substitutionValues[paramName] = value;
-      i++;
-    });
-    final whereClause = whereClauses.isNotEmpty ? 'WHERE ${whereClauses.join(' AND ')}' : '';
-    String rawQuery = "Select * from $T where $whereClause ;";
-    String tableName= RuntimeType<T>().toString().toLowerCase();
-     return executor!.query(tableName, rawQuery, substitutionValues) as Future<List<T>>;
+    //Here we need to load parameters dynamically:
+    // <=> to where.parameter.equal(value) apply to several parameters
+    // It uses a whereFilter_Index present in ORM's directory
+    // It is not available by default in Angel
+    _applyDynamicFilters(T.toString(),query.where,parameters);  //We send the property where of EntityQuery that is an instance of EntityQueryWhere
+
+    return await query.get(executor);
+
+  }
+
+
+
+
+  List<T> _parseResults( List<List<dynamic>> rows) {
+    var query = queryFactory();
+    final columnNames=query.fields;
+
+    final fromMap = Entity_Index[T.toString()]?['fromMap'] as Function?;
+    if (fromMap == null) throw UnimplementedError('No fromMap for $T');
+
+    // Each row (List) => Map<String, dynamic>
+    final mappedRows = rows.map((r) => Map<String, dynamic>.fromIterables(columnNames, r));
+
+    // For each map, build the entity
+    return mappedRows.map<T>((rowMap) => fromMap(rowMap) as T).toList();
 
   }
 
@@ -143,8 +167,39 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
   }
     }
 
+
   @override
-  Future<bool>persist(T? entity) async {
+  Future<T?> persist(T? entity) async {
+    entity = entity ?? this.entity;
+    final query = queryFactory();
+    query.values?.copyFrom(entity);
+    print('Repository: using connexion $connexionPool');
+    print('REPO save input: $entity');
+    dynamic insertedRow = await query.insert(executor!);
+    print('REPO: insertedRow=$insertedRow');
+    if (insertedRow is Optional) {
+      insertedRow = insertedRow.value;
+      if (insertedRow == null) return null;
+    }
+    if (insertedRow == null) { print('REPO INSERT FAILED!'); return null;}
+
+    if (insertedRow is T) return insertedRow;
+
+    // Use the registry if present
+    final entityType = entity.runtimeType.toString();
+    final fromMap = Entity_Index[entityType]?['fromMap'] as Function?;
+    if (fromMap != null && insertedRow is Map) {
+      return fromMap(insertedRow);
+    }
+
+    throw Exception("Unknown type: cannot build entity from insert result: $insertedRow");
+  }
+
+
+
+
+  @override
+  Future<bool>persistBool(T? entity) async {
     bool res=false;
     entity = entity?? this.entity;
 
