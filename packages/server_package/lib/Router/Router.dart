@@ -8,6 +8,7 @@ import 'package:shared_package/BDD/Model/AbstractModels/DriverEntity.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/DrivingLicenceEntity.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/EmployeeEntity.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/ItineraryEntity.dart';
+import 'package:shared_package/BDD/Model/AbstractModels/Modules/Authentication/Entities/AuthUserEntity.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/NoticeEntity.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/PhotoEntity.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/TravelEntity.dart';
@@ -16,7 +17,7 @@ import 'package:shared_package/BDD/Model/AbstractModels/VehiculeEntity.dart';
 import 'package:shared_package/Loader/EnvironmentLoader.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf/shelf.dart';
-import 'package:shared_package/BDD/Model/AbstractModels/Entity_registry_saved.dart';
+import 'package:shared_package/BDD/Model/Index/Entity_Index.dart';
 import 'RoutesEntityBuilder.dart';
 //import '../../Loader/EnvironmentLoader.dart';
 
@@ -49,15 +50,18 @@ class FRouter {
       return Response.ok('>Hello $userName');
     });
 
-    Iterable<MapEntry<String, dynamic>> classList=Entity_Registry.entries ;
+    Iterable<MapEntry<String, dynamic>> classList=Entity_Index.entries ;
      for (var c in classList){
         RouteEntityBuilder<dynamic>? routeEntity ;
-
+  print("Router : ${c.value['type'].toString()}");
+     var entity= c.value['type'].toString();
+     if(entity=="Person") continue;
         //print(router);
-        switch(c.value['type'].toString()){   //Les types ne peuvent pas être utilisé via des variable dans un constructeur d'ou ce switch
+        switch(c.value['type'].toString()){   //Les types ne peuvent pas être utilisé via des variable dans un constructeur d'où ce switch
           case 'Address':  routeEntity=  RouteEntityBuilder<Address> (router:router);
           case 'Assurance': routeEntity=  RouteEntityBuilder<Assurance> (router:router);
           case 'Administrator': routeEntity=  RouteEntityBuilder<Administrator> (router:router);
+          case 'AuthUser': routeEntity=  RouteEntityBuilder<AuthUser> (router:router);
           case 'DrivingLicence': routeEntity=  RouteEntityBuilder<DrivingLicence> (router:router);
           case 'Command':  routeEntity=  RouteEntityBuilder<Command> (router:router);
           case 'User': routeEntity=  RouteEntityBuilder<User> (router:router);

@@ -7,10 +7,10 @@ import 'package:shared_package/BDD/Interface/entityInterface.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/AddressEntity.dart';
 import 'package:shared_package/Controller/AddressController.dart';
 import 'package:shared_package/Controller/Controller.dart';
-import 'package:shared_package/Controller/Controller_index.dart';
+import 'package:shared_package/Controller/Index/Controller_index.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
-import 'package:shared_package/Controller/Index_ControllerFunction.dart';
+import 'package:shared_package/Controller/Index/Index_ControllerFunction.dart';
 
 //typedef EntityHandler = FutureOr<Response> Function(Request request, {String? id});
 
@@ -46,7 +46,7 @@ class RouteEntityBuilder<T> {
         return (Request request, String id) async {
           // handle with id
           try {
-            var controller=controllerIndex[controllerName]!() ;
+            var controller=ControllerIndex[controllerName]!() ;
             await controller?.ready; //Check that repository is initialized.
             ret = await Function.apply(controller?.functionMap![req]!,
                 [int.parse(id!)]);
@@ -65,7 +65,7 @@ class RouteEntityBuilder<T> {
           try {
             //call Entity.functionMap                      //call function     //We can provide a list of parameters or a Map cf null, Map<Symbol,dynamic>
 
-            var controller=controllerIndex[controllerName]!() ;
+            var controller=ControllerIndex[controllerName]!() ;
             await controller?.ready; //Check that repository is initialized.
             ret = await Function.apply(
                 controller?.functionMap![req]!,
@@ -152,7 +152,8 @@ class RouteEntityBuilder<T> {
 
             if (contentType.contains('application/json')) {
               final bodyString = await request.readAsString();
-             // print("RouteEntityBuilder L103, Body: $bodyString");
+
+            //  print("RouteEntityBuilder L103, Body: $bodyString");
               final Map<String, dynamic> body = jsonDecode(bodyString);
               data = body;
               namedParams = {
@@ -178,7 +179,7 @@ class RouteEntityBuilder<T> {
             // print("RoutesEntityBuilder L123, debug NamedParameter (Symbol):  $namedParams");
             //var controller=controllerIndex[controllerName];
 
-            var controller=controllerIndex[controllerName]!() ;
+            var controller=ControllerIndex[controllerName]!() ;
             await controller?.ready; //Check that repository is initialized.
             ret = await Function.apply(
                 controller!.functionMap![queryT]!,
