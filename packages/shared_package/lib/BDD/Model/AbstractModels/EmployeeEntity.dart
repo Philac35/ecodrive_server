@@ -24,8 +24,9 @@ part 'EmployeeEntity.g.dart';
 @serializable
 abstract class EmployeeEntity extends PersonEntity   implements EntityInterface{
 
+
    @BelongsTo()
-   PersonEntity get person;
+   PersonEntity? get person;
    //EmployeeEntity ({ super.idInt,   required super.firstname,   required super.lastname,   super.age,   super.gender,   super.address,   super.email,   super.photo,   required super.authUser,   super.createdAt, super. updatedAt}):super();
 
 /*Serialization

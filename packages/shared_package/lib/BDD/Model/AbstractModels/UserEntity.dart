@@ -25,16 +25,18 @@ part 'UserEntity.g.dart';
 @Orm(tableName:'users',generateMigrations:true)
 @serializable
 abstract class UserEntity extends PersonEntity   implements EntityInterface{
+  UserEntity() ;
+
 
 //required super.firstname,   required super.lastname,   super.age,   super.gender,   super.address,   super.email,   super.photo,super.photo_id,   required super.authUser, super.createdAt
 
 
 
   @BelongsTo()
-  PersonEntity get person;
+  PersonEntity? get person;
 
   @HasOne(foreignTable:'drivers',foreignKey: 'driver_id' )
-  DriverEntity get driver;
+  DriverEntity? get driver;
 
   @HasMany(foreignKey:'command_id', foreignTable:'commands')
   List<CommandEntity>? get commandList;

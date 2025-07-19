@@ -319,7 +319,7 @@ class Notice extends NoticeEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return NoticeSerializer.toMap(this);
+    return NoticeSerializer.toMap(this)!;
   }
 }
 
@@ -333,7 +333,7 @@ class NoticeEncoder extends Converter<Notice, Map> {
   const NoticeEncoder();
 
   @override
-  Map convert(Notice model) => NoticeSerializer.toMap(model);
+  Map convert(Notice model) => NoticeSerializer.toMap(model)!;
 }
 
 class NoticeDecoder extends Converter<Map, Notice> {
@@ -377,8 +377,9 @@ class NoticeSerializer extends Codec<Notice, Map> {
     );
   }
 
-  static Map<String, dynamic> toMap(NoticeEntity? model) {
+  static Map<String, dynamic>? toMap(NoticeEntity? model) {
     if (model == null) {
+      return null;
       throw FormatException("NoticeEntity L382, Required field [model] cannot be null");
     }
     return {

@@ -32,8 +32,10 @@ part 'AdministratorEntity.g.dart';
 abstract class AdministratorEntity extends PersonEntity  implements EntityInterface{
 
 
+
+
   @BelongsTo()
-  PersonEntity get person;
+  PersonEntity? get person;
 
   @HasOne(foreignTable:'auth_users',foreignKey: 'auth_users_id')
   @override

@@ -426,7 +426,7 @@ class DriverQueryValues extends MapQueryValues {
     lastname = model.lastname;
     age = model.age;
     gender = model.gender;
-    credits = model.credits;
+    credits = model.credits!;
     email = model.email;
     preferences = model.preferences;
     if (model.person != null) {
@@ -452,7 +452,7 @@ class Driver extends DriverEntity {
     this.lastname,
     this.age,
     this.gender,
-    required this.credits,
+    this.credits,
     this.email,
     this.photo,
     this.authUser,
@@ -471,6 +471,8 @@ class Driver extends DriverEntity {
        notices = List.unmodifiable(notices ?? []),
        preferences = List.unmodifiable(preferences ?? []);
 
+
+Driver.empty();
   /// A unique identifier corresponding to this item.
   @override
   String? id;
@@ -496,7 +498,7 @@ class Driver extends DriverEntity {
   String? gender;
 
   @override
-  double credits;
+  double? credits;
 
   @override
   String? email;
@@ -514,7 +516,7 @@ class Driver extends DriverEntity {
   EmployeeEntity? employee;
 
   @override
-  PersonEntity person;
+  PersonEntity? person;
 
   @override
   List<CommandEntity>? commandList;
@@ -529,7 +531,7 @@ class Driver extends DriverEntity {
   List<String>? preferences;
 
   @override
-  UserEntity user;
+  UserEntity? user;
 
   @override
   DrivingLicenceEntity? drivingLicence;
@@ -651,12 +653,12 @@ class Driver extends DriverEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return DriverSerializer.toMap(this);
+    return DriverSerializer.toMap(this)!;
   }
 
   @override
   // TODO: implement driver
-  DriverEntity get driver => user.driver;
+  DriverEntity? get driver => user?.driver;
 
 
 
@@ -672,7 +674,7 @@ class DriverEncoder extends Converter<Driver, Map> {
   const DriverEncoder();
 
   @override
-  Map convert(Driver model) => DriverSerializer.toMap(model);
+  Map convert(Driver model) => DriverSerializer.toMap(model)!;
 }
 
 class DriverDecoder extends Converter<Map, Driver> {
@@ -710,7 +712,7 @@ class DriverSerializer extends Codec<Driver, Map> {
       lastname: map['lastname'] as String?,
       age: map['age'] as int?,
       gender: map['gender'] as String?,
-      credits: map['credits'] as double,
+      credits: map['credits']!=null ?  map['credits'] as double:0.0,
       email: map['email'] as String?,
       photo:
           map['photo'] != null
@@ -731,7 +733,7 @@ class DriverSerializer extends Codec<Driver, Map> {
       person:
           map['person'] != null
               ? PersonSerializer.fromMap(map['person'] as Map) as PersonEntity
-              : {} as PersonEntity,
+              : Person.empty,
       commandList:
           map['command_list'] is Iterable
               ? List.unmodifiable(
@@ -743,7 +745,7 @@ class DriverSerializer extends Codec<Driver, Map> {
       authUserEntity:
           map['auth_user_entity'] != null
               ? AuthUserSerializer.fromMap(map['auth_user_entity'] as Map)
-              : null,
+              : AuthUserSerializer.fromMap({}),
       notices:
           map['notices'] is Iterable
               ? List.unmodifiable(
@@ -759,21 +761,22 @@ class DriverSerializer extends Codec<Driver, Map> {
       user:
           map['user'] != null
               ? UserSerializer.fromMap(map['user'] as Map) as UserEntity
-              : {}  as UserEntity,
+              : UserSerializer.fromMap({}),
       drivingLicence:
           map['driving_licence'] != null
               ? DrivingLicenceSerializer.fromMap(map['driving_licence'] as Map)
-              : null,
+              : DrivingLicenceSerializer.fromMap({}),
       vehicule:
           map['vehicule'] != null
               ? VehiculeSerializer.fromMap(map['vehicule'] as Map)
-              : null,
+              : VehiculeSerializer.fromMap({}),
     );
   }
 
-  static Map<String, dynamic> toMap(DriverEntity? model) {
+  static Map<String, dynamic>? toMap(DriverEntity? model) {
     if (model == null) {
-      throw FormatException("DriverEntity L776, Required field [model] cannot be null");
+      return null;
+    //  throw FormatException("DriverEntity L776, Required field [model] cannot be null");
     }
     return {
       'id': model.id,

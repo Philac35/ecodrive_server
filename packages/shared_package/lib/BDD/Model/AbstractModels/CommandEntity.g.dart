@@ -399,7 +399,7 @@ class Command extends CommandEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return CommandSerializer.toMap(this);
+    return CommandSerializer.toMap(this)!;
   }
 }
 
@@ -413,7 +413,7 @@ class CommandEncoder extends Converter<Command, Map> {
   const CommandEncoder();
 
   @override
-  Map convert(Command model) => CommandSerializer.toMap(model);
+  Map convert(Command model) => CommandSerializer.toMap(model)!;
 }
 
 class CommandDecoder extends Converter<Map, Command> {
@@ -460,8 +460,9 @@ class CommandSerializer extends Codec<Command, Map> {
     );
   }
 
-  static Map<String, dynamic> toMap(CommandEntity? model) {
+  static Map<String, dynamic>? toMap(CommandEntity? model) {
     if (model == null) {
+      return null;
       throw FormatException("Command L465, Required field [model] cannot be null");
     }
     return {

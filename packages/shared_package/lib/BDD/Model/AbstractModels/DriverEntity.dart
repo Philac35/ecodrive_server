@@ -42,7 +42,7 @@ abstract class DriverEntity extends UserEntity   implements EntityInterface{
 
   @override
   @BelongsTo()
-  UserEntity get user;
+  UserEntity? get user;
 
   @HasOne(foreignTable: 'driving_licences', foreignKey: 'driving_licences_id' )
   DrivingLicenceEntity? get drivingLicence; //will be stocked as Blob in BDD

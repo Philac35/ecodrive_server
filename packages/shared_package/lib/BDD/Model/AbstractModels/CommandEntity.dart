@@ -1,5 +1,6 @@
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
+
 import 'package:shared_package/BDD/Model/AbstractModels/UserEntity.dart';
 import 'package:angel3_migration/angel3_migration.dart';
 import 'package:optional/optional_internal.dart';

@@ -21,9 +21,7 @@ class AddressMigration extends Migration {
       table.varChar('city', length: 64);
       table.varChar('country', length: 64);
       table.declare('person_id', ColumnType('int')).references('people', 'id');
-      table
-          .declare('itinerary_id', ColumnType('int'))
-          .references('itineraries', 'id');
+      table.declare('itinerary_id', ColumnType('int')).references('itineraries', 'id');
     });
   }
 
@@ -148,7 +146,7 @@ class AddressQuery extends Query<Address, AddressQueryWhere> {
           fields.contains('updated_at') ? mapToNullableDateTime(row[2]) : null,
       number: fields.contains('number') ? mapToInt(row[5]) : null,
       type: fields.contains('type') ? (row[6] as String?) : null,
-      address: fields.contains('address') ? (row[7] as String) : '',
+      address: fields.contains('address') ? (row[7] as String?) : '',
       complementAddress:
           fields.contains('complement_address') ? (row[8] as String?) : null,
       postCode: fields.contains('post_code') ? (row[9] as String?) : null,
@@ -194,10 +192,7 @@ class AddressQueryWhere extends QueryWhere {
       number = NumericSqlExpressionBuilder<int>(query, 'number'),
       type = StringSqlExpressionBuilder(query, 'type'),
       address = StringSqlExpressionBuilder(query, 'address'),
-      complementAddress = StringSqlExpressionBuilder(
-        query,
-        'complement_address',
-      ),
+      complementAddress = StringSqlExpressionBuilder(query, 'complement_address'),
       postCode = StringSqlExpressionBuilder(query, 'post_code'),
       city = StringSqlExpressionBuilder(query, 'city'),
       country = StringSqlExpressionBuilder(query, 'country');
@@ -297,7 +292,7 @@ class AddressQueryValues extends MapQueryValues {
     return (values['address'] as String);
   }
 
-  set address(String value) => values['address'] = value;
+  set address(String? value) => values['address'] = value;
 
   String? get complementAddress {
     return (values['complement_address'] as String?);
@@ -336,6 +331,9 @@ class AddressQueryValues extends MapQueryValues {
     if (model.person != null) {
       values['person_id'] = model.person?.id;
     }
+    if (model.personId != null) {  //It should have both personId and person
+      values['person_id'] = model.personId;
+    }
     if (model.itinerary != null) {
       values['itinerary_id'] = model.itinerary?.id;
     }
@@ -353,10 +351,11 @@ class Address extends AddressEntity {
     this.createdAt,
     this.updatedAt,
     this.person,
+    this.personId,
     this.itinerary,
     this.number,
     this.type,
-    required this.address,
+    this.address, // was required in original Model
     this.complementAddress,
     this.postCode,
     this.city,
@@ -380,6 +379,9 @@ class Address extends AddressEntity {
   PersonEntity? person;
 
   @override
+  String? personId;
+
+  @override
   ItineraryEntity? itinerary;
 
   @override
@@ -389,7 +391,7 @@ class Address extends AddressEntity {
   String? type;
 
   @override
-  String address;
+  String? address;
 
   @override
   String? complementAddress;
@@ -473,7 +475,7 @@ class Address extends AddressEntity {
     return 'Address(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, person=$person, itinerary=$itinerary, number=$number, type=$type, address=$address, complementAddress=$complementAddress, postCode=$postCode, city=$city, country=$country)';
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic>? toJson() {
     var a=AddressSerializer.toMap(this);
     print("Address ${a}");
     return a;
@@ -490,7 +492,7 @@ class AddressEncoder extends Converter<Address, Map> {
   const AddressEncoder();
 
   @override
-  Map convert(Address model) => AddressSerializer.toMap(model);
+  Map convert(Address model) => AddressSerializer.toMap(model)!;
 }
 
 class AddressDecoder extends Converter<Map, Address> {
@@ -530,22 +532,24 @@ class AddressSerializer extends Codec<Address, Map> {
           map['person'] != null
               ? PersonSerializer.fromMap(map['person'] as Map)
               : null,
+      personId: map['person_id']?.toString(),
       itinerary:
           map['itinerary'] != null
               ? ItinerarySerializer.fromMap(map['itinerary'] as Map)
               : null,
       number: map['number'] as int?,
       type: map['type'] as String?,
-      address: map['address'] as String,
+      address: map['address'] as String?,
       complementAddress: map['complement_address'] as String?,
-      postCode: map['post_code'] as String?,
+      postCode: map['post_code']??map['postCode'] as String?,
       city: map['city'] as String?,
       country: map['country'] as String?,
     );
   }
 
-  static Map<String, dynamic> toMap(AddressEntity? model) {
+  static Map<String, dynamic>? toMap(AddressEntity? model) {
     if (model == null) {
+      return null;
       throw FormatException("AddressEntity L552, Required field [model] cannot be null");
     }
     return {

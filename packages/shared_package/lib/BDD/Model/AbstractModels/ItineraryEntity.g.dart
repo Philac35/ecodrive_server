@@ -374,7 +374,7 @@ class Itinerary extends ItineraryEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return ItinerarySerializer.toMap(this);
+    return ItinerarySerializer.toMap(this)!;
   }
 }
 
@@ -388,7 +388,7 @@ class ItineraryEncoder extends Converter<Itinerary, Map> {
   const ItineraryEncoder();
 
   @override
-  Map convert(Itinerary model) => ItinerarySerializer.toMap(model);
+  Map convert(Itinerary model) => ItinerarySerializer.toMap(model)!;
 }
 
 class ItineraryDecoder extends Converter<Map, Itinerary> {
@@ -449,9 +449,9 @@ class ItinerarySerializer extends Codec<Itinerary, Map> {
     );
   }
 
-  static Map<String, dynamic> toMap(ItineraryEntity? model) {
+  static Map<String, dynamic>? toMap(ItineraryEntity? model) {
     if (model == null) {
-      return {}; // Modified 7/07/2025
+      return null;
       throw FormatException("ItineraryEntity L454, Required field [model] cannot be null");
     }
     return {

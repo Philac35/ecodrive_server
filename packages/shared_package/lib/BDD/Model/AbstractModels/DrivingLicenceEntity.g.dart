@@ -368,7 +368,7 @@ class DrivingLicence extends DrivingLicenceEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return DrivingLicenceSerializer.toMap(this);
+    return DrivingLicenceSerializer.toMap(this)!;
   }
 }
 
@@ -383,7 +383,7 @@ class DrivingLicenceEncoder extends Converter<DrivingLicence, Map> {
   const DrivingLicenceEncoder();
 
   @override
-  Map convert(DrivingLicence model) => DrivingLicenceSerializer.toMap(model);
+  Map convert(DrivingLicence model) => DrivingLicenceSerializer.toMap(model)!;
 }
 
 class DrivingLicenceDecoder extends Converter<Map, DrivingLicence> {
@@ -443,8 +443,9 @@ class DrivingLicenceSerializer extends Codec<DrivingLicence, Map> {
     );
   }
 
-  static Map<String, dynamic> toMap(DrivingLicenceEntity? model) {
+  static Map<String, dynamic>? toMap(DrivingLicenceEntity? model) {
     if (model == null) {
+      return null;
       throw FormatException("DrivingLicenceEntity L448, Required field [model] cannot be null");
     }
     return {

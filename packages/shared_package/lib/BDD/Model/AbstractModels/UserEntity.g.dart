@@ -371,12 +371,14 @@ class User extends UserEntity {
     this.user,
     this.administrator,
     this.employee,
-    required this.person,
-    required this.driver,
+     this.person,
+     this.driver,
     List<CommandEntity>? commandList = const [],
     this.authUserEntity,
   }) : commandList = List.unmodifiable(commandList ?? []);
 
+ //static final empty= User(credits: 0.0, person: Person.empty, driver: Driver.dummy);
+  static final empty = User(credits: 0.0);
   /// A unique identifier corresponding to this item.
   @override
   String? id;
@@ -423,10 +425,10 @@ class User extends UserEntity {
   EmployeeEntity? employee;
 
   @override
-  PersonEntity person;
+  PersonEntity? person;
 
   @override
-  DriverEntity driver;
+  DriverEntity? driver;
 
   @override
   List<CommandEntity>? commandList;
@@ -534,7 +536,7 @@ class User extends UserEntity {
     return UserSerializer.fromMap(userData);
   }
   Map<String, dynamic> toJson() {
-    return UserSerializer.toMap(this);
+    return UserSerializer.toMap(this)!;
   }
 }
 
@@ -548,7 +550,7 @@ class UserEncoder extends Converter<User, Map> {
   const UserEncoder();
 
   @override
-  Map convert(User model) => UserSerializer.toMap(model);
+  Map convert(User model) => UserSerializer.toMap(model)!;
 }
 
 class UserDecoder extends Converter<Map, User> {
@@ -586,7 +588,7 @@ class UserSerializer extends Codec<User, Map> {
       lastname: map['lastname'] as String?,
       age: map['age'] as int?,
       gender: map['gender'] as String?,
-      credits: map['credits'] as double,
+      credits: map['credits']!=null ?  map['credits'] as double:0.0,
       email: map['email'] as String?,
       photo:
           map['photo'] != null
@@ -610,12 +612,12 @@ class UserSerializer extends Codec<User, Map> {
               : null,
       person:
           map['person'] != null
-              ? PersonSerializer.fromMap(map['person'] as Map) as PersonEntity
-              : {} as PersonEntity,
+              ? PersonSerializer.fromMap(map['person'] )
+              : null ,
       driver:
           map['driver'] != null
               ? DriverSerializer.fromMap(map['driver'] as Map) as DriverEntity
-              : {}  as DriverEntity,
+              : null,
       commandList:
           map['command_list'] is Iterable
               ? List.unmodifiable(
@@ -631,9 +633,9 @@ class UserSerializer extends Codec<User, Map> {
     );
   }
 
-  static Map<String, dynamic> toMap(UserEntity? model) {
+  static Map<String, dynamic>? toMap(UserEntity? model) {
     if (model == null) {
-      return {}; // Modified 7/07/2025
+      return null; // Modified 7/07/2025
       throw FormatException("UserEntity L636, Required field [model] cannot be null");
     }
     return {

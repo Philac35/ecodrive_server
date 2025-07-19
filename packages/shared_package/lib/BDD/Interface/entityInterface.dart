@@ -14,7 +14,7 @@ abstract interface class EntityInterface{
     // TODO: implement fromJson
     throw UnimplementedError();
   }
-  Map<String, dynamic> toJson();
+  Map<String, dynamic>? toJson();
 
 }
 

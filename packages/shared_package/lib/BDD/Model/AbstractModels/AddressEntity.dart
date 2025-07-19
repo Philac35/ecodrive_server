@@ -21,7 +21,7 @@ abstract class AddressEntity extends Model implements EntityInterface
 
   int? get number;
   String? get type;
-  String get address;
+  String? get address;  //was required
   String? get complementAddress;
 
   @Column(length: 8)
@@ -34,12 +34,12 @@ abstract class AddressEntity extends Model implements EntityInterface
    //Owner
     //@BelongsTo(foreignKey: 'person_id', foreignTable: 'persons')
     @BelongsTo()
-   PersonEntity? person;
+   PersonEntity? get person;
 
 
   //  @BelongsTo(foreignKey:'itineraries_id')
     @BelongsTo()
-    ItineraryEntity? itinerary;
+    ItineraryEntity? get itinerary;
 
   /*Serialization
   factory AddressEntity.fromJson(Map<String, dynamic> json)   {
@@ -49,7 +49,7 @@ abstract class AddressEntity extends Model implements EntityInterface
 
   //To Json
   @override
-  Map<String, dynamic> toJson();
+  Map<String, dynamic>? toJson();
 
 
 

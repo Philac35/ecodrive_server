@@ -303,7 +303,7 @@ class Administrator extends AdministratorEntity {
     this.employee,
     required this.person,
     this.authUserEntity,
-  });
+  }) ;
 
   /// A unique identifier corresponding to this item.
   @override
@@ -351,7 +351,7 @@ class Administrator extends AdministratorEntity {
   EmployeeEntity? employee;
 
   @override
-  PersonEntity person;
+  PersonEntity? person;
 
   @override
   AuthUserEntity? authUserEntity;
@@ -443,7 +443,7 @@ class Administrator extends AdministratorEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return AdministratorSerializer.toMap(this);
+    return AdministratorSerializer.toMap(this)!;
   }
 
   @override
@@ -476,7 +476,7 @@ class AdministratorEncoder extends Converter<Administrator, Map> {
   const AdministratorEncoder();
 
   @override
-  Map convert(Administrator model) => AdministratorSerializer.toMap(model);
+  Map convert(Administrator model) => AdministratorSerializer.toMap(model)!;
 }
 
 class AdministratorDecoder extends Converter<Map, Administrator> {
@@ -514,7 +514,7 @@ class AdministratorSerializer extends Codec<Administrator, Map> {
       lastname: map['lastname'] as String?,
       age: map['age'] as int?,
       gender: map['gender'] as String?,
-      credits: map['credits'] as double,
+      credits: map['credits'] is Null ? 0.0: map['credits'] as double,
       email: map['email'] as String?,
       photo:
           map['photo'] != null
@@ -539,7 +539,7 @@ class AdministratorSerializer extends Codec<Administrator, Map> {
       person:
           map['person'] != null
               ? PersonSerializer.fromMap(map['person'] as Map) as PersonEntity
-              : {} as PersonEntity,
+              : null,
       authUserEntity:
           map['auth_user_entity'] != null
               ? AuthUserSerializer.fromMap(map['auth_user_entity'] as Map)
@@ -547,9 +547,9 @@ class AdministratorSerializer extends Codec<Administrator, Map> {
     );
   }
 
-  static Map<String, dynamic> toMap(AdministratorEntity? model) {
+  static Map<String, dynamic>? toMap(AdministratorEntity? model) {
     if (model == null) {
-      return {}; // Modified 7/07/2025
+      return null;
       throw FormatException("AdministratorEntity L552, Required field [model] cannot be null");
     }
     return {

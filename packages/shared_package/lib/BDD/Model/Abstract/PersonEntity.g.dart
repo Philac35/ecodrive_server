@@ -230,7 +230,7 @@ class PersonQueryValues extends MapQueryValues {
     lastname = model.lastname;
     age = model.age;
     gender = model.gender;
-    credits = model.credits;
+    credits = model.credits!;
     email = model.email;
   }
 }
@@ -249,14 +249,16 @@ class Person extends PersonEntity {
     this.lastname,
     this.age,
     this.gender,
-    required this.credits,
+    this.credits,
     this.email,
     this.photo,
     this.authUser,
     this.user,
     this.administrator,
     this.employee,
-  });
+  }) ;
+ static final empty= Person(credits: 0.0) ;
+
 
   /// A unique identifier corresponding to this item.
   @override
@@ -283,7 +285,7 @@ class Person extends PersonEntity {
   String? gender;
 
   @override
-  double credits;
+  double? credits;
 
   @override
   String? email;
@@ -434,7 +436,7 @@ class PersonSerializer extends Codec<Person, Map> {
       lastname: map['lastname'] as String?,
       age: map['age'] as int?,
       gender: map['gender'] as String?,
-      credits: map['credits'] as double,
+      credits: map['credits']!=null? map['credits']  as double: 0.0 ,
       email: map['email'] as String?,
       photo:
           map['photo'] != null

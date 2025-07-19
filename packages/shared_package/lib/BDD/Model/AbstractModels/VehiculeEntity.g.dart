@@ -563,8 +563,8 @@ class Vehicule extends VehiculeEntity {
     return 'Vehicule(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, brand=$brand, modele=$modele, color=$color, energy=$energy, immatriculation=$immatriculation, firstImmatriculation=$firstImmatriculation, nbPlaces=$nbPlaces, photoList=$photoList, driver=$driver, preferences=$preferences, assurance=$assurance)';
   }
 
-  Map<String, dynamic> toJson() {
-    return VehiculeSerializer.toMap(this);
+  Map<String, dynamic>? toJson() {
+    return VehiculeSerializer?.toMap(this);
   }
 }
 
@@ -578,7 +578,7 @@ class VehiculeEncoder extends Converter<Vehicule, Map> {
   const VehiculeEncoder();
 
   @override
-  Map convert(Vehicule model) => VehiculeSerializer.toMap(model);
+  Map convert(Vehicule model) => VehiculeSerializer.toMap(model)!;
 }
 
 class VehiculeDecoder extends Converter<Map, Vehicule> {
@@ -647,8 +647,9 @@ class VehiculeSerializer extends Codec<Vehicule, Map> {
     );
   }
 
-  static Map<String, dynamic> toMap(VehiculeEntity? model) {
+  static Map<String, dynamic>? toMap(VehiculeEntity? model) {
     if (model == null) {
+      return null;
       throw FormatException("Vehicule L652, Required field [model] cannot be null");
     }
     return {

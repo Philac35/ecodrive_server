@@ -302,7 +302,7 @@ class Employee extends EmployeeEntity {
     this.administrator,
     this.employee,
     required this.person,
-  });
+  }) ;
 
   /// A unique identifier corresponding to this item.
   @override
@@ -350,7 +350,7 @@ class Employee extends EmployeeEntity {
   EmployeeEntity? employee;
 
   @override
-  PersonEntity person;
+  PersonEntity? person;
 
   Employee copyWith({
     String? id,
@@ -435,7 +435,7 @@ class Employee extends EmployeeEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return EmployeeSerializer.toMap(this);
+    return EmployeeSerializer.toMap(this)!;
   }
 }
 
@@ -449,7 +449,7 @@ class EmployeeEncoder extends Converter<Employee, Map> {
   const EmployeeEncoder();
 
   @override
-  Map convert(Employee model) => EmployeeSerializer.toMap(model);
+  Map convert(Employee model) => EmployeeSerializer.toMap(model)!;
 }
 
 class EmployeeDecoder extends Converter<Map, Employee> {
@@ -487,7 +487,7 @@ class EmployeeSerializer extends Codec<Employee, Map> {
       lastname: map['lastname'] as String?,
       age: map['age'] as int?,
       gender: map['gender'] as String?,
-      credits: map['credits'] as double,
+      credits: map['credits']!=null ?  map['credits'] as double:0.0,
       email: map['email'] as String?,
       photo:
           map['photo'] != null
@@ -512,13 +512,13 @@ class EmployeeSerializer extends Codec<Employee, Map> {
       person:
           map['person'] != null
               ? PersonSerializer.fromMap(map['person'] as Map) as PersonEntity
-              : {} as PersonEntity,
+              : null,
     );
   }
 
-  static Map<String, dynamic> toMap(EmployeeEntity? model) {
+  static Map<String, dynamic>? toMap(EmployeeEntity? model) {
     if (model == null) {
-      return {}; // Modified 7/07/2025
+      return null; // Modified 7/07/2025
       throw FormatException("EmployeeEntity L521, Required field [model] cannot be null");
     }
     return {

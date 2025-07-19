@@ -383,7 +383,7 @@ class Assurance extends AssuranceEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return AssuranceSerializer.toMap(this);
+    return AssuranceSerializer.toMap(this)!;
   }
 
   @override
@@ -402,7 +402,7 @@ class AssuranceEncoder extends Converter<Assurance, Map> {
   const AssuranceEncoder();
 
   @override
-  Map convert(Assurance model) => AssuranceSerializer.toMap(model);
+  Map convert(Assurance model) => AssuranceSerializer.toMap(model)!;
 }
 
 class AssuranceDecoder extends Converter<Map, Assurance> {
@@ -465,8 +465,9 @@ class AssuranceSerializer extends Codec<Assurance, Map> {
     );
   }
 
-  static Map<String, dynamic> toMap(AssuranceEntity? model) {
+  static Map<String, dynamic>? toMap(AssuranceEntity? model) {
     if (model == null) {
+      return null;
       throw FormatException("Assurance L470, Required field [model] cannot be null");
     }
     return {

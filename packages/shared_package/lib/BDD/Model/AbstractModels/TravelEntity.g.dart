@@ -423,7 +423,7 @@ class Travel extends TravelEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return TravelSerializer.toMap(this);
+    return TravelSerializer.toMap(this)!;
   }
 }
 
@@ -437,7 +437,7 @@ class TravelEncoder extends Converter<Travel, Map> {
   const TravelEncoder();
 
   @override
-  Map convert(Travel model) => TravelSerializer.toMap(model);
+  Map convert(Travel model) => TravelSerializer.toMap(model)!;
 }
 
 class TravelDecoder extends Converter<Map, Travel> {
@@ -502,8 +502,9 @@ class TravelSerializer extends Codec<Travel, Map> {
     );
   }
 
-  static Map<String, dynamic> toMap(TravelEntity? model) {
+  static Map<String, dynamic>? toMap(TravelEntity? model) {
     if (model == null) {
+      return null;
       throw FormatException("Travel L507,Required field [model] cannot be null");
     }
     return {

@@ -4,6 +4,7 @@ import "package:shared_package/BDD/Model/AbstractModels/AdministratorEntity.dart
 import "package:optional/optional_internal.dart";
 
 
+import "../../Interface/entityInterface.dart";
 import "../AbstractModels/EmployeeEntity.dart";
 import "../AbstractModels/Modules/Authentication/Entities/AuthUserEntity.dart";
 import "../AbstractModels/PhotoEntity.dart";
@@ -24,7 +25,7 @@ part 'PersonEntity.g.dart';
 
 @orm
 @serializable
-abstract class PersonEntity extends Model{
+abstract class PersonEntity extends Model implements EntityInterface{
 
   @Column(length: 64)
   String? get firstname;
@@ -34,7 +35,7 @@ abstract class PersonEntity extends Model{
   @Column(length: 8)
   String? get gender;
 
-  double get credits; //render app more evolutive != only user and admin has credits
+  double? get credits; //render app more evolutive != only user and admin has credits
 
   // @HasOne(foreignKey: 'person_id')
   //AddressEntity? get address;

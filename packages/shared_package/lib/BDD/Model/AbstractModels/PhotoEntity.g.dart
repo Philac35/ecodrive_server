@@ -472,7 +472,7 @@ class Photo extends PhotoEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return PhotoSerializer.toMap(this);
+    return PhotoSerializer.toMap(this)!;
   }
 }
 
@@ -486,7 +486,7 @@ class PhotoEncoder extends Converter<Photo, Map> {
   const PhotoEncoder();
 
   @override
-  Map convert(Photo model) => PhotoSerializer.toMap(model);
+  Map convert(Photo model) => PhotoSerializer.toMap(model)!;
 }
 
 class PhotoDecoder extends Converter<Map, Photo> {
@@ -548,9 +548,9 @@ class PhotoSerializer extends Codec<Photo, Map> {
     );
   }
 
-  static Map<String, dynamic> toMap(PhotoEntity? model) {
+  static Map<String, dynamic>? toMap(PhotoEntity? model) {
     if (model == null) {
-      return {}; //Modified 7/07/2025 17h56
+      return null;
       throw FormatException("PhotoEntity L553,Required field [model] cannot be null");
     }
     return {
