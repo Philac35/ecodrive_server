@@ -30,6 +30,24 @@ class ClassesIndexGenerator {
   }
 
 
+  /*
+   * Function getFiles
+   * return Files form 1 directory and subdirectory
+   */
+  List<File> getFiles({bool recursive = true}) {
+    final files = dir
+        .listSync(recursive: recursive)
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.dart') && !f.path.endsWith('.g.dart'))
+        .toList();
+
+    files.sort((a, b) => a.uri.pathSegments.last.toLowerCase().compareTo(
+        b.uri.pathSegments.last.toLowerCase())
+    );
+    return files;
+  }
+
+
   void generate() {
     final buffer = StringBuffer();
     buffer.write('/// GENERATED FILE - DO NOT MODIFY BY HAND\n');
@@ -47,13 +65,7 @@ class ClassesIndexGenerator {
 
     print('classIndexGenerator L33$isQueryClass');
 
-    final files = dir
-        .listSync()
-        .whereType<File>()
-        .where((f) =>
-    isQueryClass!
-        ? f.path.endsWith('.dart') && !f.path.endsWith('.g.dart')
-        : f.path.endsWith('.dart')).toList();
+    final files = getFiles();
 
 
     //Alpha ordered
@@ -122,10 +134,10 @@ Options:
   -h, --help            Show this help message  
 
 Examples:
-  dart run ClassesIndexGenerator.dart
+  dart run ClassesIndexGenerator.dart 
   dart run ClassesIndexGenerator.dart -dir lib/services -name serviceIndex -out Service_registry.dart
   dart run ClassesIndexGenerator.dart -name controller_registry -out Controller_index.dart
-  dart run ClassesIndexGenerator.dart -dir '../../BDD/Model/AbstractModels' -name QueryClass_Index -out Entity_Index.dart -queryClass true -serializerClass true  
+  dart run ClassesIndexGenerator.dart -dir '../../BDD/Model' -name QueryClass_Index -out Entity_Index.dart -queryClass true -serializerClass true  
 ''');
   }
 
