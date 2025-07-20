@@ -21,11 +21,23 @@ samples, guidance on mobile development, and a full API reference.
 Si la base de donnée n'a pas déjà été créée vous pouvez utiliser le fichier de création de base de donnée situé dans le
 dossier : Première installation
 
-Vous pouvez vous connecter au compte administrateur avec les identifiants de connextion suivant:
-identifiant : admin
+Vous devez démarrer le Serveur de l'API avec la commande:
+dart run packages/server_package/lib/Bin/EcodriveServer.dart -start
+
+L'interface d'administration peut être démarrée à ce jour avec 
+flutter run -d chrome packages/application_package/lib/main.dart
+
+Vous pourrez ensuite vous connecter au compte administrateur avec les identifiants de connexion suivant:
+identifiant : admin 
 password :    1u68F935
-Vous devrez alors entrer votre mot de passe personnalisé.
+Vous devrez alors personnaliser votre mot de passe.
 
-Vous aurez alors accès à votre espace d'administration qui vous permettra de créer les différents employés.
+Vous aurez accès à votre espace d'administration qui vous permettra de créer les différents employés 
+et d'accéder aux différentes données nécessaires au bon fonctionnement de votre commerce en ligne.
 
-Pour utiliser l'application il vous faudra télécharger le client ecodrive sur le store.
+Pour utiliser l'application en tant qu'utilisateur, il vous faudra télécharger le client ecodrive sur le store.
+Créer votre compte utilisateur.
+Vous pourrez dès lors créer des trajets disponibles à vos passagers.   
+
+
+ 
