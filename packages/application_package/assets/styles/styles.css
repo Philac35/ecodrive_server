@@ -1,0 +1,23 @@
+
+/*Structure*/
+
+/*Desktop*/
+.page-content{ font-family:helvetica; margin:0 5em 0 5em;}
+
+
+
+
+/* Mobile Template*/
+@media width-max(468px){
+.page-content{ margin : 0 3em 0 3em;}
+}
+
+
+/*Graphisme */
+h1{color:#0051C1;
+   display:flex;
+   text-align:center;
+   }
+
+p{color:#000;
+  font-size:1em;}
