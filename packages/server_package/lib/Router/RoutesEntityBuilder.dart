@@ -179,7 +179,7 @@ class RouteEntityBuilder<T> {
             // print("RoutesEntityBuilder L123, debug NamedParameter (Symbol):  $namedParams");
             //var controller=controllerIndex[controllerName];
 
-            var controller=ControllerIndex[controllerName]!() ;
+            var controller=ControllerIndex[controllerName]!.call() ;
             await controller?.ready; //Check that repository is initialized.
             ret = await Function.apply(
                 controller!.functionMap![queryT]!,

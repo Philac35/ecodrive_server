@@ -130,11 +130,11 @@ class ORM{
   /**
    * Function hasOne
    */
-  Future <void> hasOne(Map<String, dynamic> relations,
+  Future <void> hasOne(List<RelationMeta> relations,
       Map<String, dynamic> updatedMap,
       EntityInterface? persistedEntity) async {
 
-    for (final rel in relations.values.where((r) => r.type == RelationType.hasOne)) {
+    for (final rel in relations.where((r) => r.type == RelationType.hasOne)) {
       final childType = rel.relatedType;
       final childFromMap = Entity_Index[childType]['fromMap'] as Function;
       var child = updatedMap[rel.fieldName];
@@ -164,10 +164,10 @@ class ORM{
   /**
    * Function hasMany
    */
-  Future <void> hasMany(Map<String, dynamic> relations,
+  Future <void> hasMany(List<RelationMeta> relations,
       Map<String, dynamic> updatedMap,
       EntityInterface? persistedEntity) async {
-    for (final rel in relations.values.where((r) => r.type == RelationType.hasMany)) {
+    for (final rel in relations.where((r) => r.type == RelationType.hasMany)) {
       final childType = rel.relatedType;
       final childFromMap = Entity_Index[childType]['fromMap'] as Function;
       final children = updatedMap[rel.fieldName] as List<dynamic>?;
@@ -195,10 +195,10 @@ class ORM{
   /**
    * Function belongTo
    */
-  Future <void> belongTo(Map<String, dynamic> relations,
+  Future <void> belongTo(List<RelationMeta> relations,
       Map<String, dynamic> updatedMap,
       EntityInterface? persistedEntity) async {
-    for (final rel in relations.values.where((r) =>
+    for (final rel in relations.where((r) =>
     r.type == RelationType.belongsToMany)) {
       final childType = rel.relatedType;
       final childFromMap = Entity_Index[childType]['fromMap'] as Function;
@@ -224,9 +224,12 @@ class ORM{
               'Child id null for belongsToMany!');
 
           // Insert join table entry (assume join table and field names available in rel)
-          await insertJoinTableRow(rel.joinTable, {
-            rel.joinParentForeignKey: parentId, // e.g. student_id
-            rel.joinChildForeignKey: childId, // e.g. course_id
+          await insertJoinTableRow(rel.fieldName, {
+            // joinParentForeignKey
+            // joinChildForeignKey=foreignKey;
+            //TOCheck 20/07/2025
+            classRelationsIndex[persistedEntity].foreignKey: parentId, // e.g. student_id
+            rel.foreignKey: childId, // e.g. course_id
           });
         }
       }
@@ -273,6 +276,7 @@ class ORM{
       await persistChild(updatedChild);
     }
   }
+
 
   /**
    * Function deleteWithCascade

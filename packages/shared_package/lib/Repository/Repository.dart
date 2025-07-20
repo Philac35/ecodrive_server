@@ -70,10 +70,10 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
   void _applyDynamicFilters(String entityName, dynamic where, Map<String, dynamic> params) {
     final filter = WhereFilterIndex[entityName];
     if (filter == null) throw UnimplementedError('No filter for $entityName');
-    print("EntityName : $entityName , where : $where ; params  $params");
+    print("EntityName : $entityName , [ $where , $params]");
     params.forEach((key, value) {
       final f = filter[key]!['whereField'];
-      if (f != null) Function.apply(f,null,{#where:where,#value:value});
+      if (f != null) Function.apply(f,[where,value]);
     });
   }
 

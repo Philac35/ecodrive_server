@@ -15,25 +15,27 @@ import '../DrivingLicenceController.dart';
 import '../EmployeeController.dart';
 import '../ItineraryController.dart';
 import '../NoticeController.dart';
+import '../PersonController.dart';
 import '../PhotoController.dart';
 import '../TravelController.dart';
 import '../UserController.dart';
 import '../VehiculeController.dart';
 
 final Map<String,dynamic > ControllerIndex = {
-  'AddressController': AddressController(),
-  'AdministratorController':  AdministratorController(),
-  'AssuranceController':  AssuranceController(),
-  'CommandController':  CommandController(),
-  'DriverController':  DriverController(),
-  'DrivingLicenceController':  DrivingLicenceController(),
-  'EmployeeController':  EmployeeController(),
-  'ItineraryController':  ItineraryController(),
-  'NoticeController':  NoticeController(),
-  'PhotoController':  PhotoController(),
-  'TravelController':  TravelController(),
-  'UserController':  UserController(),
-  'VehiculeController':  VehiculeController()
+  'AddressController':()=> AddressController(),
+  'AdministratorController': ()=>  AdministratorController(),
+  'AssuranceController': ()=>  AssuranceController(),
+  'CommandController':  ()=> CommandController(),
+  'DriverController':  ()=> DriverController(),
+  'DrivingLicenceController':  ()=> DrivingLicenceController(),
+  'EmployeeController':  ()=> EmployeeController(),
+  'ItineraryController':  ()=> ItineraryController(),
+  'NoticeController':  ()=> NoticeController(),
+  'PersonController':()=> PersonController(),
+  'PhotoController': ()=>  PhotoController(),
+  'TravelController':  ()=> TravelController(),
+  'UserController':  ()=> UserController(),
+  'VehiculeController':  ()=> VehiculeController()
 
 
 };
