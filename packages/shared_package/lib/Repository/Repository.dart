@@ -264,7 +264,7 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
     //checkConnection()
     final query = queryFactory();
 
-    print('Repository L216 : i am here!');
+
     if(parameters.containsKey('id'))
        {
          parameters['id']=parameters['id'].toString();}
