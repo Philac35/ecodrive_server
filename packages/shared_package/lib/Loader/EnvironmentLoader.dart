@@ -20,7 +20,9 @@ class EnvironmentLoader{
 
  Map<String, String>? gnlConfigurationf() {
     try {
-      String path='./packages/server_package/lib/Bin';
+      //String path='packages/server_package/lib/Bin';
+      String path='packages/shared_package/lib/Configuration';
+      //String path='../Configuration';
       String file='$path/ConfigurationServer.env';
      // print("EnvironmentLoader L26 debug : ${file}");
       var env = DotEnv(includePlatformEnvironment: true)

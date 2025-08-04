@@ -20,7 +20,7 @@ import '../TravelController.dart';
 import '../UserController.dart';
 import '../VehiculeController.dart';
 
-final Map<String, Map<String,Function >> Index_ControllerFunctionMap = {
+final Map<String, Map<String,Function >> index_ControllerFunctionMap = {
   'AddressController': AddressController().functionMap,
   'AdministratorController':  AdministratorController().functionMap,
   'AssuranceController':  AssuranceController().functionMap,
@@ -35,13 +35,6 @@ final Map<String, Map<String,Function >> Index_ControllerFunctionMap = {
   'UserController':  UserController().functionMap,
   'VehiculeController':  VehiculeController().functionMap,
 
-  
-
-
-  
-
-
-  
 
 
 

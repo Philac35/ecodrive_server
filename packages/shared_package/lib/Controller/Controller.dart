@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:angel3_framework/angel3_framework.dart';
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_orm_mysql/angel3_orm_mysql.dart';
 import 'package:mysql_client/mysql_client.dart';
@@ -10,8 +11,7 @@ import 'package:shared_package/Repository/Repository.dart';
 import '../BDD/Executor/MysqlPoolExecutor.dart';
 import '../BDD/Interface/entityInterface.dart';
 import '../BDD/Model/Index/Entity_Index.dart';
-
-
+import 'package:shared_package/BDD/ORM/ORMExtension/SymbolToStringConverter.dart';
 import 'Index/Controller_index.dart';
 
  class Controller<T extends EntityInterface> extends AbstractController{
@@ -27,20 +27,23 @@ import 'Index/Controller_index.dart';
   final T Function(Map<String, dynamic>)? entityFactory;
   late final Future<bool> ready;
   //bool firstTime= true;
-
+  late Map<String, dynamic>  indexEntity;
   Controller( {
     this.entity,
     this.executor,
     required this.entityFactory,
 
   })  :
-   super(entityFactory: (map)=>Entity_Index['serializerClass'].fromMap(map),){
+   super(entityFactory: (map)=>Entity_Index[T.toString()]['fromMap']!(map)){
 //print("Controller L23, entity : ${entity}");
 
     initMySqlPoolConnection();
+    if( connexionPool!=null){
+    //  print( 'Controller L41, debug, ${connexionPool}');
+    }
     ready = initRepository();
 
-  }  
+  }
 
    Future<Controller<T>> getInstance<T extends EntityInterface>({
     T? entity,
@@ -65,19 +68,20 @@ import 'Index/Controller_index.dart';
   initMySqlPoolConnection()  {
 
     MysqlConnection c= MysqlConnection();
-    connexionPool = c.connectPool();
+    connexionPool = c.connectPool(timeoutMs: 240000);
 
   }
 
    Future<bool> initRepository() async{
   bool ret=false;
 
+
        executor= MySqlPoolExecutor( connexionPool!);
-       //executor==null?print('Controller, L39 executor is null'):print('Controller, L39 executor exist');}
+       //executor==null?print('Controller, L80 executor is null'):print('Controller, L39 executor exist');}
 
        String typeEntry=T.toString();
-       Map<String, dynamic>  indexEntity=Entity_Index[typeEntry];
-      // print("Controller L49 :$indexEntity");
+        indexEntity=Entity_Index[typeEntry];
+      // print("Controller L83 :$indexEntity");
 
        final fromMap = indexEntity["fromMap"];
        if (fromMap == null) {
@@ -91,36 +95,15 @@ import 'Index/Controller_index.dart';
            executor: executor!,
            queryFactory: qClass as dynamic Function(),
            fromJson: fromMap,
-           connexion: mySQLConnection
+           connexionPool: connexionPool
        );
 
        if(repository != null) ret==true;
-      // print("Controller debug L93 :${repository.toString()}");
-return ret;
+       print("Controller debug L102 :${repository.toString()}");
+       return ret;
    }
 
 
-
-  //Conversion Symbole to String
-  static String symbolToString(Symbol symbol) {
-    final s = symbol.toString(); // e.g. 'Symbol("foo")'
-    final match = RegExp(r'^Symbol\("(.+)"\)$').firstMatch(s);
-    if (match != null) {
-      return match.group(1)!;
-    }
-    return s; // fallback, maybe 'Symbol("foo")'
-  }
-
-
-
-  static Map<String, dynamic> convertSymbolKeysToString(Map<dynamic, dynamic> map) {
-    return {
-      for (var entry in map.entries)
-        entry.key is Symbol
-            ? symbolToString(entry.key as Symbol)
-            : entry.key.toString(): entry.value
-    };
-  }
 
 
 
@@ -129,17 +112,27 @@ return ret;
 
 
   @override
-  Future<bool> create(Map<Symbol, dynamic> parameters) async {
+  Future<bool> create(Map<dynamic, dynamic> parameters) async {
   bool ret= false;
 
-    Map<String, dynamic> parameter =convertSymbolKeysToString(parameters);
-    parameter['createdAt']=DateTime.now();
-    parameter['updatedAt']=DateTime.now();
+    //Map<String, dynamic> parameter =SymbolToStringConverter.convertSymbolKeysToString(parameters);
+    parameters['createdAt']=DateTime.now();
+    parameters['updatedAt']=DateTime.now();
 
-   // print("Controller L139 ${parameters.toString()}");
+    if(parameters['id']!=null) {
+      parameters['id'] = parameters['id'] is int ? parameters['id'].toString() : parameters['id'];
+    }
+   // parameters= SymbolToStringConverter.convertStringKeysToSymbol(parameter);
+    // print("Controller L126, create , parameters :  ${parameters.toString()}");
 
-    T entity = entityFactory!(parameter);
-        ORM orm= ORM();
+  var fromMap=indexEntity['fromMap'] as Function;
+  T entity= fromMap(parameters);
+
+    //T entity = entityFactory!(parameter);
+
+    print("Controller L148, entity ${entity.toString()}");
+
+    ORM orm= ORM();
     ret=  await orm.persist(entity)!=null ? true:false;
 
     return ret;
@@ -149,10 +142,17 @@ return ret;
   Future<bool> delete(int? id )async {
     bool exit=false;
     try {
-      var a= await repository?.delete(id); //TODO Check if it works
+      ORM orm=ORM();
+     // await repository;
+
+         if((await ready) == false){await initRepository();}
+         else{
+           await orm.deleteWithCascade(T.toString(),entity);
+      //var a= await repository!.delete(id);
+           }
       exit = true;
     } catch (e) {
-      print('Error deleting entity: $e');
+      print('Error deleting entity id ${id.toString()}: $e');
     }
     return exit;
   }
@@ -160,16 +160,19 @@ return ret;
 
   @override
   Future<EntityInterface?> save(entity)async {
-    Future<EntityInterface?>? exit;
+
+    var exit;
     try {
       //print('Controller L169 debug,Entity : $entity');
-
       // if( repository?.connexionPool ==null){  print('Controller, L180 ConnexionPool is null');}else{print('Controller, L180 ConnexionPool in repository exist');}
-     exit= repository?.persist(entity);  //TODO Check if it works
-     print('Controler L168,  creating entity: ${await exit}');
-       // Creation successful
+
+ exit= await repository?.persist(entity);
+
+      // Creation successful
+     // print('Controler L169,  creating entity: $exit');
+
     } catch (e) {
-      print('Controler L175, Error creating entity: $e');
+      print('Controler L172, Error creating entity: $e');
     }
       exit != null? print("entity persisted !"):print("entity not persisted!");
 
@@ -180,7 +183,7 @@ return ret;
   @override
   Future<bool> update(Map<Symbol,dynamic>parameters)async {
     bool exit=false;
-    Map<String, dynamic> parameter =convertSymbolKeysToString(parameters);
+    Map<String, dynamic> parameter =SymbolToStringConverter.convertSymbolKeysToString(parameters);
 
     try {
       var a=   await repository?.update( parameters: parameter,whereClause:{'id':parameter['id']});  //TODO Check if it works
@@ -234,9 +237,16 @@ return ret;
        return await repository?.findBy(parameters);
   }
 
+
+
   Future<EntityInterface?> findByFields(Map<String,dynamic> parameters) async {
-    var ret= (await repository?.findBy(parameters))?.first;
-    print(' type of findByFields ${ret.runtimeType}');
+    var ret;
+    try{
+     ret= (await repository?.findBy(parameters))?.first;
+    print(' type of findByFields, retour type:${ret.runtimeType}');
+    }catch(e){print("Controller L249, FindByFields error: ${e}");
+       print("Controller L250 Parameters: ${parameters}");}
+
     return ret;
   }
 

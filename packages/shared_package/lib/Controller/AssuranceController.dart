@@ -2,6 +2,7 @@ import 'package:angel3_framework/angel3_framework.dart';
 
 import 'package:shared_package/Controller/Controller.dart' as controller;
 
+import '../BDD/Interface/entityInterface.dart';
 import '../BDD/Model/AbstractModels/AssuranceEntity.dart'  ;
 
 @Expose('/Assurance')
@@ -11,10 +12,26 @@ class AssuranceController extends controller.Controller<Assurance>{
 
 
 
-  
+
+  @override
+  Future<EntityInterface?> save(entity)async {
+    print('AssuranceController L18 updatedEntity : ${(entity as Assurance).vehicule_id}');
+    var exit;
+    try {
+
+      exit= await repository?.persist(entity);
 
 
-  
+    } catch (e) {
+      print('Controler L172, Error creating entity: $e');
+    }
+    exit != null? print("entity persisted !"):print("entity not persisted!");
+
+    return exit;
+  }
+
+
+
 
 
   

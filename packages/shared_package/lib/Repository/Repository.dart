@@ -67,13 +67,23 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 
   }
 
+
+
+
   void _applyDynamicFilters(String entityName, dynamic where, Map<String, dynamic> params) {
     final filter = WhereFilterIndex[entityName];
     if (filter == null) throw UnimplementedError('No filter for $entityName');
-    print("EntityName : $entityName , [ $where , $params]");
+    print("Repository L73 _applyDynamicFilters: EntityName : $entityName , [ $where , $params]");
     params.forEach((key, value) {
-      final f = filter[key]!['whereField'];
-      if (f != null) Function.apply(f,[where,value]);
+      try{
+      //  print("Repository L76 _applyDynamicFilters: key : ${key}");
+      final whereField = filter[key]!['whereField'] as Function;
+     // print("Repository L81 _applyDynamicFilters: filter : ${f}");
+     // print("Repository L82 _applyDynamicFilters: Value : ${value}");
+
+      if (whereField != null && value!=null) whereField(where,value);
+
+      } catch(e){print("Repository, error of value attribution in whereClause:${e}");};
     });
   }
 
@@ -86,7 +96,8 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
     //Here we need to load parameters dynamically:
     // <=> to where.parameter.equal(value) apply to several parameters
     // It uses a whereFilter_Index present in ORM's directory
-    // It is not available by default in Angel
+    // It is not available by default in
+
     _applyDynamicFilters(T.toString(),query.where,parameters);  //We send the property where of EntityQuery that is an instance of EntityQueryWhere
 
     return await query.get(executor);
@@ -114,6 +125,7 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
   @override
   Future<T?> findById(int id) async{
     var query = queryFactory()
+
     ..where?.id!.equals(id);
     var res= (await query.get(executor)).first ;
     print("Repository L95 : Entity : ${res}");
@@ -124,16 +136,20 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
   @override
   Future<T?> findLast() async{
     var query = queryFactory()
+    //  ..select(['id', 'title'])
       ..orderBy('id', descending: true)
       ..limit(1);
+
          var res= (await query.get(executor)).first ;
       //print("Repository L105 : Entity : ${res}");
     return res;
   }
 
 
+  @override
   Future<int?> getLastId() async {
     var query = queryFactory()
+      ..select(['id'])
       ..orderBy('id', descending: true)
       ..limit(1);
     var res = await query.getOne(executor); // This is Optional<Entity>
@@ -167,36 +183,112 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
   }
     }
 
+//Helper
+    String escapeSqlString(String s) {
+     // rudimentary escaping of single quotes
+     return s.replaceAll("'", "''");
+    }
+
+  /*
+     * function rawSql
+     * need only for raw Query not for angel parametrized queries
+     * raw()  exists in Angel QueryWhere
+     */
+  String rawSql(dynamic param) {
+    if (param == null) return 'NULL';
+
+    if (param is num) {
+      return param.toString();
+    }
+
+    final val = param.toString().replaceAll("'", "''");
+
+    if (val.isEmpty) {
+      return 'NULL';
+    }
+
+    return "'$val'";
+  }
+
+
+
+  void addWhereRawForAllParams(Query query) {
+    final conditions = <String>[];
+
+    Map? mapValues = query.values?.toMap();
+    if (mapValues != null) {
+      for (var entry in mapValues.entries) {
+        var value = entry.value;          // get value from MapEntry
+           // wrap value properly
+          if (value != null) {
+            String conditionsStr="${entry.key} = ${rawSql(value)}";
+            //print("Repository L213 : $conditionsStr");
+            conditions.add(conditionsStr);
+          }
+      }
+    }
+
+    final combined = conditions.join(' AND ');
+    if (combined.isNotEmpty) {
+
+      query.where?.raw(combined);
+    }
+  }
+
+
+
 
   @override
   Future<T?> persist(T? entity) async {
     entity = entity ?? this.entity;
     final query = queryFactory();
     query.values?.copyFrom(entity);
-    print('Repository: using connexion $connexionPool');
-    print('REPO save input: $entity');
-    dynamic insertedRow = await query.insert(executor!);
-    print('REPO: insertedRow=$insertedRow');
-    if (insertedRow is Optional) {
-      insertedRow = insertedRow.value;
-      if (insertedRow == null) return null;
+    var entityid=query.values.id;
+
+    if(entityid.runtimeType==String){int.parse(entityid);}
+
+    if(connexionPool!=null){print('Repository L239 : using PoolConnexion $connexionPool');}
+    else if (connexion!=null) {print('Repository L240 : using PoolConnexion $connexionPool');}
+    else{print('Repository L241 : No connexion neither MysqlConnection nor PoolConnection ');}
+
+    //addWhereRawForAllParams(query); Not really needed
+    print('Repository L256 : persist: $query');
+    Optional<T> insertedRow;
+
+    try {
+
+       insertedRow = await query.insert(executor!); //return Future<Optional<T>> is  from class Query, it doesn't return the result of executor that is a List<List<T?>>
+    }catch(e,stack){ print('Repository L259 INSERT FAILED! error: $e');
+                     print('stack: $stack');
+      return null;}
+
+    if(insertedRow!=null){
+      print('Repository L263, debug:  type : ${insertedRow?.first!.runtimeType.toString()}, insertedRow :${insertedRow.value}   ');
+      return insertedRow.value;
     }
-    if (insertedRow == null) { print('REPO INSERT FAILED!'); return null;}
-
-    if (insertedRow is T) return insertedRow;
-
-    // Use the registry if present
-    final entityType = entity.runtimeType.toString();
-    final fromMap = Entity_Index[entityType]?['fromMap'] as Function?;
-    if (fromMap != null && insertedRow is Map) {
-      return fromMap(insertedRow);
+    else{
+      throw Exception("Repository L270, Entity was not saved, insertRow is null");
     }
 
-    throw Exception("Unknown type: cannot build entity from insert result: $insertedRow");
+
+
+
   }
 
+  /*
+   * Function parseRow
+   * Helper
+   * @return T?
+   */
+ T? parseRow(insertedRow){
+   // Use the registry if present
+   final entityType = entity.runtimeType.toString();
+   final fromMap = Entity_Index[entityType]?['fromMap'] as Function?;
+   if (fromMap != null && insertedRow is Map) {
+     return fromMap(insertedRow);
+   }
 
-
+ }
 
   @override
   Future<bool>persistBool(T? entity) async {
@@ -268,8 +360,9 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
     if(parameters.containsKey('id'))
        {
          parameters['id']=parameters['id'].toString();}
+       var fromMap= Entity_Index[T.toString()]['fromMap'] as Function;
+    final T retEntity =fromMap(parameters);
 
-    final T retEntity= Function.apply(Entity_Index[T.toString()]['fromMap'],[parameters]);
     query.values.copyFrom(retEntity); //had values to be updated
 
     if (whereClause!.containsKey('id')) {
