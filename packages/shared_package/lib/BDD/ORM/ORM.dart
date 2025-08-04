@@ -1,9 +1,11 @@
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:mysql_client/mysql_client.dart';
 import 'package:shared_package/BDD/Connection/MysqlConnection.dart';
-
+import 'package:shared_package/Controller/Index/Index_ControllerFunction.dart';
+import 'package:shared_package/Controller/Index/Controller_index.dart';
 import '../../Controller/Index/Controller_index.dart';
 import '../Executor/MysqlPoolExecutor.dart';
+import 'ORMExtension/SymbolToStringConverter.dart';
 import 'Relations/ClassRelation_Index.dart';
 import '../Interface/entityInterface.dart';
 import '../Model/Index/Entity_Index.dart';
@@ -45,28 +47,33 @@ class ORM{
     final relations = classRelationsIndex[entityType] ?? [];
 
     var updatedMap = Map<String, dynamic>.from(entityMap);
-    //print("ORM L47, entity:  ${updatedMap}");
+
 
 
     // Parents (belongsTo / hasOne)
     await cascadeParents(relations, updatedMap);
 
-    print('ORM: about to lookup controller for $entityType');
-    // Save the main entity, await save
+
+   // print("ORM L53, entity:  ${updatedMap}");
+    // Main entity save
     final updatedEntity = fromMap(updatedMap);
-    print('Controller L61 child id:$updatedEntity');
+    await isA(relations,updatedMap,updatedEntity);
+
+
     final controller = controllerIndex["${entityType}Controller"]?.call();
 
     if (controller == null) {
       print('ORM ERROR: No controller found for $entityType!');
       throw Exception('No controller found for $entityType');
     }
-    print('ORM: found controller for $entityType: $controller');
+
     await controller.initRepository();
-    print('Saving Address with person_id: ${updatedMap['person_id']}');
+
+
+
 
     final persistedEntity =await controller.save(updatedEntity);
-    print('ORM L73 Persisted in DB: $persistedEntity');
+    print('ORM L70, Main Entity Persisted in DB: $persistedEntity');
 
 
     //After parent insert we manage child Entities and check each relations:
@@ -80,6 +87,7 @@ class ORM{
   /**
    * Function cascadeParents
    * Parents (belongsTo / hasOne)
+   * Save entities related return updatedMap of parent Entities
    */
     Future<void> cascadeParents(
       Iterable relations,
@@ -88,44 +96,84 @@ class ORM{
     for (final rel in relations.where((r) =>
     r.type == RelationType.belongsTo || r.type == RelationType.hasOne)) {
       final relatedType = rel.relatedType;
+
       final entityIndexEntry = Entity_Index[relatedType];
       if (entityIndexEntry == null) continue;
       final relatedFromMap = entityIndexEntry['fromMap'] as Function;
+      //print("ORM L92, related entity ${relatedFromMap} ");
       var related = updatedMap[rel.fieldName];
+
+      //print("ORM L95, related entity ${related.runtimeType.toString()} belongsTo}");
+
       if (related != null) {
         if (related is Map) related = relatedFromMap(related);
-        EntityInterface? parentEntityPersisted;
+        EntityInterface? relatedPersisted;
         var relatedController = controllerIndex["${relatedType}Controller"]?.call();
         if (relatedController != null) {
           await relatedController.ready;
 
+
           //ReuseIfExits -> reuse child in parent record if it preexist
           if (rel.reuseIfExists && rel.findBy.isNotEmpty) {
+
             final lookupMap = <String, dynamic>{};
             for (final key in rel.findBy) {
               lookupMap[key] = (related as dynamic).toJson()[key];
             }
             final existing = await relatedController.findByFields(lookupMap);
+            print("ORM 118 findByFields ${existing}");
             if (existing != null) {
               updatedMap[rel.foreignKey] = existing.id;
-              updatedMap[rel.fieldName] = null;
-              continue;
+              updatedMap[rel.fieldName] = null;  //The related entity was persisted, we delete the content of rel.fieldName
+              relatedPersisted=existing;
+            }else{
+              print("ORM L124, No entity was found with findByFields we persist bared related Entity");
+              relatedPersisted = await persist(related);
             }
-          }
-          parentEntityPersisted = await relatedController.save(related);
+            print("ORM L127, Reuse related entity ${related.runtimeType.toString()}");
+
         } else {
-          parentEntityPersisted = await persist(related);
+          print("ORM L130, related entity ${related.runtimeType.toString()} persist triggered}");
+          relatedPersisted = await persist(related);
         }
+
+        print('ORM: L120 relatedPersisted or Reused $relatedPersisted');
 
 
         // Update map: set the FK to parent id, remove nested object
-        final parentJson = (parentEntityPersisted as dynamic).toJson();
+        final parentJson = (relatedPersisted as dynamic)!.toJson();
         final parentId = parentJson['id'];
         updatedMap[rel.foreignKey] = parentId;
         updatedMap[rel.fieldName] = null;
       }
     }
+  }}
+
+
+  Future<void> isA(List<RelationMeta> relations, Map<String, dynamic> updatedMap, EntityInterface entity) async {
+    for (final rel in relations.where((r) => r.type == RelationType.isA))  {
+      if (rel.type == RelationType.isA) {
+        final superEntity = getSuperEntity(entity, rel);
+        if (superEntity != null && updatedMap !=null) {
+          // Recursively cascade persist the super entity
+          await cascadeParents(classRelationsIndex[superEntity.runtimeType.toString()], updatedMap);
+          final persistedSuper = await persist(superEntity);
+          // Update foreign key / IDs if needed
+          updatedMap[rel.foreignKey] = persistedSuper?.id;
+        }
+      }
+    }
   }
+
+   getSuperEntity(EntityInterface  entity,RelationMeta rel){
+
+     //Map<Symbol,dynamic> m=SymbolToStringConverter.convertStringKeysToSymbol(entity.toJson()!);
+   //  print("ORM L171 $m");
+     var fromMap=Entity_Index[rel.relatedType]["fromMap"] as Function;
+     return fromMap(entity.toJson()!);
+     //return Function.apply(Entity_Index[rel.relatedType]["fromMap"]!(),null,m);
+
+   }
 
   /**
    * Function hasOne
@@ -169,6 +217,7 @@ class ORM{
       EntityInterface? persistedEntity) async {
     for (final rel in relations.where((r) => r.type == RelationType.hasMany)) {
       final childType = rel.relatedType;
+      print("ORM L188 $childType");
       final childFromMap = Entity_Index[childType]['fromMap'] as Function;
       final children = updatedMap[rel.fieldName] as List<dynamic>?;
       if (children != null) {
@@ -215,9 +264,13 @@ class ORM{
           var childController = controllerIndex["${childType}Controller"]
               ?.call();
           if (childController != null) {
+
+
             childEntityPersisted = await childController.persist(child);
+            print("ORM L230, related entity persisted");
           } else {
             childEntityPersisted = await persist(child);
+            print("ORM L230, related entity persisted");
           }
           final childId = childEntityPersisted.toJson()['id'];
           if (childId == null) throw Exception(
@@ -294,7 +347,7 @@ class ORM{
     if (controller == null) throw Exception('No controller for $entityType');
     final entity = entityOrId is EntityInterface
         ? entityOrId
-        : await controller.findById(entityOrId);
+        : await controller.repository?.findById(entityOrId);
 
     if (entity == null) throw Exception('Entity not found');
 
@@ -344,7 +397,7 @@ class ORM{
       }
 
       // --- finally: delete this entity ---
-      await controller.delete(entityMap['id']);
+      await controller.repository?.delete(entityMap['id']);
 
     }
 
