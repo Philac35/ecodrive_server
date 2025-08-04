@@ -434,9 +434,12 @@ class PersonSerializer extends Codec<Person, Map> {
               : null,
       firstname: map['firstname'] as String?,
       lastname: map['lastname'] as String?,
-      age: map['age'] as int?,
+      age: map['age'] != null ? map['age'] is String ? int.parse(map['age']) as int?:map['age'] as int?:null,
+
       gender: map['gender'] as String?,
-      credits: map['credits']!=null? map['credits']  as double: 0.0 ,
+      credits: map['credits']!=null ?
+                 map['credits'] is String ? double.parse(map['credits']) as double :0.0
+               : null,
       email: map['email'] as String?,
       photo:
           map['photo'] != null

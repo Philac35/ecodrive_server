@@ -7,6 +7,8 @@ import 'package:optional/optional_internal.dart';
 
 import 'package:shared_package/Services/Parser/Uint8ListJsonConverter.dart';
 
+import '../../../Library/StringLibrary/string_librairy.dart';
+import '../../ORM/ORMExtension/SymbolToStringConverter.dart';
 import 'DrivingLicenceEntity.dart';
 import '../../Interface/entityInterface.dart';
 import 'dart:typed_data';

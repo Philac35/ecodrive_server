@@ -353,6 +353,8 @@ class NoticeSerializer extends Codec<Notice, Map> {
   NoticeDecoder get decoder => const NoticeDecoder();
 
   static Notice fromMap(Map map) {
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
     return Notice(
       id: map['id'] as String?,
       updatedAt:

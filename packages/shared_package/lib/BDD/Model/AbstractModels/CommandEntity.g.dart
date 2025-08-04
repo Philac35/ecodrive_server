@@ -129,7 +129,7 @@ class CommandQuery extends Query<Command, CommandQueryWhere> {
       totalHT: fields.contains('total_h_t') ? mapToDouble(row[6]) : 0.0,
       totalTTC: fields.contains('total_t_t_c') ? mapToDouble(row[7]) : 0.0,
       status: fields.contains('status') ? (row[8] as String) : '',
-      user: {} as UserEntity,
+      user: null,
     );
     if (row.length > 10) {
       var modelOpt = PersonQuery().parseRow(row.skip(10).take(9).toList());
@@ -300,7 +300,7 @@ class Command extends CommandEntity {
     required this.totalHT,
     required this.totalTTC,
     required this.status,
-    required this.user,
+     this.user, //required
   });
 
   /// A unique identifier corresponding to this item.
@@ -334,7 +334,7 @@ class Command extends CommandEntity {
   String status;
 
   @override
-  UserEntity user;
+  UserEntity? user;
 
   Command copyWith({
     String? id,
@@ -433,6 +433,8 @@ class CommandSerializer extends Codec<Command, Map> {
   CommandDecoder get decoder => const CommandDecoder();
 
   static Command fromMap(Map map) {
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
     return Command(
       id: map['id'] as String?,
       createdAt:
@@ -455,8 +457,8 @@ class CommandSerializer extends Codec<Command, Map> {
       status: map['status'] as String,
       user:
           map['user'] != null
-              ? UserSerializer.fromMap(map['user'] as Map) as UserEntity
-              : {} as UserEntity,
+              ? UserSerializer.fromMap(map['user']) as UserEntity
+              : null,
     );
   }
 

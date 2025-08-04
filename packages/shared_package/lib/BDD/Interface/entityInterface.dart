@@ -8,6 +8,15 @@ abstract interface class EntityInterface{
     throw UnimplementedError();
   }
 
+
+     dynamic get id; //String or int
+
+  /// Returns the [id], parsed as an [int].
+     int get idAsInt => id != null ? int.tryParse(id ?? "-1") ?? -1 : -1;
+
+   /// Returns the [id] or "" if null.
+  String get idAsString => id ?? "";
+
   // We can't use a factory constructor in an abstract class
   // Instead, we'll define an abstract fromJson method
   static EntityInterface fromJson(Map<String, dynamic> json) {

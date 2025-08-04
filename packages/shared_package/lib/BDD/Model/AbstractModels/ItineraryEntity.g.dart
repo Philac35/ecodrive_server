@@ -18,7 +18,7 @@ class ItineraryMigration extends Migration {
       table.timeStamp('duration');
       table.declareColumn(
         'geo_point_list',
-        Column(type: ColumnType('jsonb'), length: 255),
+        Column(type: ColumnType('json'), length: 255),
       );
       table.declare('travel_id', ColumnType('int')).references('travels', 'id');
     });
@@ -192,7 +192,7 @@ class ItineraryQueryWhere extends QueryWhere {
 class ItineraryQueryValues extends MapQueryValues {
   @override
   Map<String, String> get casts {
-    return {'geo_point_list': 'jsonb'};
+    return {'geo_point_list': 'json'};
   }
 
   String? get id {
@@ -408,6 +408,8 @@ class ItinerarySerializer extends Codec<Itinerary, Map> {
   ItineraryDecoder get decoder => const ItineraryDecoder();
 
   static Itinerary fromMap(Map map) {
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
     return Itinerary(
       id: map['id'] as String?,
       createdAt:

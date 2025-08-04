@@ -7,9 +7,13 @@ import 'dart:typed_data';
 
 
 import 'package:optional/optional_internal.dart';
+import 'package:shared_package/BDD/ORM/ORMExtension/SymbolToStringConverter.dart';
+import 'package:shared_package/Library/StringLibrary/string_librairy.dart';
 
+import '../../../Services/Parser/Uint8ListJsonConverter.dart';
+import '../../Interface/entityInterface.dart';
 import '../Abstract/PersonEntity.dart';
-import 'Interface/DocumentInterface.dart';
+import 'Interface/Document.dart';
 import 'DriverEntity.dart';
 import 'PhotoEntity.dart';
 
@@ -25,16 +29,14 @@ part 'DrivingLicenceEntity.g.dart';
 
 @Orm(generateMigrations:true)
 @serializable
-abstract class DrivingLicenceEntity extends  Model  implements DocumentInterface{
-
-
+abstract class DrivingLicenceEntity extends  Model implements  Document {
 
  @BelongsTo()
   @override
   DriverEntity? get driver;
 
   @override
-  int get identificationNumber;
+  int? get identificationNumber;
 
 
   @override
@@ -46,12 +48,10 @@ abstract class DrivingLicenceEntity extends  Model  implements DocumentInterface
 
   @override
   @Column(length: 64)
-  String get title;
+  String? get title;
 
 
 
-
- //DrivingLicenceEntity({this.idInt ,required this.title, required this.identificationNumber, required this.driver, this.documentPdf,this.photo, this. id});
 
   /*Serialization
   factory DrivingLicenceEntity.fromJson(Map<String, dynamic> json) {

@@ -469,6 +469,8 @@ class EmployeeSerializer extends Codec<Employee, Map> {
   EmployeeDecoder get decoder => const EmployeeDecoder();
 
   static Employee fromMap(Map map) {
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
     return Employee(
       id: map['id'] as String?,
       createdAt:
@@ -485,9 +487,9 @@ class EmployeeSerializer extends Codec<Employee, Map> {
               : null,
       firstname: map['firstname'] as String?,
       lastname: map['lastname'] as String?,
-      age: map['age'] as int?,
+      age: int.parse(map['age'])  as int?,
       gender: map['gender'] as String?,
-      credits: map['credits']!=null ?  map['credits'] as double:0.0,
+      credits: map['credits']!=null ?  double.parse(map['credits'])  as double:0.0,
       email: map['email'] as String?,
       photo:
           map['photo'] != null
@@ -501,10 +503,7 @@ class EmployeeSerializer extends Codec<Employee, Map> {
           map['user'] != null
               ? UserSerializer.fromMap(map['user'] as Map)
               : null,
-      administrator:
-          map['administrator'] != null
-              ? AdministratorSerializer.fromMap(map['administrator'] as Map)
-              : null,
+
       employee:
           map['employee'] != null
               ? EmployeeSerializer.fromMap(map['employee'] as Map)

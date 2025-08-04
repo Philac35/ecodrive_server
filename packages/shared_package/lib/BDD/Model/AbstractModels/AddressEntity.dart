@@ -3,11 +3,13 @@ import 'package:angel3_serialize/angel3_serialize.dart';
 
 import 'package:optional/optional.dart';
 
+import '../../../Library/StringLibrary/string_librairy.dart';
 import '../../Interface/entityInterface.dart';
 
 //Import migration system
 import 'package:angel3_migration/angel3_migration.dart';
 
+import '../../ORM/ORMExtension/SymbolToStringConverter.dart';
 import '../Abstract/PersonEntity.dart';
 import 'ItineraryEntity.dart';
 part 'AddressEntity.g.dart';

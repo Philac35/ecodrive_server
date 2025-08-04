@@ -6,7 +6,9 @@ import 'package:angel3_serialize/angel3_serialize.dart';
 import 'package:optional/optional_internal.dart';
 
 
+import '../../../Library/StringLibrary/string_librairy.dart';
 import '../../Interface/entityInterface.dart';
+import '../../ORM/ORMExtension/SymbolToStringConverter.dart';
 import '../Abstract/PersonEntity.dart';
 
 

@@ -4,7 +4,9 @@ import 'package:angel3_serialize/angel3_serialize.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/UserEntity.dart';
 import 'package:angel3_migration/angel3_migration.dart';
 import 'package:optional/optional_internal.dart';
+import '../../../Library/StringLibrary/string_librairy.dart';
 import '../../Interface/entityInterface.dart';
+import '../../ORM/ORMExtension/SymbolToStringConverter.dart';
 import '../Abstract/PersonEntity.dart';
 
 part 'CommandEntity.g.dart';
@@ -31,7 +33,7 @@ abstract class CommandEntity extends Model implements EntityInterface {
   String get status;
 
   @BelongsTo()
-  UserEntity get user;
+  UserEntity? get user;
 
 
 }

@@ -3,6 +3,8 @@ import 'package:angel3_serialize/angel3_serialize.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/DriverEntity.dart';
 import 'package:optional/optional_internal.dart';
 
+import '../../../Library/StringLibrary/string_librairy.dart';
+import '../../ORM/ORMExtension/SymbolToStringConverter.dart';
 import '../Abstract/PersonEntity.dart';
 
 
@@ -57,9 +59,9 @@ abstract class UserEntity extends PersonEntity   implements EntityInterface{
   */
 
 
-  //@override
+  /*@override
   @HasOne(foreignTable: 'auth_users',foreignKey: 'auth_user_id')
   AuthUserEntity? get authUserEntity ; //-> must be fetch with person
-
+ */
 }
 

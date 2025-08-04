@@ -3,8 +3,10 @@ import 'package:angel3_serialize/angel3_serialize.dart';
 import 'package:optional/optional_internal.dart';
 
 
+import '../../../Library/StringLibrary/string_librairy.dart';
 import '../../Interface/entityInterface.dart';
 
+import '../../ORM/ORMExtension/SymbolToStringConverter.dart';
 import '../Abstract/PersonEntity.dart';
 import 'DriverEntity.dart';
 
@@ -24,9 +26,6 @@ abstract class NoticeEntity extends Model implements EntityInterface{
   @Column(length: 256)
   String get  description;
   int? get  note;
-  @override
-  DateTime? get  createdAt;
-
   @BelongsTo()
   DriverEntity?  get driver;
 

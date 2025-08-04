@@ -514,6 +514,8 @@ class AddressSerializer extends Codec<Address, Map> {
 
   static Address fromMap(Map map) {
 
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
     return Address(
       id: map['id'] as String?,
       createdAt:

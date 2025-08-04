@@ -20,6 +20,7 @@ class UserMigration extends Migration {
       table.double('credits');
       table.varChar('email', length: 128);
       table.declare('person_id', ColumnType('int')).references('people', 'id');
+      table.declare('driver_id', ColumnType('int')).references('drivers', 'id');
     });
   }
 
@@ -55,6 +56,23 @@ class UserQuery extends Query<User, UserQueryWhere> {
       ],
       trampoline: trampoline,
     );
+    leftJoin(
+      _driver = DriverQuery(trampoline: trampoline, parent: this),
+      'driver_id',
+      'id',
+      additionalFields: const [
+        'id',
+        'created_at',
+        'updated_at',
+        'firstname',
+        'lastname',
+        'age',
+        'gender',
+        'credits',
+        'email',
+      ],
+      trampoline: trampoline,
+    );
   }
 
   @override
@@ -65,6 +83,7 @@ class UserQuery extends Query<User, UserQueryWhere> {
   UserQueryWhere? _where;
 
   late PersonQuery _person;
+  late DriverQuery _driver;
 
   @override
   Map<String, String> get casts {
@@ -89,6 +108,7 @@ class UserQuery extends Query<User, UserQueryWhere> {
       'credits',
       'email',
       'person_id',
+      'driver_id'
     ];
     return _selectedFields.isEmpty
         ? localFields
@@ -116,14 +136,7 @@ class UserQuery extends Query<User, UserQueryWhere> {
     if (row.every((x) => x == null)) {
       return Optional.empty();
     }
-    // Parse driver if present
-    DriverEntity? driver;
-    if (fields.contains('driver') && row.length > 11) {  //here not sure of the rank EH 24/06/2025
-      var modelOpt = PersonQuery().parseRow(row.skip(11).take(8).toList());
-      if (modelOpt.isPresent) {
-        driver = modelOpt.value as DriverEntity;
-      }
-    }
+
 
     var model = User(
       id: fields.contains('id') ? row[0].toString() : null,
@@ -137,8 +150,8 @@ class UserQuery extends Query<User, UserQueryWhere> {
       gender: fields.contains('gender') ? (row[6] as String?) : null,
       credits: fields.contains('credits') ? mapToDouble(row[7]) : 0.0,
       email: fields.contains('email') ? (row[8] as String?) : null,
-      person: {} as PersonEntity,
-      driver: driver!,
+      person: null,
+      driver: null,
     );
     if (row.length > 10) {
       var modelOpt = PersonQuery().parseRow(row.skip(10).take(9).toList());
@@ -146,6 +159,13 @@ class UserQuery extends Query<User, UserQueryWhere> {
         model = model.copyWith(person: m);
       });
     }
+    if (row.length > 20) {
+      var modelOpt = DriverQuery().parseRow(row.skip(20).take(9).toList());
+      modelOpt.ifPresent((m) {
+        model = model.copyWith(driver: m);
+      });
+    }
+
     return Optional.of(model);
   }
 
@@ -220,7 +240,7 @@ class UserQuery extends Query<User, UserQueryWhere> {
 }
 
 class UserQueryWhere extends QueryWhere {
-  UserQueryWhere(UserQuery query)
+  UserQueryWhere(UserQuery query, )
     : id = NumericSqlExpressionBuilder<int>(query, 'id'),
       createdAt = DateTimeSqlExpressionBuilder(query, 'created_at'),
       updatedAt = DateTimeSqlExpressionBuilder(query, 'updated_at'),
@@ -230,7 +250,8 @@ class UserQueryWhere extends QueryWhere {
       gender = StringSqlExpressionBuilder(query, 'gender'),
       credits = NumericSqlExpressionBuilder<double>(query, 'credits'),
       email = StringSqlExpressionBuilder(query, 'email'),
-      personId = NumericSqlExpressionBuilder<int>(query, 'person_id');
+      personId = NumericSqlExpressionBuilder<int>(query, 'person_id'),
+      driverId = NumericSqlExpressionBuilder<int>(query, 'driver_id');
 
   final NumericSqlExpressionBuilder<int> id;
 
@@ -252,6 +273,8 @@ class UserQueryWhere extends QueryWhere {
 
   final NumericSqlExpressionBuilder<int> personId;
 
+  final NumericSqlExpressionBuilder<int> driverId;
+
   @override
   List<SqlExpressionBuilder> get expressionBuilders {
     return [
@@ -265,6 +288,7 @@ class UserQueryWhere extends QueryWhere {
       credits,
       email,
       personId,
+      driverId
     ];
   }
 }
@@ -335,6 +359,12 @@ class UserQueryValues extends MapQueryValues {
 
   set personId(int value) => values['person_id'] = value;
 
+  int get driverId {
+    return (values['driver_id'] as int);
+  }
+
+  set driverId(int value) => values['driver_id'] = value;
+
   void copyFrom(User model) {
     createdAt = model.createdAt;
     updatedAt = model.updatedAt;
@@ -346,6 +376,9 @@ class UserQueryValues extends MapQueryValues {
     email = model.email;
     if (model.person != null) {
       values['person_id'] = model.person?.id;
+    }
+    if (model.driver != null) {
+      values['driver_id'] = model.driver?.id;
     }
   }
 }
@@ -368,13 +401,10 @@ class User extends UserEntity {
     this.email,
     this.photo,
     this.authUser,
-    this.user,
-    this.administrator,
-    this.employee,
-     this.person,
-     this.driver,
+    this.person,
+    this.driver,
     List<CommandEntity>? commandList = const [],
-    this.authUserEntity,
+  //  this.authUserEntity,
   }) : commandList = List.unmodifiable(commandList ?? []);
 
  //static final empty= User(credits: 0.0, person: Person.empty, driver: Driver.dummy);
@@ -416,15 +446,6 @@ class User extends UserEntity {
   AuthUserEntity? authUser;
 
   @override
-  UserEntity? user;
-
-  @override
-  AdministratorEntity? administrator;
-
-  @override
-  EmployeeEntity? employee;
-
-  @override
   PersonEntity? person;
 
   @override
@@ -433,9 +454,9 @@ class User extends UserEntity {
   @override
   List<CommandEntity>? commandList;
 
-  @override
+  /*@override
   AuthUserEntity? authUserEntity;
-
+ */
   User copyWith({
     String? id,
     DateTime? createdAt,
@@ -448,13 +469,10 @@ class User extends UserEntity {
     String? email,
     PhotoEntity? photo,
     AuthUserEntity? authUser,
-    UserEntity? user,
-    AdministratorEntity? administrator,
-    EmployeeEntity? employee,
     PersonEntity? person,
     DriverEntity? driver,
     List<CommandEntity>? commandList,
-    AuthUserEntity? authUserEntity,
+   // AuthUserEntity? authUserEntity,
   }) {
     return User(
       id: id ?? this.id,
@@ -468,13 +486,10 @@ class User extends UserEntity {
       email: email ?? this.email,
       photo: photo ?? this.photo,
       authUser: authUser ?? this.authUser,
-      user: user ?? this.user,
-      administrator: administrator ?? this.administrator,
-      employee: employee ?? this.employee,
       person: person ?? this.person,
       driver: driver ?? this.driver,
       commandList: commandList ?? this.commandList,
-      authUserEntity: authUserEntity ?? this.authUserEntity,
+   //   authUserEntity: authUserEntity ?? this.authUserEntity,
     );
   }
 
@@ -492,15 +507,12 @@ class User extends UserEntity {
         other.email == email &&
         other.photo == photo &&
         other.authUser == authUser &&
-        other.user == user &&
-        other.administrator == administrator &&
-        other.employee == employee &&
         other.person == person &&
         other.driver == driver &&
         ListEquality<CommandEntity>(
           DefaultEquality<CommandEntity>(),
-        ).equals(other.commandList, commandList) &&
-        other.authUserEntity == authUserEntity;
+        ).equals(other.commandList, commandList);// &&
+    //    other.authUserEntity == authUserEntity;
   }
 
   @override
@@ -518,18 +530,16 @@ class User extends UserEntity {
       photo,
       authUser,
       user,
-      administrator,
-      employee,
       person,
       driver,
       commandList,
-      authUserEntity,
+    //  authUserEntity,
     ]);
   }
 
   @override
   String toString() {
-    return 'User(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email, photo=$photo, authUser=$authUser, user=$user, administrator=$administrator, employee=$employee, person=$person, driver=$driver, commandList=$commandList, authUserEntity=$authUserEntity)';
+    return 'User(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email, authUser=$authUser)';
   }
 
   static User fromJson(Map userData){
@@ -538,6 +548,21 @@ class User extends UserEntity {
   Map<String, dynamic> toJson() {
     return UserSerializer.toMap(this)!;
   }
+
+  //Has person User entity inherit of these field
+  //but there are not implemented
+  @override
+  // TODO: implement administrator
+  AdministratorEntity? get administrator => throw UnimplementedError();
+
+  @override
+  // TODO: implement employee
+  EmployeeEntity? get employee => throw UnimplementedError();
+
+  @override
+  // TODO: implement user
+  UserEntity? get user =>null;
+
 }
 
 // **************************************************************************
@@ -570,6 +595,8 @@ class UserSerializer extends Codec<User, Map> {
   UserDecoder get decoder => const UserDecoder();
 
   static User fromMap(Map map) {
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
     return User(
       id: map['id'] as String?,
       createdAt:
@@ -588,7 +615,10 @@ class UserSerializer extends Codec<User, Map> {
       lastname: map['lastname'] as String?,
       age: map['age'] as int?,
       gender: map['gender'] as String?,
-      credits: map['credits']!=null ?  map['credits'] as double:0.0,
+
+      credits: map['credits']!=null ?
+              map['credits'] is String ? double.parse(map['credits']) as double :0.0
+            : 0.0,
       email: map['email'] as String?,
       photo:
           map['photo'] != null
@@ -597,18 +627,6 @@ class UserSerializer extends Codec<User, Map> {
       authUser:
           map['auth_user'] != null
               ? AuthUserSerializer.fromMap(map['auth_user'] as Map)
-              : null,
-      user:
-          map['user'] != null
-              ? UserSerializer.fromMap(map['user'] as Map)
-              : null,
-      administrator:
-          map['administrator'] != null
-              ? AdministratorSerializer.fromMap(map['administrator'] as Map)
-              : null,
-      employee:
-          map['employee'] != null
-              ? EmployeeSerializer.fromMap(map['employee'] as Map)
               : null,
       person:
           map['person'] != null
@@ -626,10 +644,10 @@ class UserSerializer extends Codec<User, Map> {
                 ),
               )
               : [],
-      authUserEntity:
+    /*  authUserEntity:
           map['auth_user_entity'] != null
               ? AuthUserSerializer.fromMap(map['auth_user_entity'] as Map)
-              : null,
+              : null,*/
     );
   }
 
@@ -650,14 +668,11 @@ class UserSerializer extends Codec<User, Map> {
       'email': model.email,
       'photo': PhotoSerializer.toMap(model.photo),
       'auth_user': AuthUserSerializer.toMap(model.authUser),
-      'user': UserSerializer.toMap(model.user),
-      'administrator': AdministratorSerializer.toMap(model.administrator),
-      'employee': EmployeeSerializer.toMap(model.employee),
       'person': PersonSerializer.toMap(model.person),
       'driver': DriverSerializer.toMap(model.driver),
       'command_list':
           model.commandList?.map((m) => CommandSerializer.toMap(m)).toList(),
-      'auth_user_entity': AuthUserSerializer.toMap(model.authUserEntity),
+    //  'auth_user_entity': AuthUserSerializer.toMap(model.authUserEntity),
     };
   }
 }
@@ -676,12 +691,10 @@ abstract class UserFields {
     photo,
     authUser,
     user,
-    administrator,
-    employee,
     person,
     driver,
     commandList,
-    authUserEntity,
+    //authUserEntity,
   ];
 
   static const String id = 'id';
@@ -708,15 +721,11 @@ abstract class UserFields {
 
   static const String user = 'user';
 
-  static const String administrator = 'administrator';
-
-  static const String employee = 'employee';
-
   static const String person = 'person';
 
   static const String driver = 'driver';
 
   static const String commandList = 'command_list';
 
-  static const String authUserEntity = 'auth_user_entity';
+  //static const String authUserEntity = 'auth_user_entity';
 }

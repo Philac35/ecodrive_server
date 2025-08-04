@@ -7,6 +7,8 @@ import 'package:angel3_serialize/angel3_serialize.dart';
 //import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:optional/optional_internal.dart';
 
+import '../../../Library/StringLibrary/string_librairy.dart';
+import '../../ORM/ORMExtension/SymbolToStringConverter.dart';
 import 'AddressEntity.dart' as a;
 import 'AddressEntity.dart';
 import 'TravelEntity.dart';

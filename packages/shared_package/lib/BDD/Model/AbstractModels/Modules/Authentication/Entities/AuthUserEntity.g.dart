@@ -17,7 +17,7 @@ class AuthUserMigration extends Migration {
       table.varChar('password', length: 255);
       table.declareColumn(
         'role',
-        Column(type: ColumnType('jsonb'), length: 255),
+        Column(type: ColumnType('json'), length: 255),
       );
       table.declare('person_id', ColumnType('int')).references('people', 'id');
     });
@@ -175,7 +175,7 @@ class AuthUserQueryWhere extends QueryWhere {
 class AuthUserQueryValues extends MapQueryValues {
   @override
   Map<String, String> get casts {
-    return {'role': 'jsonb'};
+    return {'role': 'json'};
   }
 
   String? get id {

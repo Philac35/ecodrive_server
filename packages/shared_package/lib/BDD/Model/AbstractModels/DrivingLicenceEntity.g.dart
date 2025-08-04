@@ -13,13 +13,13 @@ class DrivingLicenceMigration extends Migration {
       table.serial('id').primaryKey();
       table.timeStamp('created_at');
       table.timeStamp('updated_at');
-      table.integer('id_int');
       table.integer('identification_number');
       table.declareColumn(
         'document_pdf',
-        Column(type: ColumnType('jsonb'), length: 255),
+        Column(type: ColumnType('json'), length: 255),
       );
       table.varChar('title', length: 64);
+      table.varChar("path", length:256);
       table.declare('driver_id', ColumnType('int')).references('people', 'id');
     });
   }
@@ -84,11 +84,11 @@ class DrivingLicenceQuery
       'id',
       'created_at',
       'updated_at',
-      'id_int',
       'driver_id',
       'identification_number',
       'document_pdf',
       'title',
+      'path'
     ];
     return _selectedFields.isEmpty
         ? localFields
@@ -122,12 +122,13 @@ class DrivingLicenceQuery
           fields.contains('created_at') ? mapToNullableDateTime(row[1]) : null,
       updatedAt:
           fields.contains('updated_at') ? mapToNullableDateTime(row[2]) : null,
-      id_Int: fields.contains('id_int') ? mapToInt(row[3]) : null,
       identificationNumber:
-          fields.contains('identification_number') ? mapToInt(row[5]) : 0,
+          fields.contains('identification_number') ? mapToInt(row[3]) : 0,
       documentPdf:
-          fields.contains('document_pdf') ? (row[6] as Uint8List?) : null,
-      title: fields.contains('title') ? (row[7] as String) : '',
+          fields.contains('document_pdf') ? Uint8ListJsonConverter().jsonStrToUint(row[4]) : null,
+      title: fields.contains('title') ? (row[5] as String) : '',
+      path: fields.contains('path') ? (row[6] as String) : '',
+
     );
     if (row.length > 8) {
       var modelOpt = PersonQuery().parseRow(row.skip(8).take(9).toList());
@@ -153,22 +154,20 @@ class DrivingLicenceQueryWhere extends QueryWhere {
     : id = NumericSqlExpressionBuilder<int>(query, 'id'),
       createdAt = DateTimeSqlExpressionBuilder(query, 'created_at'),
       updatedAt = DateTimeSqlExpressionBuilder(query, 'updated_at'),
-      id_Int = NumericSqlExpressionBuilder<int>(query, 'id_int'),
       driverId = NumericSqlExpressionBuilder<int>(query, 'driver_id'),
       identificationNumber = NumericSqlExpressionBuilder<int>(
         query,
         'identification_number',
       ),
       documentPdf = ListSqlExpressionBuilder(query, 'document_pdf'),
-      title = StringSqlExpressionBuilder(query, 'title');
+      title = StringSqlExpressionBuilder(query, 'title'),
+      path = StringSqlExpressionBuilder(query, 'path');
 
   final NumericSqlExpressionBuilder<int> id;
 
   final DateTimeSqlExpressionBuilder createdAt;
 
   final DateTimeSqlExpressionBuilder updatedAt;
-
-  final NumericSqlExpressionBuilder<int> id_Int;
 
   final NumericSqlExpressionBuilder<int> driverId;
 
@@ -178,26 +177,28 @@ class DrivingLicenceQueryWhere extends QueryWhere {
 
   final StringSqlExpressionBuilder title;
 
+  final StringSqlExpressionBuilder path;
+
   @override
   List<SqlExpressionBuilder> get expressionBuilders {
     return [
       id,
       createdAt,
       updatedAt,
-      id_Int,
       driverId,
       identificationNumber,
       documentPdf,
       title,
+      path
     ];
   }
 }
 
 class DrivingLicenceQueryValues extends MapQueryValues {
-  @override
+  /*@override
   Map<String, String> get casts {
-    return {'document_pdf': 'jsonb'};
-  }
+    return {'document_pdf': 'json'};
+  }*/
 
   String? get id {
     return (values['id'] as String?);
@@ -217,12 +218,6 @@ class DrivingLicenceQueryValues extends MapQueryValues {
 
   set updatedAt(DateTime? value) => values['updated_at'] = value;
 
-  int? get id_Int {
-    return (values['id_int'] as int?);
-  }
-
-  set id_Int(int? value) => values['id_int'] = value;
-
   int get driverId {
     return (values['driver_id'] as int);
   }
@@ -237,7 +232,7 @@ class DrivingLicenceQueryValues extends MapQueryValues {
       values['identification_number'] = value;
 
   Uint8List? get documentPdf {
-    return json.decode((values['document_pdf'] as String)).cast();
+    return json.decode((values['document_pdf'] )).cast();
   }
 
   set documentPdf(Uint8List? value) =>
@@ -247,15 +242,22 @@ class DrivingLicenceQueryValues extends MapQueryValues {
     return (values['title'] as String);
   }
 
-  set title(String value) => values['title'] = value;
+  set title(String? value) => values['title'] = value;
+
+  String get path {
+    return (values['path'] as String);
+  }
+
+  set path(String? value) => values['path'] = value;
+
 
   void copyFrom(DrivingLicence model) {
     createdAt = model.createdAt;
     updatedAt = model.updatedAt;
-    id_Int = model.id_Int;
-    identificationNumber = model.identificationNumber;
+    identificationNumber = model.identificationNumber!;
     documentPdf = model.documentPdf;
     title = model.title;
+    path = model.path;
     if (model.driver != null) {
       values['driver_id'] = model.driver?.id;
     }
@@ -272,12 +274,12 @@ class DrivingLicence extends DrivingLicenceEntity {
     this.id,
     this.createdAt,
     this.updatedAt,
-    this.id_Int,
     this.driver,
     required this.identificationNumber,
     this.documentPdf,
     this.photo,
     required this.title,
+    this.path
   });
 
   /// A unique identifier corresponding to this item.
@@ -293,22 +295,22 @@ class DrivingLicence extends DrivingLicenceEntity {
   DateTime? updatedAt;
 
   @override
-  int? id_Int;
-
-  @override
   DriverEntity? driver;
 
   @override
-  int identificationNumber;
+  int? identificationNumber;
 
   @override
   Uint8List? documentPdf;
 
   @override
+  String? path;
+
+  @override
   PhotoEntity? photo;
 
   @override
-  String title;
+  String? title;
 
   DrivingLicence copyWith({
     String? id,
@@ -320,17 +322,19 @@ class DrivingLicence extends DrivingLicenceEntity {
     Uint8List? documentPdf,
     PhotoEntity? photo,
     String? title,
+    String? path
+
   }) {
     return DrivingLicence(
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      id_Int: id_Int ?? this.id_Int,
       driver: driver ?? this.driver,
       identificationNumber: identificationNumber ?? this.identificationNumber,
       documentPdf: documentPdf ?? this.documentPdf,
       photo: photo ?? this.photo,
       title: title ?? this.title,
+      path: path ?? this.path,
     );
   }
 
@@ -344,7 +348,8 @@ class DrivingLicence extends DrivingLicenceEntity {
         other.identificationNumber == identificationNumber &&
         ListEquality().equals(other.documentPdf, documentPdf) &&
         other.photo == photo &&
-        other.title == title;
+        other.title == title &&
+        other.path == path;
   }
 
   @override
@@ -353,23 +358,26 @@ class DrivingLicence extends DrivingLicenceEntity {
       id,
       createdAt,
       updatedAt,
-      id_Int,
       driver,
       identificationNumber,
       documentPdf,
       photo,
       title,
+      path
     ]);
   }
 
   @override
   String toString() {
-    return 'DrivingLicence(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, id_Int=$id_Int, driver=$driver, identificationNumber=$identificationNumber, documentPdf=$documentPdf, photo=$photo, title=$title)';
+    return 'DrivingLicence(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, driver=$driver, identificationNumber=$identificationNumber, documentPdf=$documentPdf, photo=$photo, title=$title, path=$path)';
   }
 
   Map<String, dynamic> toJson() {
     return DrivingLicenceSerializer.toMap(this)!;
   }
+
+
+
 }
 
 // **************************************************************************
@@ -403,6 +411,11 @@ class DrivingLicenceSerializer extends Codec<DrivingLicence, Map> {
   DrivingLicenceDecoder get decoder => const DrivingLicenceDecoder();
 
   static DrivingLicence fromMap(Map map) {
+
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
+    //map['identification_number']=map['identification_number']??map['identificationNumber'];
+
     return DrivingLicence(
       id: map['id'] as String?,
       createdAt:
@@ -417,29 +430,18 @@ class DrivingLicenceSerializer extends Codec<DrivingLicence, Map> {
                   ? (map['updated_at'] as DateTime)
                   : DateTime.parse(map['updated_at'].toString()))
               : null,
-      id_Int: map['id_int'] as int?,
       driver:
           map['driver'] != null
               ? DriverSerializer.fromMap(map['driver'] as Map)
               : null,
       identificationNumber: map['identification_number'] as int,
-      documentPdf:
-          map['document_pdf'] is Uint8List
-              ? (map['document_pdf'] as Uint8List)
-              : (map['document_pdf'] is Iterable<int>
-                  ? Uint8List.fromList(
-                    (map['document_pdf'] as Iterable<int>).toList(),
-                  )
-                  : (map['document_pdf'] is String
-                      ? Uint8List.fromList(
-                        base64.decode(map['document_pdf'] as String),
-                      )
-                      : null)),
+      documentPdf:  map['document_pdf'] !=null ? Uint8ListJsonConverter().jsonStrToUint(map['document_pdf']):null,
       photo:
           map['photo'] != null
               ? PhotoSerializer.fromMap(map['photo'] as Map)
               : null,
       title: map['title'] as String,
+      path: map['path'] as String
     );
   }
 
@@ -458,6 +460,7 @@ class DrivingLicenceSerializer extends Codec<DrivingLicence, Map> {
           model.documentPdf != null ? base64.encode(model.documentPdf!) : null,
       'photo': PhotoSerializer.toMap(model.photo),
       'title': model.title,
+      'path': model.path
     };
   }
 }
@@ -467,12 +470,12 @@ abstract class DrivingLicenceFields {
     id,
     createdAt,
     updatedAt,
-    id_Int,
     driver,
     identificationNumber,
     documentPdf,
     photo,
     title,
+    path
   ];
 
   static const String id = 'id';
@@ -480,8 +483,6 @@ abstract class DrivingLicenceFields {
   static const String createdAt = 'created_at';
 
   static const String updatedAt = 'updated_at';
-
-  static const String id_Int = 'id_int';
 
   static const String driver = 'driver';
 
@@ -492,4 +493,6 @@ abstract class DrivingLicenceFields {
   static const String photo = 'photo';
 
   static const String title = 'title';
+
+  static const String path = 'path';
 }

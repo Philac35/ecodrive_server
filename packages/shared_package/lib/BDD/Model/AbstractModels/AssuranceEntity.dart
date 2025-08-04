@@ -6,9 +6,13 @@ import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
 
 import 'package:optional/optional_internal.dart';
- 
+import '../../../Library/CompressionLibrary/CompressionLib.dart';
+import '../../../Library/StringLibrary/string_librairy.dart';
+import '../../../Services/Parser/Uint8ListJsonConverter.dart';
+import '../../Interface/entityInterface.dart';
 import 'DriverEntity.dart';
-import 'Interface/DocumentInterface.dart';
+import 'Interface/Document.dart';
+import 'package:shared_package/BDD/ORM/ORMExtension/SymbolToStringConverter.dart';
 import 'PhotoEntity.dart';
 import 'VehiculeEntity.dart';
 //Import migration system
@@ -23,14 +27,14 @@ part 'AssuranceEntity.g.dart';
 
 @Orm(generateMigrations:true)
 @serializable
-abstract class AssuranceEntity  extends  Model  implements DocumentInterface{
+abstract class AssuranceEntity  extends  Model implements Document  {
 
 
   @override
-  int get identificationNumber;
+  int? get identificationNumber;
 
   @override
-  Uint8List? get  documentPdf;
+  Uint8List? get documentPdf;
 
   @override
   @HasOne(foreignKey: 'photo_id', foreignTable: 'photos')
@@ -38,12 +42,16 @@ abstract class AssuranceEntity  extends  Model  implements DocumentInterface{
 
   @override
   @Column(length: 64)
-  String get title;
+  String? get title;
 
-  @BelongsTo()
-  VehiculeEntity  get vehicule;
+  @override
+  @Column(length: 256)
+  String? get path;
 
-   //AssuranceEntity ({required this.title, required this.identificationNumber, required this.vehicule, this.documentPdf,this.photo});
+  @BelongsTo(foreignTable:"vehicule",localKey:'vehicule_id',foreignKey: "id")
+  VehiculeEntity?  get vehicule;
+
+  int? get vehicule_id;
 
   /*Serialization
   factory AssuranceEntity .fromJson(Map<String, dynamic> json) {

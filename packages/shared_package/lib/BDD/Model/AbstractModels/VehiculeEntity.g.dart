@@ -22,7 +22,7 @@ class VehiculeMigration extends Migration {
       table.integer('nb_places');
       table.declareColumn(
         'preferences',
-        Column(type: ColumnType('jsonb'), length: 255),
+        Column(type: ColumnType('json'), length: 255),
       );
       table.declare('driver_id', ColumnType('int')).references('people', 'id');
     });
@@ -92,10 +92,11 @@ class VehiculeQuery extends Query<Vehicule, VehiculeQueryWhere> {
 
   late PersonQuery _driver;
 
+  /*
   @override
   Map<String, String> get casts {
     return {};
-  }
+  }*/
 
   @override
   String get tableName {
@@ -140,7 +141,10 @@ class VehiculeQuery extends Query<Vehicule, VehiculeQueryWhere> {
     return VehiculeQueryWhere(this);
   }
 
+
   Optional<Vehicule> parseRow(List row) {
+   // print("ParseRow Assurance L163: row : $row");
+   print("ParseRow Assurance L164: row length : ${row.length}");
     if (row.every((x) => x == null)) {
       return Optional.empty();
     }
@@ -162,8 +166,8 @@ class VehiculeQuery extends Query<Vehicule, VehiculeQueryWhere> {
               : null,
       nbPlaces: fields.contains('nb_places') ? mapToInt(row[9]) : null,
       preferences:
-          fields.contains('preferences') ? (row[11] as List<String>?) : null,
-      driver: {} as DriverEntity,
+          fields.contains('preferences') ? List<String>.from(json.decode(row[10])) as List<String> : null,
+      driver_id: fields.contains('driver_id') ? mapToInt(row[11]) : null,
     );
     if (row.length > 12) {
       var modelOpt = PhotoQuery().parseRow(row.skip(12).take(10).toList());
@@ -316,11 +320,12 @@ class VehiculeQueryWhere extends QueryWhere {
 }
 
 class VehiculeQueryValues extends MapQueryValues {
+/*
   @override
   Map<String, String> get casts {
-    return {'preferences': 'jsonb'};
+    return {'preferences': 'json'};
   }
-
+*/
   String? get id {
     return (values['id'] as String?);
   }
@@ -387,10 +392,23 @@ class VehiculeQueryValues extends MapQueryValues {
   }
 
   set driverId(int value) => values['driver_id'] = value;
+/*
+  List<String>? get preferences {
+    return  json.decode((values['preferences'] as String)).cast();
+  }*/
 
   List<String>? get preferences {
-    return json.decode((values['preferences'] as String)).cast();
+    final raw = values['preferences'];
+    if (raw == null) return null;
+    if (raw is String) {
+      return List<String>.from(json.decode(raw));
+    }
+    if (raw is List) {
+      return List<String>.from(raw);
+    }
+    return null;
   }
+
 
   set preferences(List<String>? value) =>
       values['preferences'] = json.encode(value);
@@ -430,7 +448,8 @@ class Vehicule extends VehiculeEntity {
     this.firstImmatriculation,
     this.nbPlaces,
     List<PhotoEntity>? photoList = const [],
-    required this.driver,
+    this.driver,
+    required this.driver_id,
     List<String>? preferences = const [],
     this.assurance,
   }) : photoList = List.unmodifiable(photoList ?? []),
@@ -473,13 +492,16 @@ class Vehicule extends VehiculeEntity {
   List<PhotoEntity>? photoList;
 
   @override
-  DriverEntity driver;
+  DriverEntity? driver;
+
+  int? driver_id;
 
   @override
   List<String>? preferences;
 
   @override
   AssuranceEntity? assurance;
+
 
   Vehicule copyWith({
     String? id,
@@ -494,6 +516,7 @@ class Vehicule extends VehiculeEntity {
     int? nbPlaces,
     List<PhotoEntity>? photoList,
     DriverEntity? driver,
+    int? driver_id,
     List<String>? preferences,
     AssuranceEntity? assurance,
   }) {
@@ -509,7 +532,7 @@ class Vehicule extends VehiculeEntity {
       firstImmatriculation: firstImmatriculation ?? this.firstImmatriculation,
       nbPlaces: nbPlaces ?? this.nbPlaces,
       photoList: photoList ?? this.photoList,
-      driver: driver ?? this.driver,
+      driver_id: driver_id ?? this.driver_id,
       preferences: preferences ?? this.preferences,
       assurance: assurance ?? this.assurance,
     );
@@ -598,6 +621,9 @@ class VehiculeSerializer extends Codec<Vehicule, Map> {
   VehiculeDecoder get decoder => const VehiculeDecoder();
 
   static Vehicule fromMap(Map map) {
+
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
     return Vehicule(
       id: map['id'] as String?,
       createdAt:
@@ -617,11 +643,10 @@ class VehiculeSerializer extends Codec<Vehicule, Map> {
       color: map['color'] as String?,
       energy: map['energy'] as String?,
       immatriculation: map['immatriculation'] as String?,
-      firstImmatriculation:
-          map['first_immatriculation'] != null
-              ? (map['first_immatriculation'] is DateTime
+      firstImmatriculation: map['first_immatriculation'] != null
+              ? ( map['first_immatriculation'] is DateTime
                   ? (map['first_immatriculation'] as DateTime)
-                  : DateTime.parse(map['first_immatriculation'].toString()))
+                  : DateTimeLocal().parseDate(map['first_immatriculation']))
               : null,
       nbPlaces: map['nb_places'] as int?,
       photoList:
@@ -632,14 +657,16 @@ class VehiculeSerializer extends Codec<Vehicule, Map> {
                 ),
               )
               : [],
-      driver:
-          map['driver'] != null
-              ? DriverSerializer.fromMap(map['driver'] as Map) as DriverEntity
-              : {} as DriverEntity,
+      driver:   map['driver'] != null
+          ? DriverSerializer.fromMap(map['driver'] as Map)
+          : null,
+      driver_id:  map['driver_id'] != null
+          ? map['driver_id'] as int?
+          : null,
       preferences:
           map['preferences'] is Iterable
-              ? (map['preferences'] as Iterable).cast<String>().toList()
-              : [],
+              ?  map['preferences'] //(map['preferences'] as Iterable).cast<String>().toList()
+              : null,
       assurance:
           map['assurance'] != null
               ? AssuranceSerializer.fromMap(map['assurance'] as Map)
@@ -686,6 +713,7 @@ abstract class VehiculeFields {
     nbPlaces,
     photoList,
     driver,
+    driver_id,
     preferences,
     assurance,
   ];
@@ -713,6 +741,8 @@ abstract class VehiculeFields {
   static const String photoList = 'photo_list';
 
   static const String driver = 'driver';
+
+  static const String driver_id = 'driver_id';
 
   static const String preferences = 'preferences';
 

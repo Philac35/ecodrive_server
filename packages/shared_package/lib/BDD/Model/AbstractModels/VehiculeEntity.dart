@@ -4,9 +4,12 @@ import 'package:optional/optional_internal.dart';
 
 
 
+import '../../../Library/DateTimeLibrary/DateTimeLocal.dart';
+import '../../../Library/StringLibrary/string_librairy.dart';
 import '../../Interface/entityInterface.dart';
 
 
+import '../../ORM/ORMExtension/SymbolToStringConverter.dart';
 import '../Abstract/PersonEntity.dart';
 import 'AssuranceEntity.dart';
 
@@ -42,6 +45,7 @@ abstract class VehiculeEntity extends Model implements EntityInterface{
   String? get immatriculation;
 
   DateTime? get firstImmatriculation;
+
   int? get nbPlaces;
 
   @HasMany()
@@ -49,7 +53,7 @@ abstract class VehiculeEntity extends Model implements EntityInterface{
 
   //Owner
   @BelongsTo()
-  DriverEntity get  driver;
+  DriverEntity? get  driver;
 
   List<String>?  get preferences;
 

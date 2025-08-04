@@ -15,7 +15,7 @@ class TravelMigration extends Migration {
       table.timeStamp('updated_at');
       table.declareColumn(
         'validate',
-        Column(type: ColumnType('jsonb'), length: 255),
+        Column(type: ColumnType('json'), length: 255),
       );
       table.timeStamp('departure_time');
       table.timeStamp('arrival_time');
@@ -256,7 +256,7 @@ class TravelQueryWhere extends QueryWhere {
 class TravelQueryValues extends MapQueryValues {
   @override
   Map<String, String> get casts {
-    return {'validate': 'jsonb'};
+    return {'validate': 'json'};
   }
 
   String? get id {
@@ -457,6 +457,8 @@ class TravelSerializer extends Codec<Travel, Map> {
   TravelDecoder get decoder => const TravelDecoder();
 
   static Travel fromMap(Map map) {
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
     return Travel(
       id: map['id'] as String?,
       createdAt:

@@ -1,5 +1,7 @@
 
 
+import "dart:convert";
+
 import "package:angel3_orm/angel3_orm.dart";
 import "package:angel3_serialize/angel3_serialize.dart";
 
@@ -8,9 +10,11 @@ import "package:angel3_serialize/angel3_serialize.dart";
 import "package:optional/optional_internal.dart";
 
 
+import "../../../Library/StringLibrary/string_librairy.dart";
 import '../../Interface/entityInterface.dart';
 
 
+import "../../ORM/ORMExtension/SymbolToStringConverter.dart";
 import "AdministratorEntity.dart";
 import "CommandEntity.dart";
 import "EmployeeEntity.dart";

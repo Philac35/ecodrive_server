@@ -21,7 +21,7 @@ class DriverMigration extends Migration {
       table.varChar('email', length: 128);
       table.declareColumn(
         'preferences',
-        Column(type: ColumnType('jsonb'), length: 255),
+        Column(type: ColumnType('json'), length: 255),
       );
       table.declare('person_id', ColumnType('int')).references('people', 'id');
       table.declare('user_id', ColumnType('int')).references('people', 'id');
@@ -66,11 +66,11 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
       'driver_id',
       additionalFields: const [
         'id',
+        'created_at',
         'updated_at',
         'title',
         'description',
         'note',
-        'created_at',
         'driver_id',
       ],
       trampoline: trampoline,
@@ -107,10 +107,11 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
 
   late PersonQuery _user;
 
+  /*
   @override
   Map<String, String> get casts {
     return {};
-  }
+  }*/
 
   @override
   String get tableName {
@@ -129,8 +130,8 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
       'gender',
       'credits',
       'email',
-      'person_id',
       'preferences',
+      'person_id',
       'user_id',
     ];
     return _selectedFields.isEmpty
@@ -171,10 +172,9 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
       gender: fields.contains('gender') ? (row[6] as String?) : null,
       credits: fields.contains('credits') ? mapToDouble(row[7]) : 0.0,
       email: fields.contains('email') ? (row[8] as String?) : null,
-      preferences:
-          fields.contains('preferences') ? (row[10] as List<String>?) : null,
-      person: {} as PersonEntity,
-      user: {} as UserEntity,
+      preferences:  fields.contains('preferences') ? List<String>.from(json.decode(row[10])) : null,
+      person: null ,
+      user: null ,
 
     );
     if (row.length > 12) {
@@ -191,6 +191,7 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
     }
     if (row.length > 28) {
       var modelOpt = PersonQuery().parseRow(row.skip(28).take(9).toList());
+     print('DriverEntity L194: type of model Opt ${modelOpt.runtimeType}');
       modelOpt.ifPresent((m) {
         model = model.copyWith(user: m as UserEntity);
       });
@@ -293,8 +294,8 @@ class DriverQueryWhere extends QueryWhere {
       gender = StringSqlExpressionBuilder(query, 'gender'),
       credits = NumericSqlExpressionBuilder<double>(query, 'credits'),
       email = StringSqlExpressionBuilder(query, 'email'),
-      personId = NumericSqlExpressionBuilder<int>(query, 'person_id'),
       preferences = ListSqlExpressionBuilder(query, 'preferences'),
+      personId = NumericSqlExpressionBuilder<int>(query, 'person_id'),
       userId = NumericSqlExpressionBuilder<int>(query, 'user_id');
 
   final NumericSqlExpressionBuilder<int> id;
@@ -341,10 +342,11 @@ class DriverQueryWhere extends QueryWhere {
 }
 
 class DriverQueryValues extends MapQueryValues {
+  /*
   @override
   Map<String, String> get casts {
-    return {'preferences': 'jsonb'};
-  }
+    return {'preferences': 'json'};
+  }*/
 
   String? get id {
     return (values['id'] as String?);
@@ -456,8 +458,6 @@ class Driver extends DriverEntity {
     this.email,
     this.photo,
     this.authUser,
-    this.administrator,
-    this.employee,
     required this.person,
 
     List<CommandEntity>? commandList = const [],
@@ -509,11 +509,6 @@ Driver.empty();
   @override
   AuthUserEntity? authUser;
 
-  @override
-  AdministratorEntity? administrator;
-
-  @override
-  EmployeeEntity? employee;
 
   @override
   PersonEntity? person;
@@ -551,8 +546,6 @@ Driver.empty();
     String? email,
     PhotoEntity? photo,
     AuthUserEntity? authUser,
-    AdministratorEntity? administrator,
-    EmployeeEntity? employee,
     PersonEntity? person,
     DriverEntity? driver,
     List<CommandEntity>? commandList,
@@ -575,8 +568,8 @@ Driver.empty();
       email: email ?? this.email,
       photo: photo ?? this.photo,
       authUser: authUser ?? this.authUser,
-      administrator: administrator ?? this.administrator,
-      employee: employee ?? this.employee,
+     //  administrator: administrator ?? this.administrator,
+     // employee: employee ?? this.employee,
       person: person ?? this.person,
       commandList: commandList ?? this.commandList,
       authUserEntity: authUserEntity ?? this.authUserEntity,
@@ -602,13 +595,12 @@ Driver.empty();
         other.email == email &&
         other.photo == photo &&
         other.authUser == authUser &&
-        other.administrator == administrator &&
-        other.employee == employee &&
+
         other.person == person &&
              ListEquality<CommandEntity>(
           DefaultEquality<CommandEntity>(),
         ).equals(other.commandList, commandList) &&
-        other.authUserEntity == authUserEntity &&
+       // other.authUserEntity == authUserEntity &&
         ListEquality<NoticeEntity>(
           DefaultEquality<NoticeEntity>(),
         ).equals(other.notices, notices) &&
@@ -634,8 +626,7 @@ Driver.empty();
       email,
       photo,
       authUser,
-      administrator,
-      employee,
+
       person,
       commandList,
       authUserEntity,
@@ -659,6 +650,14 @@ Driver.empty();
   @override
   // TODO: implement driver
   DriverEntity? get driver => user?.driver;
+
+  @override
+  // TODO: implement administrator
+  AdministratorEntity? get administrator => throw UnimplementedError();
+
+  @override
+  // TODO: implement employee
+  EmployeeEntity? get employee => throw UnimplementedError();
 
 
 
@@ -693,83 +692,85 @@ class DriverSerializer extends Codec<Driver, Map> {
   @override
   DriverDecoder get decoder => const DriverDecoder();
 
+  /*
+  This shouldn' be in driver of Driver
+   administrator:
+      map['administrator'] != null
+          ? AdministratorSerializer.fromMap(map['administrator'] as Map)
+          : null,*/
   static Driver fromMap(Map map) {
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
     return Driver(
       id: map['id'] as String?,
       createdAt:
-          map['created_at'] != null
-              ? (map['created_at'] is DateTime
-                  ? (map['created_at'] as DateTime)
-                  : DateTime.parse(map['created_at'].toString()))
-              : null,
+      map['created_at'] != null
+          ? (map['created_at'] is DateTime
+          ? (map['created_at'] as DateTime)
+          : DateTime.parse(map['created_at'].toString()))
+          : null,
       updatedAt:
-          map['updated_at'] != null
-              ? (map['updated_at'] is DateTime
-                  ? (map['updated_at'] as DateTime)
-                  : DateTime.parse(map['updated_at'].toString()))
-              : null,
+      map['updated_at'] != null
+          ? (map['updated_at'] is DateTime
+          ? (map['updated_at'] as DateTime)
+          : DateTime.parse(map['updated_at'].toString()))
+          : null,
       firstname: map['firstname'] as String?,
       lastname: map['lastname'] as String?,
-      age: map['age'] as int?,
+      age: map['age'] != null ? map['age'] is String ? int.parse(map['age']) as int?:map['age'] as int?:null,
       gender: map['gender'] as String?,
-      credits: map['credits']!=null ?  map['credits'] as double:0.0,
+      credits: map['credits']!=null ?
+      map['credits'] is String ? double.parse(map['credits']) as double :0.0
+          : null,
       email: map['email'] as String?,
       photo:
-          map['photo'] != null
-              ? PhotoSerializer.fromMap(map['photo'] as Map)
-              : null,
+      map['photo'] != null
+          ? PhotoSerializer.fromMap(map['photo'] as Map)
+          : null,
       authUser:
-          map['auth_user'] != null
-              ? AuthUserSerializer.fromMap(map['auth_user'] as Map)
-              : null,
-      administrator:
-          map['administrator'] != null
-              ? AdministratorSerializer.fromMap(map['administrator'] as Map)
-              : null,
-      employee:
-          map['employee'] != null
-              ? EmployeeSerializer.fromMap(map['employee'] as Map)
-              : null,
+      map['auth_user'] != null
+          ? AuthUserSerializer.fromMap(map['auth_user'] as Map)
+          : null,
       person:
-          map['person'] != null
-              ? PersonSerializer.fromMap(map['person'] as Map) as PersonEntity
-              : Person.empty,
+      map['person'] != null
+          ? PersonSerializer.fromMap(map['person'] as Map) as PersonEntity
+          : Person.empty,
       commandList:
-          map['command_list'] is Iterable
-              ? List.unmodifiable(
-                ((map['command_list'] as Iterable).whereType<Map>()).map(
-                  CommandSerializer.fromMap,
-                ),
-              )
-              : [],
+      map['command_list'] is Iterable
+          ? List.unmodifiable(
+        ((map['command_list'] as Iterable).whereType<Map>()).map(
+          CommandSerializer.fromMap,
+        ),
+      )
+          : null,
       authUserEntity:
-          map['auth_user_entity'] != null
-              ? AuthUserSerializer.fromMap(map['auth_user_entity'] as Map)
-              : AuthUserSerializer.fromMap({}),
+      map['auth_user_entity'] != null
+          ? AuthUserSerializer.fromMap(map['auth_user_entity'] as Map)
+          : null,
       notices:
-          map['notices'] is Iterable
-              ? List.unmodifiable(
-                ((map['notices'] as Iterable).whereType<Map>()).map(
-                  NoticeSerializer.fromMap,
-                ),
-              )
-              : [],
+      map['notices'] is Iterable
+          ? List.unmodifiable(
+        ((map['notices'] as Iterable).whereType<Map>()).map(
+          NoticeSerializer.fromMap,
+        ),
+      )
+          : null,
       preferences:
-          map['preferences'] is Iterable
-              ? (map['preferences'] as Iterable).cast<String>().toList()
-              : [],
+      map['preferences'] is Iterable
+          ? (map['preferences'] as Iterable).cast<String>().toList()
+          : null,
       user:
-          map['user'] != null
-              ? UserSerializer.fromMap(map['user'] as Map) as UserEntity
-              : UserSerializer.fromMap({}),
+      map['user'] != null
+          ? UserSerializer.fromMap(map['user'] as Map) as UserEntity
+          : null,
       drivingLicence:
-          map['driving_licence'] != null
-              ? DrivingLicenceSerializer.fromMap(map['driving_licence'] as Map)
-              : DrivingLicenceSerializer.fromMap({}),
+      map['driving_licence'] != null
+          ? DrivingLicenceSerializer.fromMap(map['driving_licence'] as Map)
+          : null,
       vehicule:
-          map['vehicule'] != null
-              ? VehiculeSerializer.fromMap(map['vehicule'] as Map)
-              : VehiculeSerializer.fromMap({}),
+      map['vehicule'] != null
+          ? VehiculeSerializer.fromMap(map['vehicule'] as Map)
+          : null,
     );
   }
 
@@ -790,13 +791,11 @@ class DriverSerializer extends Codec<Driver, Map> {
       'email': model.email,
       'photo': PhotoSerializer.toMap(model.photo),
       'auth_user': AuthUserSerializer.toMap(model.authUser),
-      'administrator': AdministratorSerializer.toMap(model.administrator),
-      'employee': EmployeeSerializer.toMap(model.employee),
+
       'person': PersonSerializer.toMap(model.person),
       'driver': DriverSerializer.toMap(model.driver),
-      'command_list':
-          model.commandList?.map((m) => CommandSerializer.toMap(m)).toList(),
-      'auth_user_entity': AuthUserSerializer.toMap(model.authUserEntity),
+      'command_list': model.commandList?.map((m) => CommandSerializer.toMap(m)).toList(),
+     // 'auth_user_entity': AuthUserSerializer.toMap(model.authUserEntity),
       'notices': model.notices?.map((m) => NoticeSerializer.toMap(m)).toList(),
       'preferences': model.preferences,
       'user': UserSerializer.toMap(model.user),
@@ -804,6 +803,9 @@ class DriverSerializer extends Codec<Driver, Map> {
       'vehicule': VehiculeSerializer.toMap(model.vehicule),
     };
   }
+}
+
+class StringLibrary {
 }
 
 abstract class DriverFields {
@@ -819,8 +821,8 @@ abstract class DriverFields {
     email,
     photo,
     authUser,
-    administrator,
-    employee,
+  //  administrator,
+   // employee,
     person,
     driver,
     commandList,
@@ -854,9 +856,6 @@ abstract class DriverFields {
 
   static const String authUser = 'auth_user';
 
-  static const String administrator = 'administrator';
-
-  static const String employee = 'employee';
 
   static const String person = 'person';
 

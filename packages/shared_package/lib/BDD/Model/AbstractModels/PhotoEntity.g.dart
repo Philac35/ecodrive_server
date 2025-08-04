@@ -18,7 +18,7 @@ class PhotoMigration extends Migration {
       table.varChar('description', length: 256);
       table.declareColumn(
         'photo',
-        Column(type: ColumnType('jsonb'), length: 255),
+        Column(type: ColumnType('json'), length: 255),
       );
       table.declare('person_id', ColumnType('int')).references('people', 'id');
       table
@@ -94,7 +94,6 @@ class PhotoQuery extends Query<Photo, PhotoQueryWhere> {
         'id',
         'created_at',
         'updated_at',
-        'id_int',
         'driver_id',
         'identification_number',
         'document_pdf',
@@ -176,7 +175,7 @@ class PhotoQuery extends Query<Photo, PhotoQueryWhere> {
       title: fields.contains('title') ? (row[3] as String?) : null,
       uri: fields.contains('uri') ? (row[4] as String?) : null,
       description: fields.contains('description') ? (row[5] as String?) : null,
-      photo: fields.contains('photo') ? (row[6] as Uint8List?) : null,
+      photo: fields.contains('photo') ? Uint8ListJsonConverter().jsonStrToUint(row[6]) : null,
     );
     if (row.length > 10) {
       var modelOpt = PersonQuery().parseRow(row.skip(10).take(9).toList());
@@ -275,7 +274,7 @@ class PhotoQueryWhere extends QueryWhere {
 class PhotoQueryValues extends MapQueryValues {
   @override
   Map<String, String> get casts {
-    return {'photo': 'jsonb'};
+    return {'photo': 'json'};
   }
 
   String? get id {
@@ -506,6 +505,8 @@ class PhotoSerializer extends Codec<Photo, Map> {
   PhotoDecoder get decoder => const PhotoDecoder();
 
   static Photo fromMap(Map map) {
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
     return Photo(
       id: map['id'] as String?,
       createdAt:

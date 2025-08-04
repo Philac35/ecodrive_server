@@ -354,6 +354,9 @@ class Administrator extends AdministratorEntity {
   PersonEntity? person;
 
   @override
+  String? personId;
+
+  @override
   AuthUserEntity? authUserEntity;
 
   Administrator copyWith({
@@ -496,6 +499,8 @@ class AdministratorSerializer extends Codec<Administrator, Map> {
   AdministratorDecoder get decoder => const AdministratorDecoder();
 
   static Administrator fromMap(Map map) {
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
     return Administrator(
       id: map['id'] as String?,
       createdAt:
