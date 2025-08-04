@@ -6,14 +6,13 @@ import 'package:runtime_type/runtime_type.dart';
 import 'package:shared_package/BDD/Interface/entityInterface.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/AddressEntity.dart';
 import 'package:shared_package/Controller/AddressController.dart';
-import 'package:shared_package/Controller/Controller.dart';
+
 import 'package:shared_package/Controller/Index/Controller_index.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
-import 'package:shared_package/Controller/Index/Index_ControllerFunction.dart';
+
 
 //typedef EntityHandler = FutureOr<Response> Function(Request request, {String? id});
-
 class RouteEntityBuilder<T> {
 
   String? base;
@@ -63,7 +62,7 @@ class RouteEntityBuilder<T> {
         //Requests without id parameters
         return (Request request) async {
           try {
-            //call Entity.functionMap                      //call function     //We can provide a list of parameters or a Map cf null, Map<Symbol,dynamic>
+            //call Entity.functionMap      //call function     //We can provide a list of parameters or a Map cf null, Map<Symbol,dynamic>
 
             var controller=ControllerIndex[controllerName]!() ;
             await controller?.ready; //Check that repository is initialized.
@@ -73,7 +72,7 @@ class RouteEntityBuilder<T> {
                 request.params.cast<Symbol, dynamic>()) ??
                 {
                   queryT.value.replaceFirst(queryT.value[0],
-                      queryT.value[0].toUpperCase()): 'no response'
+                      queryT.value[0].toUpperCase()): 'No Response'
                 };
 
 
@@ -87,6 +86,8 @@ class RouteEntityBuilder<T> {
       }
 
   }
+
+
 
 
 
@@ -133,6 +134,7 @@ class RouteEntityBuilder<T> {
     }
 
       buildPostRoutes() {
+        final stopwatch = Stopwatch()..start();
         List<String> queryType = ["create", "update"];
         final classType = RuntimeType<T>().toString();
         final controllerName = '${T.toString()}Controller';
@@ -148,7 +150,7 @@ class RouteEntityBuilder<T> {
             var headers = <String, String>{"content-type": "application/json"};
 
             final contentType = request.headers['content-type'] ?? '';
-            Map<Symbol, dynamic> namedParams = {};
+
 
             if (contentType.contains('application/json')) {
               final bodyString = await request.readAsString();
@@ -156,18 +158,18 @@ class RouteEntityBuilder<T> {
             //  print("RouteEntityBuilder L103, Body: $bodyString");
               final Map<String, dynamic> body = jsonDecode(bodyString);
               data = body;
-              namedParams = {
-                //Type Symbol is used for reflection
-                for (var entry in body.entries) Symbol(entry.key): entry.value
-              };
+
             } else
             if (contentType.contains('application/x-www-form-urlencoded')) {
               final bodyString = await request.readAsString();
               final formData = Uri.splitQueryString(bodyString);
-              namedParams = {
-                for (var entry in formData.entries) Symbol(entry.key): entry
-                    .value
-              };
+
+
+              if(formData['id']!=null) {
+                formData['id'] = formData['id'] is int ? formData['id'].toString()! : formData['id']!;
+              }
+            data=formData;
+
             } else if (contentType.contains('multipart/form-data')) {
               // Use a package like shelf_multipart to parse
               return Response(
@@ -178,22 +180,22 @@ class RouteEntityBuilder<T> {
 
             // print("RoutesEntityBuilder L123, debug NamedParameter (Symbol):  $namedParams");
             //var controller=controllerIndex[controllerName];
+           // print("RoutesEntityBuilder L182, debug Request:${data.toString()}");
+
+
 
             var controller=ControllerIndex[controllerName]!.call() ;
             await controller?.ready; //Check that repository is initialized.
-            ret = await Function.apply(
-                controller!.functionMap![queryT]!,
-                [namedParams]
-                // I set the Map in a List != to the third optional parameters
-            ) ??
-                {
-                  queryT.replaceFirst(
-                      queryT[0], queryT[0].toUpperCase()): 'no response'
-                };
+             var createupdate=controller!.functionMap![queryT]! as Function;
+
+           var res=  createupdate(data);
+           if(res!=null){ret={queryT:await res};}
+           else{ ret = {queryT: 'no response'};}
 
             print('RoutesEntityBuilder L161, Response :${ret.toString()}');
            // print('RoutesEntityBuilder L162, Response :${jsonEncode(ret)}');
 
+            print('Router Response: ${stopwatch.elapsedMilliseconds}ms');
 
               return Response.ok(jsonEncode(ret), headers: headers);
           });

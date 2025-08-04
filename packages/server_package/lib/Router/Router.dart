@@ -29,6 +29,7 @@ class FRouter {
   FRouter() {
     getConfiguration();
     router = Router();
+
     getRoutes();
 
   }
