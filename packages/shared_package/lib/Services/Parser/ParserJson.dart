@@ -7,7 +7,7 @@ class ParserJson<T> implements ParserJsonInterface {
   ParserJson(this.jsonObject);
 
   @override
-  Map<String, dynamic> decode(String jsonString) {
+  Map<String, dynamic>? decode(String jsonString) {
     try {
       if (jsonObject != null) {
         return jsonObject as Map<String, dynamic>;
@@ -16,7 +16,7 @@ class ParserJson<T> implements ParserJsonInterface {
       }
     } catch (e) {
       print('Error decoding JSON: $e');
-      return {};
+      return null;
     }
   }
 
@@ -40,4 +40,8 @@ class ParserJson<T> implements ParserJsonInterface {
     final encodedMap = encode(input);
     return encodedMap != null ? json.encode(encodedMap) : '{}';
   }
+
+
+
+
 }

@@ -30,7 +30,7 @@ class HiveService implements Service {
     await Hive.initFlutter(); // Initialize Hive for Flutter
     boxname!=null? await Hive.openBox<String>(boxname):await Hive.openBox<String>(_defaultBoxName); // Open a default box
     print('Hive logging system initialized');
-  }
+  } 
 
   Future<Box<String>> openBox(String boxName) async {
     if (boxName.isEmpty) {
