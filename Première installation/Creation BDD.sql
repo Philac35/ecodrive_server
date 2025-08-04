@@ -1,5 +1,8 @@
-CREATE DATABASE EcorideBDD ;
-USE EcorideBDD;
+CREATE DATABASE Ecoride_development ;
+
+
+USE Ecoride_development;
+
 
 CREATE TABLE address (
     id INT AUTO_INCREMENT NOT NULL,
@@ -11,7 +14,8 @@ CREATE TABLE address (
     postcode VARCHAR(5),
     city VARCHAR(64),
     country VARCHAR(64),
-    createdAt DATETIME
+    created_at DATETIME,
+    updated_at DATETIME
 );
 
 CREATE TABLE photo (
@@ -20,7 +24,8 @@ CREATE TABLE photo (
     title VARCHAR(64),
     url VARCHAR(128),
     description VARCHAR(256),
-    createdAt DATETIME
+    created_at DATETIME,
+    updated_at DATETIME
 );
 
 CREATE TABLE authUser (
@@ -28,7 +33,9 @@ CREATE TABLE authUser (
     PRIMARY KEY (id),
     identifiant VARCHAR(64),
     password VARCHAR(128),
-    role VARCHAR(64)
+    role VARCHAR(64),
+    created_at DATETIME,
+    updated_at DATETIME
 );
 
 CREATE TABLE notice (
@@ -37,7 +44,8 @@ CREATE TABLE notice (
     title VARCHAR(64),
     description VARCHAR(256),
     note INT,
-    createdAt DATETIME
+    created_at DATETIME,
+    updated_at DATETIME
 );
 
 CREATE TABLE user (
@@ -54,7 +62,8 @@ CREATE TABLE user (
     email VARCHAR(128),
     photo_id INT,
     authUser_id INT,
-    createdAt DATETIME,
+    created_at DATETIME,
+    updated_at DATETIME,
     FOREIGN KEY (address_id) REFERENCES address(id),
     FOREIGN KEY (photo_id) REFERENCES photo(id),
     FOREIGN KEY (authUser_id) REFERENCES authUser(id)
@@ -74,11 +83,13 @@ CREATE TABLE driver (
     email VARCHAR(128),
     photo_id INT,
     authUser_id INT,
-    createdAt DATETIME,
     notice_id INT,
     preferences JSON,
-    drivingLicense VARCHAR(128),
+    drivingLicense_id INT,
+    created_at DATETIME,
+    updated_at DATETIME,
     FOREIGN KEY (address_id) REFERENCES address(id),
+    FOREIGN KEY (driving_licences_id) REFERENCES driving_licences(id),
     FOREIGN KEY (photo_id) REFERENCES photo(id),
     FOREIGN KEY (authUser_id) REFERENCES authUser(id),
     FOREIGN KEY (notice_id) REFERENCES notice(id)
@@ -96,7 +107,8 @@ CREATE TABLE employee (
     email VARCHAR(128),
     photo_id INT,
     authUser_id INT,
-    createdAt DATETIME,
+    created_at DATETIME,
+    updated_at DATETIME,
     FOREIGN KEY (address_id) REFERENCES address(id),
     FOREIGN KEY (photo_id) REFERENCES photo(id),
     FOREIGN KEY (authUser_id) REFERENCES authUser(id)
@@ -114,7 +126,8 @@ CREATE TABLE administrator (
     email VARCHAR(128),
     photo_id INT,
     authUser_id INT,
-    createdAt DATETIME,
+    created_at DATETIME,
+    updated_at DATETIME,
     FOREIGN KEY (address_id) REFERENCES address(id),
     FOREIGN KEY (photo_id) REFERENCES photo(id),
     FOREIGN KEY (authUser_id) REFERENCES authUser(id)
@@ -130,7 +143,8 @@ CREATE TABLE itinerary (
     dateArrival DATETIME,
     eco BOOLEAN,
     DURATION DATETIME,
-    createdAt DATETIME,
+    created_at DATETIME,
+    updated_at DATETIME,
     FOREIGN KEY (addressDeparture_id) REFERENCES address(id),
     FOREIGN KEY (addressArrival_id) REFERENCES address(id)
 );
@@ -146,7 +160,9 @@ CREATE TABLE vehicule (
     firstImmatriculation DATETIME,
     nbPlace INT,
     preferences VARCHAR(255),
-    assurance_url VARCHAR(128)
+    assurance_url VARCHAR(128),
+    created_at DATETIME,
+    updated_at DATETIME,
 );
 
 CREATE TABLE travel (
@@ -173,6 +189,8 @@ CREATE TABLE commande (
     unitaryPrice FLOAT,
     totalHT FLOAT,
     totalTTC FLOAT,
+    created_at DATETIME,
+    updated_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
