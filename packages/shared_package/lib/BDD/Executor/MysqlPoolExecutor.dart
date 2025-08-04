@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:logging/logging.dart';
 import 'package:mysql_client/mysql_client.dart';
+import 'package:shared_package/BDD/ManageBDD.dart';
 
 import 'MySqlTransactionExecutor.dart';
 
@@ -10,11 +12,11 @@ class MySqlPoolExecutor extends QueryExecutor {
   late Logger _logger;
 
   final MySQLConnectionPool _pool;
-
+  late final stopwatch;
 
   MySqlPoolExecutor(this._pool, {Logger? logger}) {
     _logger = logger ?? Logger('MySqlExecutor');
-
+     stopwatch = Stopwatch()..start();
     // _connection != null ? print('orm_mysql MysqlExecutor L14, debug : connection is null'):
     //print('orm_mysql L14, debug : connection is null');
   }
@@ -85,16 +87,34 @@ class MySqlPoolExecutor extends QueryExecutor {
 
   @override
   Future<List<List>> query(
-      String tableName, String query, Map<String, dynamic> substitutionValues,
-      {String returningQuery = '',
+      String tableName,
+      String query,
+      Map<String,
+      dynamic> substitutionValues,
+      { String returningQuery = '',
         String resultQuery = '',
         List<String> returningFields = const []}) async {
-    // Change @id -> ?
+
+     late List<List> ret;
+    //manage preferences of Vehicule
+    if (substitutionValues.containsKey('preferences')) {
+      var prefs = substitutionValues['preferences'];
+      if (prefs == null) {
+        substitutionValues['preferences'] = null;
+      } else if (prefs is List) {
+        substitutionValues['preferences'] = jsonEncode(prefs);
+      }
+      // else if it's already a String, assume it's encoded JSON
+    }
+
+    //Substitution system : Change @parameter -> ?
     for (var name in substitutionValues.keys) {
       query = query.replaceAll('@$name', ':$name');
-
+     // print("MysqlPoolExecutor L99 query:$query");
       // Convert UTC time to local time
       var value = substitutionValues[name];
+
+     //Utilistation du system temporel local
       if (value is DateTime && value.isUtc) {
         var t = value.toLocal();
         //_logger.fine('Datetime deteted: $name');
@@ -104,22 +124,36 @@ class MySqlPoolExecutor extends QueryExecutor {
       }
     }
 
+
     //_logger.fine('Query: $query');
     //_logger.fine('Values: $substitutionValues');
     //_logger.fine('Returning Query: $returningQuery');
+    //print("MysqlPoolExecutor L130 query:$query");
 
     if (returningQuery.isNotEmpty) {
       // Handle insert, update and delete
       // Retrieve back the inserted record
+
+
+
+      //INSERT
       if (query.startsWith("INSERT")) {
-        // _connection != null ? print('orm_mysql L107, debug : connection is null'):
+        // _connection != null ? print('orm_mysql L127, debug : connection is null'):
+       // print("MysqlPoolExecutor L143 substitutions values:$substitutionValues");
 
-        var result = await _pool.execute(query, substitutionValues);
 
-        //logger.fine(result.lastInsertID);
+      print("MysqlPoolExecutor L142 ${query.toString()}");
+        IResultSet result;
+        try {
+          result = await _pool.execute(query, substitutionValues).timeout(const Duration(minutes: 2));
+          print('Insert in BDD: ${stopwatch.elapsedMilliseconds}ms');
+
+          //print("MysqlPoolExecutor L149 result:$result");
+          print('Last id : ${result.lastInsertID}');
 
         query = returningQuery;
         //logger.fine('Result.insertId: ${result.insertId}');
+
         // Has primary key
         if (returningQuery.endsWith('.id=?')) {
           query = query.replaceAll("?", ":id");
@@ -128,12 +162,19 @@ class MySqlPoolExecutor extends QueryExecutor {
         } else {
           query = _convertSQL(query, substitutionValues);
         }
-      } else if (query.startsWith("UPDATE")) {
+        }catch(e){print("MysqlPoolExecutor L152, query : error :$e");}
+      }
+
+      //UPDATE
+      else if (query.startsWith("UPDATE")) {
+        try{
         await _pool.execute(query, substitutionValues);
+      }catch(e){print("MysqlPoolExecutor L159, Update query : error :$e");}
         query = returningQuery;
       }
     }
 
+    //DELETE
     // Select the deleted records prior to being delete
     var isDeleteQuery = query.startsWith("DELETE");
     List<List<dynamic>> deletedResults = [];
@@ -142,25 +183,50 @@ class MySqlPoolExecutor extends QueryExecutor {
       //_logger.fine('Select query for delete: $selectQuery');
 
       deletedResults = await _pool
-          .execute(selectQuery, substitutionValues)
+          .execute(selectQuery, substitutionValues)// it deletes nothing here, it returns selection
+          .timeout(const Duration(minutes: 1))
           .then((results) {
         return results.rows.map((r) => r.typedAssoc().values.toList()).toList();
-      });
+      })
+       .catchError((onError){print("MysqlPoolExecutor L157, Delete query : error :$onError");});
+
+
     }
 
     //_logger.fine('Query 2: $query');
     //_logger.fine('Values 2: $substitutionValues');
+    //query=query.replaceFirst('assurances.document_pdf,','');
 
-    // Handle select
+
+    // Execute Delete or Select Query,
+    // Select last entry from BDD for an Insert
+    // Return parseSQLResult
+
+
     return _pool.execute(query, substitutionValues).then((results) {
+      print('2nd query in BDD: ${stopwatch.elapsedMilliseconds}ms');
       if (isDeleteQuery) {
         return deletedResults;
       } else {
         //return results.rows.map((r) => r.typedAssoc().values.toList()).toList();
-        return parseSQLResult(results);
+
+        var ret =parseSQLResult(results);
+        print('parse 2nd result: ${stopwatch.elapsedMilliseconds}ms');
+        // print('MysqlPoolExecutor L203 , FromResultSet $ret');
+        return ret;
       }
-    });
+    }).timeout(const Duration(minutes: 3, seconds: 30))
+
+        .catchError((e){print("MysqlPoolExecutor L171, Select query : error :$e");});
+
+
+   // return ret ;
   }
+
+
+
+
+
 
   String _convertSQL(String query, Map<String, dynamic> substitutionValues) {
     var newQuery = query;
@@ -182,9 +248,9 @@ class MySqlPoolExecutor extends QueryExecutor {
       for (var i = 0; i < row.numOfColumns; i++) {
         var val = row.typedColAt(i);
 
-        //retResult.add(colTypes[i].convertStringValueToProvidedType(val));
         retResult.add(val);
       }
+
       mappedResult.add(retResult);
     }
 

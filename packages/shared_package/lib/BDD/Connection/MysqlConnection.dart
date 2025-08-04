@@ -114,7 +114,7 @@ class MysqlConnection implements ConnectionInterface {
         // timeoutInSeconds: configuration['timeout_in_seconds'] as int ?? 30, // idem
         secure: bool.parse(configuration['USE_SSL']!)  ?? false,
         maxConnections: 10,
-        timeoutMs : timeoutMs?? 10000,
+        timeoutMs : timeoutMs?? 120000,
 
         //collation : 'utf8mb4_general_ci'  // not required
       );

@@ -23,6 +23,8 @@ import '../Model/AbstractModels/TravelEntity.dart';
 import '../Model/AbstractModels/UserEntity.dart';
 import '../Model/AbstractModels/VehiculeEntity.dart';
 
+
+//Must be run at root level, with the path to this file
 void main() async {
   MySQLConnection mysqlConn;
   MySqlMigrationRunner? runner;
@@ -55,29 +57,36 @@ void main() async {
       //Caution to the order, FK must be set after the creation of Tables
       //FK are set with alter queries. (We could do it directly in Entity migration if you want to have fun with ordered the classes.
       migrations: [
-        PersonMigration(),
-        AuthUserMigration(),
-        AddressMigration(),
-        AdministratorMigration(),
-        AssuranceMigration(),
-        DriverMigration(),
+        //PersonMigration(),
+        //AuthUserMigration(),
+        //AddressMigration(),
+        //AdministratorMigration(),
+        //AssuranceMigration(),
+        //DriverMigration(),
         DrivingLicenceMigration(),
-        EmployeeMigration(),
-        ItineraryMigration(),
-        NoticeMigration(),
-        PhotoMigration(),
-        TravelMigration(),
-        UserMigration(),
-        VehiculeMigration(),
+        //EmployeeMigration(),
+        //ItineraryMigration(),
+        //NoticeMigration(),
+        //PhotoMigration(),
+        //TravelMigration(),
+        //UserMigration(),
+        //VehiculeMigration(),
 
          ],
     );
 
     // Run the migrations
     try {
-      await runner.up();
-      // await runner.rollback();
-      //await runner.reset();
+
+      String command="up";
+      switch(command){
+        case "up":await runner.up();
+        case "rollback":await runner.rollback();
+        case "reset":await runner.reset();
+      }
+
+
+
     } catch (errorRunner) {
       print("run_migration L82, Error Runner UP : $errorRunner");
     }
