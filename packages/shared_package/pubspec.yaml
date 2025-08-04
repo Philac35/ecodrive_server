@@ -18,6 +18,7 @@ dependencies:
   angel3_migration: ^8.4.0
   angel3_migration_runner: ^8.4.1
   angel3_serialize: ^8.3.0
+  archive: ^4.0.7
   asn1lib: ^1.5.9
   basic_utils: ^5.7.0
   dotenv: ^4.2.0
