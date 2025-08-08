@@ -70,7 +70,9 @@ dev_dependencies:
   build_runner: ^2.4.15
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
+  test: ^1.25.15
+  test_api: ^0.7.4
+  test_core: ^0.6.8
 
 workspace:
   - 'packages/application_package'
