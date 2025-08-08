@@ -63,9 +63,9 @@ class ListVoyagesState extends State<ListVoyages> {
           return ListTile(
             title: Text(
               'Heure de départ : ${travel.departureTime}, '
-                  'Départ: ${travel.itinerary.addressDeparture?.city} - '
-                  'Arrivée : ${travel.itinerary.addressArrival?.city}, '
-                  'Durée estimée : ${travel.itinerary.duration}',
+                  'Départ: ${travel.itinerary!.addressDeparture?.city} - '
+                  'Arrivée : ${travel.itinerary!.addressArrival?.city}, '
+                  'Durée estimée : ${travel.itinerary!.duration}',
             ),
             onTap: () {
               try {
