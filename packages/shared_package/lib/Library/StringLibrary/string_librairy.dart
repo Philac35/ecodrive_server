@@ -28,9 +28,9 @@ class StringLib {
   }
 
   static String snakeToCamel(String entry) {
-    final reg = RegExp(r'_[a-z]');
+    final reg = RegExp(r'_([a-z])');
 
-    var result = entry.replaceAllMapped(reg, (Match m) => '${m.group(0)!.toUpperCase()}');
+    var result = entry.replaceAllMapped(reg, (Match m) => '${m.group(1)!.toUpperCase()}');
     if (result.startsWith('A-Z')) {
       result = result.firstToLowerCase();
     }
