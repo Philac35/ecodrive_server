@@ -36,6 +36,7 @@ class AdministratorMigration extends Migration {
 class AdministratorQuery extends Query<Administrator, AdministratorQueryWhere> {
   AdministratorQuery({super.parent, Set<String>? trampoline}) {
     trampoline ??= <String>{};
+    if (trampoline.contains(tableName)) return; // Modification E.H 6/08/2025 17h56 Prevent recursion!
     trampoline.add(tableName);
     _where = AdministratorQueryWhere(this);
     leftJoin(
@@ -52,6 +53,10 @@ class AdministratorQuery extends Query<Administrator, AdministratorQueryWhere> {
         'gender',
         'credits',
         'email',
+        'address_id',
+        'photo_id',
+        'auth_user_id',
+        'user_id',
       ],
       trampoline: trampoline,
     );
@@ -128,10 +133,13 @@ class AdministratorQuery extends Query<Administrator, AdministratorQueryWhere> {
       gender: fields.contains('gender') ? (row[6] as String?) : null,
       credits: fields.contains('credits') ? mapToDouble(row[7]) : 0.0,
       email: fields.contains('email') ? (row[8] as String?) : null,
-      person: {} as PersonEntity,
+      personId:fields.contains('person_id')
+           ? row[8] is String
+             ? int.parse(row[8]):row[8]
+            :null
     );
-    if (row.length > 10) {
-      var modelOpt = PersonQuery().parseRow(row.skip(10).take(9).toList());
+    if (row.length > 10) {  // We could have a solution based on EntityQuery().fields.length. here administrator
+      var modelOpt = PersonQuery().parseRow(row.skip(10).take(15).toList());
       modelOpt.ifPresent((m) {
         model = model.copyWith(person: m);
       });
@@ -259,6 +267,12 @@ class AdministratorQueryValues extends MapQueryValues {
 
   set email(String? value) => values['email'] = value;
 
+  int get addressId {
+    return (values['address_id'] as int);
+  }
+
+  set addressId(int? value) => values['address_id'] = value;
+
   int get personId {
     return (values['person_id'] as int);
   }
@@ -297,11 +311,15 @@ class Administrator extends AdministratorEntity {
     required this.credits,
     this.email,
     this.photo,
+    this.photoId,
+    this.address,
+    this.addressId,
     this.authUser,
     this.user,
     this.administrator,
     this.employee,
-    required this.person,
+    this.person,
+    this.personId,
     this.authUserEntity,
   }) ;
 
@@ -336,7 +354,14 @@ class Administrator extends AdministratorEntity {
   String? email;
 
   @override
+  AddressEntity? address;
+
+  int? addressId;
+
+  @override
   PhotoEntity? photo;
+
+  int? photoId;
 
   @override
   AuthUserEntity? authUser;
@@ -354,7 +379,7 @@ class Administrator extends AdministratorEntity {
   PersonEntity? person;
 
   @override
-  String? personId;
+  int? personId;
 
   @override
   AuthUserEntity? authUserEntity;
@@ -369,7 +394,10 @@ class Administrator extends AdministratorEntity {
     String? gender,
     double? credits,
     String? email,
+    AddressEntity? address,
+    int? addressId,
     PhotoEntity? photo,
+    int? photoId,
     AuthUserEntity? authUser,
     UserEntity? user,
     AdministratorEntity? administrator,
@@ -387,7 +415,10 @@ class Administrator extends AdministratorEntity {
       gender: gender ?? this.gender,
       credits: credits ?? this.credits,
       email: email ?? this.email,
+      address: address?? this.address,
+      addressId: addressId?? this.addressId,
       photo: photo ?? this.photo,
+      photoId: photoId ?? this.photoId,
       authUser: authUser ?? this.authUser,
       user: user ?? this.user,
       administrator: administrator ?? this.administrator,
@@ -409,7 +440,10 @@ class Administrator extends AdministratorEntity {
         other.gender == gender &&
         other.credits == credits &&
         other.email == email &&
+        other.address == address &&
+        other.addressId == addressId &&
         other.photo == photo &&
+        other.photoId == photoId &&
         other.authUser == authUser &&
         other.user == user &&
         other.administrator == administrator &&
@@ -430,7 +464,9 @@ class Administrator extends AdministratorEntity {
       gender,
       credits,
       email,
+      address,
       photo,
+      photoId,
       authUser,
       user,
       administrator,
@@ -442,7 +478,7 @@ class Administrator extends AdministratorEntity {
 
   @override
   String toString() {
-    return 'Administrator(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email, photo=$photo, authUser=$authUser, user=$user, administrator=$administrator, employee=$employee, person=$person, authUserEntity=$authUserEntity)';
+    return 'Administrator(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email, address=$address,addressId=$addressId,photo=$photo, authUser=$authUser, user=$user, administrator=$administrator, employee=$employee, person=$person, authUserEntity=$authUserEntity)';
   }
 
   Map<String, dynamic> toJson() {
@@ -521,6 +557,13 @@ class AdministratorSerializer extends Codec<Administrator, Map> {
       gender: map['gender'] as String?,
       credits: map['credits'] is Null ? 0.0: map['credits'] as double,
       email: map['email'] as String?,
+      address:
+           map['address'] != null
+              ? AddressSerializer.fromMap(map['address'] as Map)
+              : null,
+      addressId: map['address_id'] != null
+              ?  map['address_id'] as int?
+              :null,
       photo:
           map['photo'] != null
               ? PhotoSerializer.fromMap(map['photo'] as Map)
@@ -567,6 +610,8 @@ class AdministratorSerializer extends Codec<Administrator, Map> {
       'gender': model.gender,
       'credits': model.credits,
       'email': model.email,
+      'address':model.address,
+      'addressId':model.addressId,
       'photo': PhotoSerializer.toMap(model.photo),
       'auth_user': AuthUserSerializer.toMap(model.authUser),
       'user': UserSerializer.toMap(model.user),
@@ -589,6 +634,8 @@ abstract class AdministratorFields {
     gender,
     credits,
     email,
+    address,
+    addressId,
     photo,
     authUser,
     user,
@@ -615,6 +662,10 @@ abstract class AdministratorFields {
   static const String credits = 'credits';
 
   static const String email = 'email';
+
+  static const String address = 'address';
+
+  static const String addressId = 'addressId';
 
   static const String photo = 'photo';
 

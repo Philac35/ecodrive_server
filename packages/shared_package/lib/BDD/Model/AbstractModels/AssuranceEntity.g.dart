@@ -41,10 +41,18 @@ class AssuranceMigration extends Migration {
 // **************************************************************************
 
 class AssuranceQuery extends Query<Assurance, AssuranceQueryWhere> {
+
   AssuranceQuery({super.parent, Set<String>? trampoline}) {
+
+    bool isActive = !(trampoline?.contains(tableName) ?? false);
     trampoline ??= <String>{};
+
     trampoline.add(tableName);
+
     _where = AssuranceQueryWhere(this);
+
+    if(isActive){
+
     leftJoin(
       _vehicule = VehiculeQuery(trampoline: trampoline, parent: this),
       'vehicule_id',
@@ -62,21 +70,27 @@ class AssuranceQuery extends Query<Assurance, AssuranceQueryWhere> {
         'nb_places',
         'preferences',
       ],
-      trampoline: trampoline,
+     trampoline: trampoline,
     );
+
     leftJoin(
         _photo = PhotoQuery(trampoline: trampoline, parent: this),
         'photo_id',
         'id',
         additionalFields: const [
-        'id',
-        'created_at',
-        'updated_at',
-        'title',
-        'uri',
-        'description',
-        'photo',
-         ],);
+          'id',
+          'created_at',
+          'updated_at',
+          'title',
+          'uri',
+          'description',
+          'photo',
+          'person_id',
+          'vehicule_id',
+          'driving_licence_id',
+         ],
+       trampoline: trampoline,
+    );}
 
   }
 
@@ -106,6 +120,7 @@ class AssuranceQuery extends Query<Assurance, AssuranceQueryWhere> {
 
   @override
   List<String> get fields {
+
     const localFields = [
       'id',
       'created_at',
@@ -117,6 +132,7 @@ class AssuranceQuery extends Query<Assurance, AssuranceQueryWhere> {
       'vehicule_id',
       'photo_id'
     ];
+
     return _selectedFields.isEmpty
         ? localFields
         : localFields
@@ -125,6 +141,7 @@ class AssuranceQuery extends Query<Assurance, AssuranceQueryWhere> {
   }
 
   AssuranceQuery select(List<String> selectedFields) {
+
     _selectedFields = selectedFields;
     return this;
   }
@@ -136,6 +153,7 @@ class AssuranceQuery extends Query<Assurance, AssuranceQueryWhere> {
 
   @override
   AssuranceQueryWhere newWhereClause() {
+
     return AssuranceQueryWhere(this);
   }
 
@@ -145,7 +163,10 @@ class AssuranceQuery extends Query<Assurance, AssuranceQueryWhere> {
     if (row.every((x) => x == null)) {
       return Optional.empty();
     }
-    var model = Assurance(
+
+
+    print('L151 row : $row');
+    var   model = Assurance(
       id: fields.contains('id') ? row[0].toString() : null,
       createdAt:
           fields.contains('created_at') ? mapToNullableDateTime(row[1]) : null,
@@ -158,11 +179,18 @@ class AssuranceQuery extends Query<Assurance, AssuranceQueryWhere> {
             row[4] is String?  Uint8ListJsonConverter().jsonStrToUint(row[4])
             :CompressionLib().decompressBlob(row[4])
           : null,
-      photo: null,
-      title: fields.contains('title') ? (row[5] as String?) : null,   //Caution to order
-      path: fields.contains('path') ? (row[6] as String?) : null,
-      vehicule_id: fields.contains('vehicule_id') ?  (int.parse(row[7]) as int?): null,
-      photo_id: fields.contains('photo_id') ? (row[8] as String?) : null,
+      title: fields.contains('title') ? row[5] is String? //Caution to order
+                                        ?(row[5] as String?) :null
+                                      : null,
+      path: fields.contains('path') ? row[6] is String
+                                        ?(row[6] as String?) :null
+                                     : null,
+      vehiculeId: fields.contains('vehicule_id') ? row[7] is String ?
+                                                     int.parse(row[7]) : null
+                                                 :null,
+      photoId: fields.contains('photo_id') ? row[8] is String ?
+                                                    int.parse(row[8]) : null
+                                                :null,
       );
     if (row.length > 9) {
       var modelOpt = VehiculeQuery().parseRow(row.skip(9).take(12).toList());
@@ -171,11 +199,12 @@ class AssuranceQuery extends Query<Assurance, AssuranceQueryWhere> {
       });
     };
     if (row.length > 22) {
-      var modelOpt = PhotoQuery().parseRow(row.skip(22).take(29).toList());
+      var modelOpt = PhotoQuery().parseRow(row.skip(22).take(10).toList());
       modelOpt.ifPresent((m) {
         model = model.copyWith(photo: m);
       });
     };
+
     return Optional.of(model);
   }
 
@@ -190,6 +219,7 @@ class AssuranceQuery extends Query<Assurance, AssuranceQueryWhere> {
 }
 
 class AssuranceQueryWhere extends QueryWhere {
+
   AssuranceQueryWhere(AssuranceQuery query)
     : id = NumericSqlExpressionBuilder<int>(query, 'id'),
       createdAt = DateTimeSqlExpressionBuilder(query, 'created_at'),
@@ -298,21 +328,26 @@ class AssuranceQueryValues extends MapQueryValues {
   set photoId(int value) => values['photo_id'] = value;
 
   void copyFrom(Assurance model) {
+
     createdAt = model.createdAt;
     updatedAt = model.updatedAt;
     identificationNumber = model.identificationNumber ;
     documentPdf = model.documentPdf;
     title = model.title;
     path =  model.path;
-    if (model.vehicule_id != null) {
-      values['vehicule_id'] = model.vehicule_id;
+    if (model.vehiculeId != null) {
+      values['vehicule_id'] = model.vehiculeId;
     }
-    else if (model.vehicule != null) {
-      values['vehicule_id'] = int.parse(model.vehicule!.id!);
+    if (model.vehicule != null) {
+      values['vehicule'] = VehiculeSerializer.toMap(model.vehicule);
     }
 
-    else if (model.photo != null) {
-      values['photo_id'] = model.photo!.id;
+    if (model.photoId != null) {
+      values['photo_id'] =model.photoId;
+      //values['photo_id'] = model.photo!.id;
+    }
+    if (model.photo != null) {
+      values['photo'] = PhotoSerializer.toMap(model.photo);
     }
   }
 }
@@ -323,6 +358,7 @@ class AssuranceQueryValues extends MapQueryValues {
 
 @generatedSerializable
 class Assurance extends AssuranceEntity {
+
   Assurance({
     this.id,
     this.createdAt,
@@ -330,12 +366,13 @@ class Assurance extends AssuranceEntity {
     this.identificationNumber,  //was required
     this.documentPdf,
     this.photo,
-    this.photo_id,
+    this.photoId,
     required this.title,
     this.path,
     this.vehicule, //was required
-    this.vehicule_id
-  });
+    this.vehiculeId
+  }){
+}
 
   /// A unique identifier corresponding to this item.
   @override
@@ -360,7 +397,7 @@ class Assurance extends AssuranceEntity {
   PhotoEntity? photo;
 
   @override
-  String? photo_id;
+  int? photoId;
 
   @override
   String? title;
@@ -372,7 +409,7 @@ class Assurance extends AssuranceEntity {
   VehiculeEntity? vehicule;
 
   @override
-  int? vehicule_id;
+  int? vehiculeId;
 
 
 
@@ -385,12 +422,15 @@ class Assurance extends AssuranceEntity {
     int? identificationNumber,
     Uint8List? documentPdf,
     PhotoEntity? photo,
+    int? photoId,
     String? title,
     String? path,
     VehiculeEntity? vehicule,
-    int? vehicule_id,
+    int? vehiculeId,
 
   }) {
+
+
     return Assurance(
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
@@ -398,15 +438,17 @@ class Assurance extends AssuranceEntity {
       identificationNumber: identificationNumber ?? this.identificationNumber,
       documentPdf: documentPdf ?? this.documentPdf,
       photo: photo ?? this.photo,
+      photoId: photoId ?? this.photoId,
       title: title ?? this.title,
-      path: path ?? this.path!,
+      path: path ?? this.path,
       vehicule: vehicule ?? this.vehicule,
-      vehicule_id: vehicule_id?? this.vehicule_id
+      vehiculeId: vehiculeId?? this.vehiculeId
     );
   }
 
   @override
   bool operator ==(other) {
+
     return other is AssuranceEntity &&
         other.id == id &&
         other.createdAt == createdAt &&
@@ -414,14 +456,17 @@ class Assurance extends AssuranceEntity {
         other.identificationNumber == identificationNumber &&
         other.documentPdf == documentPdf &&
         other.photo == photo &&
+        other.photoId == photoId &&
         other.title == title &&
         other.path == path &&
         other.vehicule == vehicule&&
-        other.vehicule_id== vehicule_id;
+        other.vehiculeId== vehiculeId;
   }
 
   @override
   int get hashCode {
+
+
     return hashObjects([
       id,
       createdAt,
@@ -429,16 +474,17 @@ class Assurance extends AssuranceEntity {
       identificationNumber,
       documentPdf,
       photo,
+      photoId,
       title,
       path,
       vehicule,
-      vehicule_id
+      vehiculeId
     ]);
   }
 
   @override
   String toString() {
-    return 'Assurance(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, identificationNumber=$identificationNumber, documentPdf=$documentPdf, photo=$photo, title=$title, path=$path,vehicule=$vehicule, vehicule_id=$vehicule_id)';
+    return 'Assurance(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, identificationNumber=$identificationNumber, documentPdf=$documentPdf, photo=$photo, title=$title, path=$path,vehicule=$vehicule, vehiculeId=$vehiculeId)';
   }
 
   Map<String, dynamic> toJson() {
@@ -508,14 +554,14 @@ class AssuranceSerializer extends Codec<Assurance, Map> {
           map['photo'] != null
               ? PhotoSerializer.fromMap(map['photo'] as Map)
               : null,
-      photo_id:map['photo_id'].toString()??null,
+      photoId:int.parse(map['photo_id'])??null,
       title: map['title'] as String?,
       path: map['path'] != null ? map['path'] as String :null,
       vehicule:
           map['vehicule'] != null
               ? VehiculeSerializer.fromMap(map['vehicule'] as Map) as VehiculeEntity
               : null,
-      vehicule_id:map['vehicule_id']!=null?
+      vehiculeId:map['vehicule_id']!=null?
         (map['vehicule_id'] is String) ? int.parse(map['vehicule_id']): map['vehicule_id']
                :null,
     );
@@ -525,6 +571,7 @@ class AssuranceSerializer extends Codec<Assurance, Map> {
   }
 
   static Map<String, dynamic>? toMap(AssuranceEntity? model) {
+
     if (model == null) {
       return null;
       throw FormatException("Assurance L470, Required field [model] cannot be null");
@@ -537,15 +584,21 @@ class AssuranceSerializer extends Codec<Assurance, Map> {
       'document_pdf':
           model.documentPdf != null ? model.documentPdf : null,
       'photo': PhotoSerializer.toMap(model.photo),
+      'photoId':model.photoId,
       'title': model.title,
       'path' : model.path,
       'vehicule': VehiculeSerializer.toMap(model.vehicule),
-      'vehicule_id': model.vehicule_id
+      'vehiculeId': model.vehiculeId
     };
   }
 }
 
 abstract class AssuranceFields {
+
+AssuranceFields(){
+
+}
+
   static const List<String> allFields = <String>[
     id,
     createdAt,
@@ -553,10 +606,11 @@ abstract class AssuranceFields {
     identificationNumber,
     documentPdf,
     photo,
+    photoId,
     title,
     path,
     vehicule,
-    vehicule_id
+    vehiculeId
   ];
 
   static const String id = 'id';
@@ -571,11 +625,13 @@ abstract class AssuranceFields {
 
   static const String photo = 'photo';
 
+  static const String photoId = 'photo_id';
+
   static const String title = 'title';
 
   static const String path = 'path';
 
   static const String vehicule = 'vehicule';
 
-  static const String vehicule_id = 'vehicule_id';
+  static const String vehiculeId = 'vehicule_id';
 }

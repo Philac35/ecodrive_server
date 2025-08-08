@@ -20,6 +20,8 @@ class ItineraryMigration extends Migration {
         'geo_point_list',
         Column(type: ColumnType('json'), length: 255),
       );
+      table.declare('address_departure_id', ColumnType('int')).references('addresses', 'id');
+      table.declare('address_arrival_id', ColumnType('int')).references('addresses', 'id');
       table.declare('travel_id', ColumnType('int')).references('travels', 'id');
     });
   }
@@ -37,8 +39,49 @@ class ItineraryMigration extends Migration {
 class ItineraryQuery extends Query<Itinerary, ItineraryQueryWhere> {
   ItineraryQuery({super.parent, Set<String>? trampoline}) {
     trampoline ??= <String>{};
+    if (trampoline.contains(tableName)) return; // Modification E.H 6/08/2025 17h56 Prevent recursion!
     trampoline.add(tableName);
     _where = ItineraryQueryWhere(this);
+    leftJoin(
+      _addressDeparture = AddressQuery(trampoline: trampoline, parent: this),
+      'address_departure_id',
+      'id',
+      additionalFields: const [
+        'id',
+        'created_at',
+        'updated_at',
+        'person_id',
+        'itinerary_id',
+        'number',
+        'type',
+        'address',
+        'complement_address',
+        'post_code',
+        'city',
+        'country',
+      ],
+      trampoline: trampoline,
+    );
+    leftJoin(
+      _addressArrival = AddressQuery(trampoline: trampoline, parent: this),
+      'address_arrival_id',
+      'id',
+      additionalFields: const [
+        'id',
+        'created_at',
+        'updated_at',
+        'person_id',
+        'itinerary_id',
+        'number',
+        'type',
+        'address',
+        'complement_address',
+        'post_code',
+        'city',
+        'country',
+      ],
+      trampoline: trampoline,
+    );
     leftJoin(
       _travel = TravelQuery(trampoline: trampoline, parent: this),
       'travel_id',
@@ -64,6 +107,8 @@ class ItineraryQuery extends Query<Itinerary, ItineraryQueryWhere> {
   ItineraryQueryWhere? _where;
 
   late TravelQuery _travel;
+  late AddressQuery _addressDeparture;
+  late AddressQuery _addressArrival;
 
   @override
   Map<String, String> get casts {
@@ -81,6 +126,8 @@ class ItineraryQuery extends Query<Itinerary, ItineraryQueryWhere> {
       'id',
       'created_at',
       'updated_at',
+      'address_departure_id',
+      'address_arrival_id',
       'price',
       'eco',
       'duration',
@@ -129,7 +176,19 @@ class ItineraryQuery extends Query<Itinerary, ItineraryQueryWhere> {
               : null,
     );
     if (row.length > 8) {
-      var modelOpt = TravelQuery().parseRow(row.skip(8).take(7).toList());
+      var modelOpt = AddressQuery().parseRow(row.skip(8).take(14).toList());
+      modelOpt.ifPresent((m) {
+        model = model.copyWith(addressDeparture: m);
+      });
+    }
+    if (row.length > 23) {
+      var modelOpt = AddressQuery().parseRow(row.skip(23).take(14).toList());
+      modelOpt.ifPresent((m) {
+        model = model.copyWith(addressArrival: m);
+      });
+    }
+    if (row.length > 38) {
+      var modelOpt = TravelQuery().parseRow(row.skip(38).take(7).toList());
       modelOpt.ifPresent((m) {
         model = model.copyWith(travel: m);
       });
@@ -152,6 +211,8 @@ class ItineraryQueryWhere extends QueryWhere {
     : id = NumericSqlExpressionBuilder<int>(query, 'id'),
       createdAt = DateTimeSqlExpressionBuilder(query, 'created_at'),
       updatedAt = DateTimeSqlExpressionBuilder(query, 'updated_at'),
+      addressDepartureId = NumericSqlExpressionBuilder<int>(query, 'address_departure_id'),
+      addressArrivalId = NumericSqlExpressionBuilder<int>(query, 'address_arrival_id'),
       price = NumericSqlExpressionBuilder<double>(query, 'price'),
       eco = BooleanSqlExpressionBuilder(query, 'eco'),
       duration = DateTimeSqlExpressionBuilder(query, 'duration'),
@@ -163,6 +224,10 @@ class ItineraryQueryWhere extends QueryWhere {
   final DateTimeSqlExpressionBuilder createdAt;
 
   final DateTimeSqlExpressionBuilder updatedAt;
+
+  final NumericSqlExpressionBuilder<int> addressDepartureId;
+
+  final NumericSqlExpressionBuilder<int> addressArrivalId;
 
   final NumericSqlExpressionBuilder<double> price;
 
@@ -180,6 +245,8 @@ class ItineraryQueryWhere extends QueryWhere {
       id,
       createdAt,
       updatedAt,
+      addressDepartureId,
+      addressArrivalId,
       price,
       eco,
       duration,
@@ -212,6 +279,30 @@ class ItineraryQueryValues extends MapQueryValues {
   }
 
   set updatedAt(DateTime? value) => values['updated_at'] = value;
+
+  Address? get addressDeparture {
+    return (values['address_departure'] as Address?);
+  }
+
+  set addressDeparture( Address? value) => values['address_departure_id'] = value;
+
+  int get addressDepartureId {
+    return (values['address_departure_id'] as int);
+  }
+
+  set addressDepartureId(int value) => values['address_departure_id'] = value;
+
+  Address? get addressArrival {
+    return (values['address_arrival'] as Address?);
+  }
+
+  set addressArrival( Address? value) => values['address_arrival_id'] = value;
+
+  int get addressArrivalId {
+    return (values['address_arrival_id'] as int);
+  }
+
+  set addressArrivalId(int value) => values['address_arrival_id'] = value;
 
   double? get price {
     return (values['price'] as double?) ?? 0.0;
@@ -295,7 +386,13 @@ class Itinerary extends ItineraryEntity {
   AddressEntity? addressDeparture;
 
   @override
+  int?  addressDepartureId;
+
+  @override
   AddressEntity? addressArrival;
+
+  @override
+  int?  addressArrivalId;
 
   @override
   bool? eco;
@@ -308,6 +405,9 @@ class Itinerary extends ItineraryEntity {
 
   @override
   TravelEntity? travel;
+
+  @override
+  int? travelId;
 
   Itinerary copyWith({
     String? id,
@@ -376,6 +476,8 @@ class Itinerary extends ItineraryEntity {
   Map<String, dynamic> toJson() {
     return ItinerarySerializer.toMap(this)!;
   }
+
+
 }
 
 // **************************************************************************
@@ -462,7 +564,9 @@ class ItinerarySerializer extends Codec<Itinerary, Map> {
       'updated_at': model.updatedAt?.toIso8601String(),
       'price': model.price,
       'address_departure': AddressSerializer.toMap(model.addressDeparture),
+      'address_departure_id': model.addressDepartureId,
       'address_arrival': AddressSerializer.toMap(model.addressArrival),
+      'address_arrival_id': model.addressArrivalId,
       'eco': model.eco,
       'duration': model.duration?.toIso8601String(),
       'geo_point_list': model.geoPointList,
@@ -478,7 +582,9 @@ abstract class ItineraryFields {
     updatedAt,
     price,
     addressDeparture,
+    addressDepartureId,
     addressArrival,
+    addressArrivalId,
     eco,
     duration,
     geoPointList,
@@ -495,7 +601,11 @@ abstract class ItineraryFields {
 
   static const String addressDeparture = 'address_departure';
 
+  static const String addressDepartureId = 'address_departure_id';
+
   static const String addressArrival = 'address_arrival';
+
+  static const String addressArrivalId = 'address_arrival_id';  
 
   static const String eco = 'eco';
 

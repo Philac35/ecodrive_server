@@ -39,13 +39,18 @@ class PhotoMigration extends Migration {
 // **************************************************************************
 // OrmGenerator
 // **************************************************************************
-
+ 
 class PhotoQuery extends Query<Photo, PhotoQueryWhere> {
   PhotoQuery({super.parent, Set<String>? trampoline}) {
     trampoline ??= <String>{};
-    if (trampoline.contains(tableName)) return; //  Modification E.H 2/07/2025 17h56 Prevent recursion!
+
+    bool isActive = !(trampoline?.contains(tableName) ?? false);//Prevent recurion
+
+
     trampoline.add(tableName);
     _where = PhotoQueryWhere(this);
+    if(isActive){
+
     leftJoin(
       _person = PersonQuery(trampoline: trampoline, parent: this),
       'person_id',
@@ -60,9 +65,14 @@ class PhotoQuery extends Query<Photo, PhotoQueryWhere> {
         'gender',
         'credits',
         'email',
+        'address_id',
+        'photo_id',
+        'auth_user_id',
+        'user_id',
       ],
       trampoline: trampoline,
     );
+
     leftJoin(
       _vehicule = VehiculeQuery(trampoline: trampoline, parent: this),
       'vehicule_id',
@@ -83,6 +93,7 @@ class PhotoQuery extends Query<Photo, PhotoQueryWhere> {
       ],
       trampoline: trampoline,
     );
+
     leftJoin(
       _drivingLicence = DrivingLicenceQuery(
         trampoline: trampoline,
@@ -100,7 +111,7 @@ class PhotoQuery extends Query<Photo, PhotoQueryWhere> {
         'title',
       ],
       trampoline: trampoline,
-    );
+    );}
   }
 
   @override
@@ -175,23 +186,25 @@ class PhotoQuery extends Query<Photo, PhotoQueryWhere> {
       title: fields.contains('title') ? (row[3] as String?) : null,
       uri: fields.contains('uri') ? (row[4] as String?) : null,
       description: fields.contains('description') ? (row[5] as String?) : null,
-      photo: fields.contains('photo') ? Uint8ListJsonConverter().jsonStrToUint(row[6]) : null,
+      photo: fields.contains('photo')
+          ? Uint8ListJsonConverter().jsonStrToUint(row[6])
+          : null,
     );
     if (row.length > 10) {
-      var modelOpt = PersonQuery().parseRow(row.skip(10).take(9).toList());
+      var modelOpt = PersonQuery().parseRow(row.skip(10).take(15).toList());
       modelOpt.ifPresent((m) {
         model = model.copyWith(person: m);
       });
     }
-    if (row.length > 19) {
-      var modelOpt = VehiculeQuery().parseRow(row.skip(19).take(12).toList());
+    if (row.length > 26) {
+      var modelOpt = VehiculeQuery().parseRow(row.skip(26).take(12).toList());
       modelOpt.ifPresent((m) {
         model = model.copyWith(vehicule: m);
       });
     }
-    if (row.length > 31) {
+    if (row.length > 39) {
       var modelOpt = DrivingLicenceQuery().parseRow(
-        row.skip(31).take(8).toList(),
+        row.skip(39).take(8).toList(),
       );
       modelOpt.ifPresent((m) {
         model = model.copyWith(drivingLicence: m);
@@ -220,19 +233,19 @@ class PhotoQuery extends Query<Photo, PhotoQueryWhere> {
 
 class PhotoQueryWhere extends QueryWhere {
   PhotoQueryWhere(PhotoQuery query)
-    : id = NumericSqlExpressionBuilder<int>(query, 'id'),
-      createdAt = DateTimeSqlExpressionBuilder(query, 'created_at'),
-      updatedAt = DateTimeSqlExpressionBuilder(query, 'updated_at'),
-      title = StringSqlExpressionBuilder(query, 'title'),
-      uri = StringSqlExpressionBuilder(query, 'uri'),
-      description = StringSqlExpressionBuilder(query, 'description'),
-      photo = ListSqlExpressionBuilder(query, 'photo'),
-      personId = NumericSqlExpressionBuilder<int>(query, 'person_id'),
-      vehiculeId = NumericSqlExpressionBuilder<int>(query, 'vehicule_id'),
-      drivingLicenceId = NumericSqlExpressionBuilder<int>(
-        query,
-        'driving_licence_id',
-      );
+      : id = NumericSqlExpressionBuilder<int>(query, 'id'),
+        createdAt = DateTimeSqlExpressionBuilder(query, 'created_at'),
+        updatedAt = DateTimeSqlExpressionBuilder(query, 'updated_at'),
+        title = StringSqlExpressionBuilder(query, 'title'),
+        uri = StringSqlExpressionBuilder(query, 'uri'),
+        description = StringSqlExpressionBuilder(query, 'description'),
+        photo = ListSqlExpressionBuilder(query, 'photo'),
+        personId = NumericSqlExpressionBuilder<int>(query, 'person_id'),
+        vehiculeId = NumericSqlExpressionBuilder<int>(query, 'vehicule_id'),
+        drivingLicenceId = NumericSqlExpressionBuilder<int>(
+          query,
+          'driving_licence_id',
+        );
 
   final NumericSqlExpressionBuilder<int> id;
 
@@ -362,18 +375,20 @@ class PhotoQueryValues extends MapQueryValues {
 
 @generatedSerializable
 class Photo extends PhotoEntity {
-  Photo({
-    this.id,
-    this.createdAt,
-    this.updatedAt,
-    this.title,
-    this.uri,
-    this.description,
-    this.photo,
-    this.person,
-    this.vehicule,
-    this.drivingLicence,
-  });
+  Photo(
+      {this.id,
+      this.createdAt,
+      this.updatedAt,
+      this.title,
+      this.uri,
+      this.description,
+      this.photo,
+      this.person,
+      this.personId,
+      this.vehicule,
+      this.vehiculeId,
+      this.drivingLicence,
+      this.drivingLicenceId});
 
   /// A unique identifier corresponding to this item.
   @override
@@ -403,23 +418,35 @@ class Photo extends PhotoEntity {
   PersonEntity? person;
 
   @override
+  int? personId;
+
+  @override
   VehiculeEntity? vehicule;
+
+  @override
+  int? vehiculeId;
 
   @override
   DrivingLicenceEntity? drivingLicence;
 
-  Photo copyWith({
-    String? id,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    String? title,
-    String? uri,
-    String? description,
-    Uint8List? photo,
-    PersonEntity? person,
-    VehiculeEntity? vehicule,
-    DrivingLicenceEntity? drivingLicence,
-  }) {
+  @override
+  int? drivingLicenceId;
+
+  Photo copyWith(
+      {String? id,
+      DateTime? createdAt,
+      DateTime? updatedAt,
+      String? title,
+      String? uri,
+      String? description,
+      Uint8List? photo,
+      int? photoId,
+      PersonEntity? person,
+      int? personId,
+      VehiculeEntity? vehicule,
+      int? vehiculeId,
+      DrivingLicenceEntity? drivingLicence,
+      int? drivingLicenceId}) {
     return Photo(
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
@@ -429,8 +456,11 @@ class Photo extends PhotoEntity {
       description: description ?? this.description,
       photo: photo ?? this.photo,
       person: person ?? this.person,
+      personId: personId ?? this.personId,
       vehicule: vehicule ?? this.vehicule,
+      vehiculeId: vehiculeId ?? this.vehiculeId,
       drivingLicence: drivingLicence ?? this.drivingLicence,
+      drivingLicenceId: drivingLicenceId ?? this.drivingLicenceId,
     );
   }
 
@@ -445,8 +475,11 @@ class Photo extends PhotoEntity {
         other.description == description &&
         ListEquality().equals(other.photo, photo) &&
         other.person == person &&
+        other.personId == personId &&
         other.vehicule == vehicule &&
-        other.drivingLicence == drivingLicence;
+        other.vehiculeId == vehiculeId &&
+        other.drivingLicence == drivingLicence &&
+        other.drivingLicenceId == drivingLicenceId;
   }
 
   @override
@@ -467,7 +500,7 @@ class Photo extends PhotoEntity {
 
   @override
   String toString() {
-    return 'Photo(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, title=$title, uri=$uri, description=$description, photo=$photo, person=$person, vehicule=$vehicule, drivingLicence=$drivingLicence)';
+    return 'Photo(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, title=$title, uri=$uri, description=$description, photo=$photo, person=$person,personId=$personId, vehicule=$vehicule, vehiculeId=$vehiculeId,drivingLicence=$drivingLicence,drivingLicenceId=$drivingLicenceId)';
   }
 
   Map<String, dynamic> toJson() {
@@ -505,54 +538,64 @@ class PhotoSerializer extends Codec<Photo, Map> {
   PhotoDecoder get decoder => const PhotoDecoder();
 
   static Photo fromMap(Map map) {
-    map=StringLib().camelToSnakeKeyFromMap(map);
+    map = StringLib().camelToSnakeKeyFromMap(map);
 
     return Photo(
       id: map['id'] as String?,
-      createdAt:
-          map['created_at'] != null
-              ? (map['created_at'] is DateTime
-                  ? (map['created_at'] as DateTime)
-                  : DateTime.parse(map['created_at'].toString()))
-              : null,
-      updatedAt:
-          map['updated_at'] != null
-              ? (map['updated_at'] is DateTime
-                  ? (map['updated_at'] as DateTime)
-                  : DateTime.parse(map['updated_at'].toString()))
-              : null,
+      createdAt: map['created_at'] != null
+          ? (map['created_at'] is DateTime
+              ? (map['created_at'] as DateTime)
+              : DateTime.parse(map['created_at'].toString()))
+          : null,
+      updatedAt: map['updated_at'] != null
+          ? (map['updated_at'] is DateTime
+              ? (map['updated_at'] as DateTime)
+              : DateTime.parse(map['updated_at'].toString()))
+          : null,
       title: map['title'] as String?,
       uri: map['uri'] as String?,
       description: map['description'] as String?,
-      photo:
-          map['photo'] is Uint8List
-              ? (map['photo'] as Uint8List)
-              : (map['photo'] is Iterable<int>
-                  ? Uint8List.fromList((map['photo'] as Iterable<int>).toList())
-                  : (map['photo'] is String
-                      ? Uint8List.fromList(
-                        base64.decode(map['photo'] as String),
-                      )
-                      : null)),
-      person:
-          map['person'] != null
-              ? PersonSerializer.fromMap(map['person'] as Map)
-              : null,
-      vehicule:
-          map['vehicule'] != null
-              ? VehiculeSerializer.fromMap(map['vehicule'] as Map)
-              : null,
-      drivingLicence:
-          map['driving_licence'] != null
-              ? DrivingLicenceSerializer.fromMap(map['driving_licence'] as Map)
-              : null,
+      photo: map['photo'] is Uint8List
+          ? (map['photo'] as Uint8List)
+          : (map['photo'] is Iterable<int>
+              ? Uint8List.fromList((map['photo'] as Iterable<int>).toList())
+              : (map['photo'] is String
+                  ? Uint8List.fromList(
+                      base64.decode(map['photo'] as String),
+                    )
+                  : null)),
+      person: map['person'] != null
+          ? PersonSerializer.fromMap(map['person'] as Map)
+          : null,
+      personId: map['person_id'] != null
+          ? map['person_id'] is String
+              ? int.parse(map['person_id'])
+              : map['person_id']
+          : null,
+      vehicule: map['vehicule'] != null
+          ? VehiculeSerializer.fromMap(map['vehicule'] as Map)
+          : null,
+      vehiculeId: map['vehicule_id'] != null
+          ? map['vehicule_id'] is String
+              ? int.parse(map['vehicule_id'])
+              : map['vehicule_id']
+          : null,
+      drivingLicence: map['driving_licence'] != null
+          ? DrivingLicenceSerializer.fromMap(map['driving_licence'] as Map)
+          : null,
+      drivingLicenceId: map['driving_licence_id'] != null
+          ? map['driving_licence_id'] is String
+              ? int.parse(map['driving_licence_id'])
+              : map['driving_Licence_id']
+          : null,
     );
   }
 
   static Map<String, dynamic>? toMap(PhotoEntity? model) {
     if (model == null) {
       return null;
-      throw FormatException("PhotoEntity L553,Required field [model] cannot be null");
+      throw FormatException(
+          "PhotoEntity L553,Required field [model] cannot be null");
     }
     return {
       'id': model.id,
@@ -563,8 +606,11 @@ class PhotoSerializer extends Codec<Photo, Map> {
       'description': model.description,
       'photo': model.photo != null ? base64.encode(model.photo!) : null,
       'person': PersonSerializer.toMap(model.person),
+      'personId': model.personId,
       'vehicule': VehiculeSerializer.toMap(model.vehicule),
-      'driving_licence': DrivingLicenceSerializer.toMap(model.drivingLicence),
+      'vehiculeId': model.vehiculeId,
+      'drivingLicence': DrivingLicenceSerializer.toMap(model.drivingLicence),
+      'drivingLicenceId': model.drivingLicenceId
     };
   }
 }
@@ -579,8 +625,11 @@ abstract class PhotoFields {
     description,
     photo,
     person,
+    personId,
     vehicule,
+    vehiculeId,
     drivingLicence,
+    drivingLicenceId
   ];
 
   static const String id = 'id';
@@ -599,7 +648,13 @@ abstract class PhotoFields {
 
   static const String person = 'person';
 
+  static const String personId = 'person_id';
+
   static const String vehicule = 'vehicule';
 
+  static const String vehiculeId = 'vehicule_id';
+
   static const String drivingLicence = 'driving_licence';
+
+  static const String drivingLicenceId = 'driving_licence_id';
 }

@@ -33,6 +33,7 @@ class NoticeMigration extends Migration {
 class NoticeQuery extends Query<Notice, NoticeQueryWhere> {
   NoticeQuery({super.parent, Set<String>? trampoline}) {
     trampoline ??= <String>{};
+    if (trampoline.contains(tableName)) return; // Modification E.H 6/08/2025 17h56 Prevent recursion!
     trampoline.add(tableName);
     _where = NoticeQueryWhere(this);
     leftJoin(
@@ -243,6 +244,7 @@ class Notice extends NoticeEntity {
     this.note,
     this.createdAt,
     this.driver,
+    this.driverId
   });
 
   /// A unique identifier corresponding to this item.
@@ -268,6 +270,9 @@ class Notice extends NoticeEntity {
   @override
   DriverEntity? driver;
 
+  @override
+  int? driverId;
+
   Notice copyWith({
     String? id,
     DateTime? updatedAt,
@@ -276,6 +281,7 @@ class Notice extends NoticeEntity {
     int? note,
     DateTime? createdAt,
     DriverEntity? driver,
+    driverId
   }) {
     return Notice(
       id: id ?? this.id,
@@ -285,6 +291,7 @@ class Notice extends NoticeEntity {
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,
       driver: driver ?? this.driver,
+      driverId: driverId ?? this.driverId,
     );
   }
 
@@ -297,7 +304,8 @@ class Notice extends NoticeEntity {
         other.description == description &&
         other.note == note &&
         other.createdAt == createdAt &&
-        other.driver == driver;
+        other.driver == driver&&
+        other.driverId == driverId;
   }
 
   @override
@@ -315,7 +323,7 @@ class Notice extends NoticeEntity {
 
   @override
   String toString() {
-    return 'Notice(id=$id, updatedAt=$updatedAt, title=$title, description=$description, note=$note, createdAt=$createdAt, driver=$driver)';
+    return 'Notice(id=$id, updatedAt=$updatedAt, title=$title, description=$description, note=$note, createdAt=$createdAt, driver=$driver, driverId=$driverId)';
   }
 
   Map<String, dynamic> toJson() {
@@ -376,7 +384,12 @@ class NoticeSerializer extends Codec<Notice, Map> {
           map['driver'] != null
               ? DriverSerializer.fromMap(map['driver'] as Map)
               : null,
+      driverId: map['driver_id'] != null
+          ? map['driver_id'] is String
+                ? int.parse(map['driver_id']):map['driver_id']
+          : null,
     );
+
   }
 
   static Map<String, dynamic>? toMap(NoticeEntity? model) {
@@ -392,6 +405,7 @@ class NoticeSerializer extends Codec<Notice, Map> {
       'note': model.note,
       'created_at': model.createdAt?.toIso8601String(),
       'driver': DriverSerializer.toMap(model.driver),
+      'driverId': model.driverId
     };
   }
 }
@@ -405,6 +419,7 @@ abstract class NoticeFields {
     note,
     createdAt,
     driver,
+    driverId
   ];
 
   static const String id = 'id';
@@ -420,4 +435,6 @@ abstract class NoticeFields {
   static const String createdAt = 'created_at';
 
   static const String driver = 'driver';
+
+  static const String driverId = 'driver_id';
 }

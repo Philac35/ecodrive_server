@@ -24,7 +24,7 @@ class DriverMigration extends Migration {
         Column(type: ColumnType('json'), length: 255),
       );
       table.declare('person_id', ColumnType('int')).references('people', 'id');
-      table.declare('user_id', ColumnType('int')).references('people', 'id');
+      table.declare('user_id', ColumnType('int')).references('user', 'id');
     });
   }
 
@@ -40,9 +40,13 @@ class DriverMigration extends Migration {
 
 class DriverQuery extends Query<Driver, DriverQueryWhere> {
   DriverQuery({super.parent, Set<String>? trampoline}) {
+    trampoline ??= <String>{};    bool isActive = !(trampoline?.contains(tableName) ?? false);
+
     trampoline ??= <String>{};
+    if (trampoline.contains(tableName)) return; // Modification E.H 6/08/2025 17h56 Prevent recursion!
     trampoline.add(tableName);
     _where = DriverQueryWhere(this);
+   if(isActive){
     leftJoin(
       _person = PersonQuery(trampoline: trampoline, parent: this),
       'person_id',
@@ -57,6 +61,11 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
         'gender',
         'credits',
         'email',
+        'address_id',
+        'photo_id',
+        'auth_user_id',
+        'user_id',
+
       ],
       trampoline: trampoline,
     );
@@ -92,6 +101,7 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
       ],
       trampoline: trampoline,
     );
+   }
   }
 
   @override
@@ -160,7 +170,9 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
     if (row.every((x) => x == null)) {
       return Optional.empty();
     }
-    var model = Driver(
+    var model;
+    try{
+     model = Driver(
       id: fields.contains('id') ? row[0].toString() : null,
       createdAt:
           fields.contains('created_at') ? mapToNullableDateTime(row[1]) : null,
@@ -172,29 +184,38 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
       gender: fields.contains('gender') ? (row[6] as String?) : null,
       credits: fields.contains('credits') ? mapToDouble(row[7]) : 0.0,
       email: fields.contains('email') ? (row[8] as String?) : null,
-      preferences:  fields.contains('preferences') ? List<String>.from(json.decode(row[10])) : null,
-      person: null ,
-      user: null ,
+      preferences:  fields.contains('preferences') ?  row[10] is String ?
+                                                      List<String>.from(json.decode(row[10])):null
+                                                   : null,
+      personId:  fields.contains('person_id') ?row[11] is String ?
+                                 int.parse(row[11]) : null
+                            :null,
+      userId: fields.contains('person_id') ?row[12] is String ?
+                                int.parse(row[12]) : null
+                          :null,
 
     );
-    if (row.length > 12) {
-      var modelOpt = PersonQuery().parseRow(row.skip(12).take(9).toList());
+    if (row.length > 13) {
+      var modelOpt = PersonQuery().parseRow(row.skip(13).take(15).toList());
       modelOpt.ifPresent((m) {
         model = model.copyWith(person: m);
       });
     }
-    if (row.length > 21) {
-      var modelOpt = NoticeQuery().parseRow(row.skip(21).take(7).toList());
+    if (row.length > 29) {
+      var modelOpt = NoticeQuery().parseRow(row.skip(29).take(7).toList());
       modelOpt.ifPresent((m) {
         model = model.copyWith(notices: [m]);
       });
     }
-    if (row.length > 28) {
-      var modelOpt = PersonQuery().parseRow(row.skip(28).take(9).toList());
+    if (row.length > 37) {
+      var modelOpt = PersonQuery().parseRow(row.skip(37).take(9).toList());
      print('DriverEntity L194: type of model Opt ${modelOpt.runtimeType}');
       modelOpt.ifPresent((m) {
         model = model.copyWith(user: m as UserEntity);
       });
+    }}
+    catch(e,s){print('L202,parseRow error : $e');
+    print('Stack:$s ');
     }
     return Optional.of(model);
   }
@@ -446,6 +467,7 @@ class DriverQueryValues extends MapQueryValues {
 
 @generatedSerializable
 class Driver extends DriverEntity {
+
   Driver({
     this.id,
     this.createdAt,
@@ -457,14 +479,18 @@ class Driver extends DriverEntity {
     this.credits,
     this.email,
     this.photo,
+    this.address,
+    this.addressId,
     this.authUser,
-    required this.person,
-
+     this.person,   //required
+    this.personId,
     List<CommandEntity>? commandList = const [],
+    List<int>? commandIdList = const [],
     this.authUserEntity,
     List<NoticeEntity>? notices = const [],
     List<String>? preferences = const [],
-    required this.user,
+     this.user, //required
+    this.userId,
     this.drivingLicence,
     this.vehicule,
   }) : commandList = List.unmodifiable(commandList ?? []),
@@ -504,6 +530,11 @@ Driver.empty();
   String? email;
 
   @override
+  AddressEntity? address;
+
+  int? addressId;
+
+  @override
   PhotoEntity? photo;
 
   @override
@@ -514,7 +545,13 @@ Driver.empty();
   PersonEntity? person;
 
   @override
+  int? personId;
+
+  @override
   List<CommandEntity>? commandList;
+
+  @override
+  List<int>? commandIdList;
 
   @override
   AuthUserEntity? authUserEntity;
@@ -527,6 +564,9 @@ Driver.empty();
 
   @override
   UserEntity? user;
+
+  @override
+  int? userId;
 
   @override
   DrivingLicenceEntity? drivingLicence;
@@ -544,6 +584,8 @@ Driver.empty();
     String? gender,
     double? credits,
     String? email,
+    AddressEntity? address,
+    int? addressId,
     PhotoEntity? photo,
     AuthUserEntity? authUser,
     PersonEntity? person,
@@ -566,6 +608,8 @@ Driver.empty();
       gender: gender ?? this.gender,
       credits: credits ?? this.credits,
       email: email ?? this.email,
+      address: address?? this.address,
+      addressId: addressId?? this.addressId,
       photo: photo ?? this.photo,
       authUser: authUser ?? this.authUser,
      //  administrator: administrator ?? this.administrator,
@@ -594,8 +638,9 @@ Driver.empty();
         other.credits == credits &&
         other.email == email &&
         other.photo == photo &&
+        other.address == address &&
+        other.addressId == addressId &&
         other.authUser == authUser &&
-
         other.person == person &&
              ListEquality<CommandEntity>(
           DefaultEquality<CommandEntity>(),
@@ -624,9 +669,9 @@ Driver.empty();
       gender,
       credits,
       email,
+      address,
       photo,
       authUser,
-
       person,
       commandList,
       authUserEntity,
@@ -640,7 +685,7 @@ Driver.empty();
 
   @override
   String toString() {
-    return 'Driver(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email, photo=$photo, authUser=$authUser, administrator=$administrator, employee=$employee, person=$person,  commandList=$commandList, authUserEntity=$authUserEntity, notices=$notices, preferences=$preferences, user=$user, drivingLicence=$drivingLicence, vehicule=$vehicule)';
+    return 'Driver(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email,address=$address,addressId=$addressId, photo=$photo, authUser=$authUser, administrator=$administrator, employee=$employee, person=$person,  commandList=$commandList, authUserEntity=$authUserEntity, notices=$notices, preferences=$preferences, user=$user, drivingLicence=$drivingLicence, vehicule=$vehicule)';
   }
 
   Map<String, dynamic> toJson() {
@@ -658,6 +703,11 @@ Driver.empty();
   @override
   // TODO: implement employee
   EmployeeEntity? get employee => throw UnimplementedError();
+
+  @override
+  // TODO: implement driverId
+  int? get driverId => user?.driverId;
+
 
 
 
@@ -723,6 +773,13 @@ class DriverSerializer extends Codec<Driver, Map> {
       map['credits'] is String ? double.parse(map['credits']) as double :0.0
           : null,
       email: map['email'] as String?,
+      address:
+      map['address'] != null
+          ? AddressSerializer.fromMap(map['address'] as Map)
+          : null,
+      addressId: map['address_id'] != null
+          ?  map['address_id'] as int?
+          :null,
       photo:
       map['photo'] != null
           ? PhotoSerializer.fromMap(map['photo'] as Map)
@@ -789,6 +846,8 @@ class DriverSerializer extends Codec<Driver, Map> {
       'gender': model.gender,
       'credits': model.credits,
       'email': model.email,
+      'address':model.address,
+      'addressId':model.addressId,
       'photo': PhotoSerializer.toMap(model.photo),
       'auth_user': AuthUserSerializer.toMap(model.authUser),
 
@@ -819,6 +878,8 @@ abstract class DriverFields {
     gender,
     credits,
     email,
+    address,
+    addressId,
     photo,
     authUser,
   //  administrator,
@@ -852,10 +913,13 @@ abstract class DriverFields {
 
   static const String email = 'email';
 
+  static const String address = 'address';
+
+  static const String addressId = 'addressId';
+
   static const String photo = 'photo';
 
   static const String authUser = 'auth_user';
-
 
   static const String person = 'person';
 

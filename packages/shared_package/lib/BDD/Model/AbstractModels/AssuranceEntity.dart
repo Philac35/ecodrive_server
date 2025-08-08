@@ -39,6 +39,7 @@ abstract class AssuranceEntity  extends  Model implements Document  {
   @override
   @HasOne(foreignKey: 'photo_id', foreignTable: 'photos')
   PhotoEntity? get photo;
+  int? get photoId;
 
   @override
   @Column(length: 64)
@@ -51,7 +52,7 @@ abstract class AssuranceEntity  extends  Model implements Document  {
   @BelongsTo(foreignTable:"vehicule",localKey:'vehicule_id',foreignKey: "id")
   VehiculeEntity?  get vehicule;
 
-  int? get vehicule_id;
+  int? get vehiculeId;
 
   /*Serialization
   factory AssuranceEntity .fromJson(Map<String, dynamic> json) {

@@ -34,14 +34,16 @@ abstract class AddressEntity extends Model implements EntityInterface
   String? get country ;
 
    //Owner
-    //@BelongsTo(foreignKey: 'person_id', foreignTable: 'persons')
-    @BelongsTo()
+    @BelongsTo(foreignKey: 'person_id', foreignTable: 'people')
+    //@BelongsTo()
    PersonEntity? get person;
+    int? get personId;
 
 
   //  @BelongsTo(foreignKey:'itineraries_id')
     @BelongsTo()
     ItineraryEntity? get itinerary;
+    int? get itineraryId;
 
   /*Serialization
   factory AddressEntity.fromJson(Map<String, dynamic> json)   {

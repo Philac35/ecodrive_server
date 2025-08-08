@@ -37,9 +37,12 @@ class AddressMigration extends Migration {
 
 class AddressQuery extends Query<Address, AddressQueryWhere> {
   AddressQuery({super.parent, Set<String>? trampoline}) {
+    bool isActive = !(trampoline?.contains(tableName) ?? false) ;// Prevent recursion
     trampoline ??= <String>{};
+
     trampoline.add(tableName);
     _where = AddressQueryWhere(this);
+    if(isActive){
     leftJoin(
       _person = PersonQuery(trampoline: trampoline, parent: this),
       'person_id',
@@ -72,7 +75,7 @@ class AddressQuery extends Query<Address, AddressQueryWhere> {
         'travel_id',
       ],
       trampoline: trampoline,
-    );
+    );}
   }
 
   @override
@@ -82,9 +85,9 @@ class AddressQuery extends Query<Address, AddressQueryWhere> {
 
   AddressQueryWhere? _where;
 
-  late PersonQuery _person;
+ PersonQuery? _person;
 
-  late ItineraryQuery _itinerary;
+  ItineraryQuery? _itinerary;
 
   @override
   Map<String, String> get casts {
@@ -144,23 +147,25 @@ class AddressQuery extends Query<Address, AddressQueryWhere> {
           fields.contains('created_at') ? mapToNullableDateTime(row[1]) : null,
       updatedAt:
           fields.contains('updated_at') ? mapToNullableDateTime(row[2]) : null,
-      number: fields.contains('number') ? mapToInt(row[5]) : null,
-      type: fields.contains('type') ? (row[6] as String?) : null,
-      address: fields.contains('address') ? (row[7] as String?) : '',
+      number: fields.contains('number') ? mapToInt(row[3]) : null,
+      type: fields.contains('type') ? (row[4] as String?) : null,
+      address: fields.contains('address') ? (row[5] as String?) : '',
       complementAddress:
-          fields.contains('complement_address') ? (row[8] as String?) : null,
-      postCode: fields.contains('post_code') ? (row[9] as String?) : null,
-      city: fields.contains('city') ? (row[10] as String?) : null,
-      country: fields.contains('country') ? (row[11] as String?) : null,
+          fields.contains('complement_address') ? (row[6] as String?) : null,
+      postCode: fields.contains('post_code') ? (row[7] as String?) : null,
+      city: fields.contains('city') ? (row[8] as String?) : null,
+      country: fields.contains('country') ? (row[9] as String?) : null,
+      personId: fields.contains('person_id') ? int.parse(row[10]) : null,
+      itineraryId: fields.contains('itinerary_id') ? int.parse(row[11]) : null,
     );
     if (row.length > 12) {
-      var modelOpt = PersonQuery().parseRow(row.skip(12).take(9).toList());
+      var modelOpt = PersonQuery().parseRow(row.skip(12).take(15).toList());
       modelOpt.ifPresent((m) {
         model = model.copyWith(person: m);
       });
     }
-    if (row.length > 21) {
-      var modelOpt = ItineraryQuery().parseRow(row.skip(21).take(8).toList());
+    if (row.length > 28) {
+      var modelOpt = ItineraryQuery().parseRow(row.skip(28).take(8).toList());
       modelOpt.ifPresent((m) {
         model = model.copyWith(itinerary: m);
       });
@@ -173,11 +178,11 @@ class AddressQuery extends Query<Address, AddressQueryWhere> {
     return parseRow(row);
   }
 
-  PersonQuery get person {
+  PersonQuery? get person {
     return _person;
   }
 
-  ItineraryQuery get itinerary {
+  ItineraryQuery? get itinerary {
     return _itinerary;
   }
 }
@@ -263,7 +268,13 @@ class AddressQueryValues extends MapQueryValues {
   }
 
   set updatedAt(DateTime? value) => values['updated_at'] = value;
+/*
+  Person? get person{
+    return (values['person'] as Person?);
+  }
 
+  set person(Person? value) => values['person'] = value;
+*/
   int get personId {
     return (values['person_id'] as int);
   }
@@ -328,9 +339,9 @@ class AddressQueryValues extends MapQueryValues {
     postCode = model.postCode;
     city = model.city;
     country = model.country;
-    if (model.person != null) {
+   /* if (model.person != null) {
       values['person_id'] = model.person?.id;
-    }
+    } */
     if (model.personId != null) {  //It should have both personId and person
       values['person_id'] = model.personId;
     }
@@ -353,6 +364,7 @@ class Address extends AddressEntity {
     this.person,
     this.personId,
     this.itinerary,
+    this.itineraryId,
     this.number,
     this.type,
     this.address, // was required in original Model
@@ -379,10 +391,12 @@ class Address extends AddressEntity {
   PersonEntity? person;
 
   @override
-  String? personId;
+  int? personId;
 
   @override
   ItineraryEntity? itinerary;
+
+  int? itineraryId;
 
   @override
   int? number;
@@ -534,11 +548,12 @@ class AddressSerializer extends Codec<Address, Map> {
           map['person'] != null
               ? PersonSerializer.fromMap(map['person'] as Map)
               : null,
-      personId: map['person_id']?.toString(),
+      personId: int.parse( map['person_id']),
       itinerary:
           map['itinerary'] != null
               ? ItinerarySerializer.fromMap(map['itinerary'] as Map)
               : null,
+      itineraryId: int.parse( map['itinerary_id']),
       number: map['number'] as int?,
       type: map['type'] as String?,
       address: map['address'] as String?,
@@ -559,7 +574,9 @@ class AddressSerializer extends Codec<Address, Map> {
       'created_at': model.createdAt?.toIso8601String(),
       'updated_at': model.updatedAt?.toIso8601String(),
       'person': PersonSerializer.toMap(model.person),
+      'personId':model.personId,
       'itinerary': ItinerarySerializer.toMap(model.itinerary),
+      'itineraryId':model.itineraryId,
       'number': model.number,
       'type': model.type,
       'address': model.address,
@@ -576,8 +593,10 @@ abstract class AddressFields {
     id,
     createdAt,
     updatedAt,
-    person,
+  //  person,
+    personId,
     itinerary,
+    itineraryId,
     number,
     type,
     address,
@@ -593,9 +612,13 @@ abstract class AddressFields {
 
   static const String updatedAt = 'updated_at';
 
-  static const String person = 'person';
+  //static const String person = 'person';
+
+  static const String personId = 'person_id';
 
   static const String itinerary = 'itinerary';
+
+  static const String itineraryId = 'itinerary_id';
 
   static const String number = 'number';
 

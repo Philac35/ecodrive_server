@@ -29,14 +29,17 @@ part 'TravelEntity.g.dart';
 abstract class TravelEntity extends Model implements EntityInterface{
 
   @BelongsTo()
-  DriverEntity  get  driver;
+  DriverEntity?  get  driver;
+  int? get driverId;
 
   @HasOne(foreignTable:'itineraries', foreignKey: 'itinerary_id')
-  iti.ItineraryEntity get   itinerary;
+  iti.ItineraryEntity? get   itinerary;
+  int? get itineraryId;
 
-
-  @HasMany(foreignTable: 'users', foreignKey: 'travel_id')
+  @HasMany(foreignTable: 'users', foreignKey: 'user_id')
   List?  get user;
+  //List<int?> get userIdList; // A voir
+
 
   List? get  validate;
   DateTime?  get departureTime;

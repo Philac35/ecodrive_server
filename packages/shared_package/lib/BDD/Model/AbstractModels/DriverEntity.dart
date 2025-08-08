@@ -8,6 +8,7 @@ import "package:angel3_serialize/angel3_serialize.dart";
 
 //import "package:shared_package/Entities/UserEntity.dart";
 import "package:optional/optional_internal.dart";
+import "package:shared_package/BDD/Model/AbstractModels/AddressEntity.dart";
 
 
 import "../../../Library/StringLibrary/string_librairy.dart";
@@ -15,6 +16,7 @@ import '../../Interface/entityInterface.dart';
 
 
 import "../../ORM/ORMExtension/SymbolToStringConverter.dart";
+import "AddressEntity.dart";
 import "AdministratorEntity.dart";
 import "CommandEntity.dart";
 import "EmployeeEntity.dart";
@@ -47,13 +49,15 @@ abstract class DriverEntity extends UserEntity   implements EntityInterface{
   @override
   @BelongsTo()
   UserEntity? get user;
+  int? userId;
 
   @HasOne(foreignTable: 'driving_licences', foreignKey: 'driving_licences_id' )
   DrivingLicenceEntity? get drivingLicence; //will be stocked as Blob in BDD
+  int? drivingLicenceId;
 
   @HasOne(foreignTable: 'vehicules',foreignKey: 'vehicule_id')
   VehiculeEntity ? get vehicule;
-
+  int? vehiculeId;
 
 /*
   DriverEntity({

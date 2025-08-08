@@ -40,10 +40,14 @@ class VehiculeMigration extends Migration {
 
 class VehiculeQuery extends Query<Vehicule, VehiculeQueryWhere> {
   VehiculeQuery({super.parent, Set<String>? trampoline}) {
+
     trampoline ??= <String>{};
-    if (trampoline.contains(tableName)) return; // Modification E.H 2/07/2025 17h56 Prevent recursion!
+    bool isActive = !(trampoline?.contains(tableName) ?? false);
     trampoline.add(tableName);
     _where = VehiculeQueryWhere(this);
+
+    if(isActive){
+
     leftJoin(
       _photoList = PhotoQuery(trampoline: trampoline, parent: this),
       'id',
@@ -62,6 +66,7 @@ class VehiculeQuery extends Query<Vehicule, VehiculeQueryWhere> {
       ],
       trampoline: trampoline,
     );
+
     leftJoin(
       _driver = PersonQuery(trampoline: trampoline, parent: this),
       'driver_id',
@@ -79,6 +84,9 @@ class VehiculeQuery extends Query<Vehicule, VehiculeQueryWhere> {
       ],
       trampoline: trampoline,
     );
+
+
+    }
   }
 
   @override
@@ -167,7 +175,7 @@ class VehiculeQuery extends Query<Vehicule, VehiculeQueryWhere> {
       nbPlaces: fields.contains('nb_places') ? mapToInt(row[9]) : null,
       preferences:
           fields.contains('preferences') ? List<String>.from(json.decode(row[10])) as List<String> : null,
-      driver_id: fields.contains('driver_id') ? mapToInt(row[11]) : null,
+      driverId: fields.contains('driver_id') ? mapToInt(row[11]) : null,
     );
     if (row.length > 12) {
       var modelOpt = PhotoQuery().parseRow(row.skip(12).take(10).toList());
@@ -449,9 +457,10 @@ class Vehicule extends VehiculeEntity {
     this.nbPlaces,
     List<PhotoEntity>? photoList = const [],
     this.driver,
-    required this.driver_id,
+    this.driverId,//required
     List<String>? preferences = const [],
-    this.assurance,
+ //   this.assurance,
+   // this.assuranceId
   }) : photoList = List.unmodifiable(photoList ?? []),
        preferences = List.unmodifiable(preferences ?? []);
 
@@ -494,13 +503,16 @@ class Vehicule extends VehiculeEntity {
   @override
   DriverEntity? driver;
 
-  int? driver_id;
+  int? driverId;
 
   @override
   List<String>? preferences;
 
   @override
-  AssuranceEntity? assurance;
+  //AssuranceEntity? assurance;
+
+  @override
+  //int? assuranceId;
 
 
   Vehicule copyWith({
@@ -516,9 +528,10 @@ class Vehicule extends VehiculeEntity {
     int? nbPlaces,
     List<PhotoEntity>? photoList,
     DriverEntity? driver,
-    int? driver_id,
+    int? driverId,
     List<String>? preferences,
     AssuranceEntity? assurance,
+    int? assuranceId
   }) {
     return Vehicule(
       id: id ?? this.id,
@@ -532,9 +545,10 @@ class Vehicule extends VehiculeEntity {
       firstImmatriculation: firstImmatriculation ?? this.firstImmatriculation,
       nbPlaces: nbPlaces ?? this.nbPlaces,
       photoList: photoList ?? this.photoList,
-      driver_id: driver_id ?? this.driver_id,
+      driverId: driverId ?? this.driverId,
       preferences: preferences ?? this.preferences,
-      assurance: assurance ?? this.assurance,
+    //  assurance: assurance ?? this.assurance,
+     // assuranceId: assuranceId ?? this.assuranceId,
     );
   }
 
@@ -557,8 +571,9 @@ class Vehicule extends VehiculeEntity {
         other.driver == driver &&
         ListEquality<String>(
           DefaultEquality<String>(),
-        ).equals(other.preferences, preferences) &&
-        other.assurance == assurance;
+        ).equals(other.preferences, preferences) ;
+      //  other.assurance == assurance &&
+       // other.assuranceId == assuranceId;
   }
 
   @override
@@ -577,13 +592,15 @@ class Vehicule extends VehiculeEntity {
       photoList,
       driver,
       preferences,
-      assurance,
+   //   assurance,
     ]);
   }
 
   @override
   String toString() {
-    return 'Vehicule(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, brand=$brand, modele=$modele, color=$color, energy=$energy, immatriculation=$immatriculation, firstImmatriculation=$firstImmatriculation, nbPlaces=$nbPlaces, photoList=$photoList, driver=$driver, preferences=$preferences, assurance=$assurance)';
+    return 'Vehicule(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, brand=$brand, modele=$modele, color=$color, energy=$energy, immatriculation=$immatriculation, firstImmatriculation=$firstImmatriculation, nbPlaces=$nbPlaces, photoList=$photoList, driver=$driver,driverId=$driverId, preferences=$preferences,'
+        //' assurance=$assurance, assuranceId=$assuranceId'
+        ')';
   }
 
   Map<String, dynamic>? toJson() {
@@ -660,17 +677,20 @@ class VehiculeSerializer extends Codec<Vehicule, Map> {
       driver:   map['driver'] != null
           ? DriverSerializer.fromMap(map['driver'] as Map)
           : null,
-      driver_id:  map['driver_id'] != null
+      driverId:  map['driver_id'] != null
           ? map['driver_id'] as int?
           : null,
       preferences:
           map['preferences'] is Iterable
               ?  map['preferences'] //(map['preferences'] as Iterable).cast<String>().toList()
               : null,
-      assurance:
+     /* assurance:
           map['assurance'] != null
               ? AssuranceSerializer.fromMap(map['assurance'] as Map)
               : null,
+      assuranceId:  map['assurance_id'] != null
+          ? map['assurance_id'] as int?
+          : null,*/
     );
   }
 
@@ -694,7 +714,8 @@ class VehiculeSerializer extends Codec<Vehicule, Map> {
           model.photoList?.map((m) => PhotoSerializer.toMap(m)).toList(),
       'driver': DriverSerializer.toMap(model.driver),
       'preferences': model.preferences,
-      'assurance': AssuranceSerializer.toMap(model.assurance),
+     // 'assurance': AssuranceSerializer.toMap(model.assurance),
+   //   'assuranceId': model.assuranceId
     };
   }
 }
@@ -713,9 +734,10 @@ abstract class VehiculeFields {
     nbPlaces,
     photoList,
     driver,
-    driver_id,
+    driverId,
     preferences,
-    assurance,
+  //  assurance,
+   // assuranceId
   ];
 
   static const String id = 'id';
@@ -742,9 +764,12 @@ abstract class VehiculeFields {
 
   static const String driver = 'driver';
 
-  static const String driver_id = 'driver_id';
+  static const String driverId = 'driver_id';
 
   static const String preferences = 'preferences';
 
-  static const String assurance = 'assurance';
+  //static const String assurance = 'assurance';
+
+  //static const String assuranceId = 'assurance_id';
+
 }

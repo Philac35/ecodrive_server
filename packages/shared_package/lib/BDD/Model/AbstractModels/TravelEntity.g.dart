@@ -19,7 +19,9 @@ class TravelMigration extends Migration {
       );
       table.timeStamp('departure_time');
       table.timeStamp('arrival_time');
-      table.declare('driver_id', ColumnType('int')).references('people', 'id');
+      table.declare('driver_id', ColumnType('int')).references('drivers', 'id');
+      table.declare('itinerary_id', ColumnType('int')).references('itineraries', 'id');
+      table.declare('users_id_list', ColumnType('json')).references('users', 'id'); //List de users_id  hasMany relation
     });
   }
 
@@ -36,6 +38,7 @@ class TravelMigration extends Migration {
 class TravelQuery extends Query<Travel, TravelQueryWhere> {
   TravelQuery({super.parent, Set<String>? trampoline}) {
     trampoline ??= <String>{};
+    if (trampoline.contains(tableName)) return; // Modification E.H 6/08/2025 17h56 Prevent recursion!
     trampoline.add(tableName);
     _where = TravelQueryWhere(this);
     leftJoin(
@@ -55,6 +58,24 @@ class TravelQuery extends Query<Travel, TravelQueryWhere> {
       ],
       trampoline: trampoline,
     );
+    leftJoin(
+      _itinerary = ItineraryQuery(trampoline: trampoline, parent: this),
+      'itinerary_id',
+      'id',
+      additionalFields: const [
+        'id',
+        'created_at',
+        'updated_at',
+        'address_departure_id',
+        'address_arrival_id',
+        'price',
+        'eco',
+        'duration',
+        'geo_point_list',
+        'travel_id',
+      ],
+      trampoline: trampoline,
+    );
   }
 
   @override
@@ -65,6 +86,8 @@ class TravelQuery extends Query<Travel, TravelQueryWhere> {
   TravelQueryWhere? _where;
 
   late PersonQuery _driver;
+
+  late ItineraryQuery _itinerary;
 
   @override
   Map<String, String> get casts {
@@ -319,12 +342,15 @@ class TravelQueryValues extends MapQueryValues {
 
 @generatedSerializable
 class Travel extends TravelEntity {
+
   Travel({
     this.id,
     this.createdAt,
     this.updatedAt,
-    required this.driver,
-    required this.itinerary,
+    this.driver, //was required
+    this.driverId,
+    this.itinerary, // was required
+    this.itineraryId,
     List<dynamic>? user = const [],
     List<dynamic>? validate = const [],
     this.departureTime,
@@ -332,23 +358,27 @@ class Travel extends TravelEntity {
   }) : user = List.unmodifiable(user ?? []),
        validate = List.unmodifiable(validate ?? []), super.empty();
 
-  /// A unique identifier corresponding to this item.
+
   @override
   String? id;
 
-  /// The time at which this item was created.
   @override
   DateTime? createdAt;
 
-  /// The last time at which this item was updated.
   @override
   DateTime? updatedAt;
 
   @override
-  DriverEntity driver;
+  DriverEntity? driver;
 
   @override
-  ItineraryEntity itinerary;
+  int? driverId;
+
+  @override
+  ItineraryEntity? itinerary;
+
+  @override
+  int? itineraryId;
 
   @override
   List<dynamic>? user;
@@ -367,8 +397,11 @@ class Travel extends TravelEntity {
     DateTime? createdAt,
     DateTime? updatedAt,
     DriverEntity? driver,
+    int? driverId,
     ItineraryEntity? itinerary,
+    int? itineraryId,
     List<dynamic>? user,
+    //List<dynamic>? userIdList, //a voir
     List<dynamic>? validate,
     DateTime? departureTime,
     DateTime? arrivalTime,
@@ -378,7 +411,9 @@ class Travel extends TravelEntity {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       driver: driver ?? this.driver,
+      driverId: driverId ?? this.driverId,
       itinerary: itinerary ?? this.itinerary,
+      itineraryId: itineraryId ?? this.itineraryId,
       user: user ?? this.user,
       validate: validate ?? this.validate,
       departureTime: departureTime ?? this.departureTime,
@@ -394,6 +429,7 @@ class Travel extends TravelEntity {
         other.updatedAt == updatedAt &&
         other.driver == driver &&
         other.itinerary == itinerary &&
+        other.itineraryId== itineraryId &&
         ListEquality<dynamic>(DefaultEquality()).equals(other.user, user) &&
         ListEquality<dynamic>(
           DefaultEquality(),
@@ -419,7 +455,7 @@ class Travel extends TravelEntity {
 
   @override
   String toString() {
-    return 'Travel(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, driver=$driver, itinerary=$itinerary, user=$user, validate=$validate, departureTime=$departureTime, arrivalTime=$arrivalTime)';
+    return 'Travel(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, driver=$driver, driverId=$driverId,itinerary=$itinerary,itineraryId=$itineraryId, user=$user, validate=$validate, departureTime=$departureTime, arrivalTime=$arrivalTime)';
   }
 
   Map<String, dynamic> toJson() {
@@ -476,11 +512,11 @@ class TravelSerializer extends Codec<Travel, Map> {
       driver:
           map['driver'] != null
               ? DriverSerializer.fromMap(map['driver'] as Map) as DriverEntity
-              : {}  as DriverEntity,
+              : null,
       itinerary:
           map['itinerary'] != null
               ? ItinerarySerializer.fromMap(map['itinerary'] as Map) as Itinerary
-              : {}  as Itinerary,
+              : null,
       user:
           map['user'] is Iterable
               ? (map['user'] as Iterable).cast<dynamic>().toList()
@@ -553,4 +589,5 @@ abstract class TravelFields {
   static const String departureTime = 'departure_time';
 
   static const String arrivalTime = 'arrival_time';
+
 }

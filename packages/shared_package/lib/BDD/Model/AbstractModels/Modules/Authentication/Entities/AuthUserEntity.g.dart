@@ -35,9 +35,11 @@ class AuthUserMigration extends Migration {
 
 class AuthUserQuery extends Query<AuthUser, AuthUserQueryWhere> {
   AuthUserQuery({super.parent, Set<String>? trampoline}) {
+    bool isActive = !(trampoline?.contains(tableName) ?? false) ;
     trampoline ??= <String>{};
     trampoline.add(tableName);
     _where = AuthUserQueryWhere(this);
+    if(isActive){
     leftJoin(
       _person = PersonQuery(trampoline: trampoline, parent: this),
       'person_id',
@@ -52,9 +54,15 @@ class AuthUserQuery extends Query<AuthUser, AuthUserQueryWhere> {
         'gender',
         'credits',
         'email',
+        'address_id',
+        'photo_id',
+        'auth_user_id',
+        'user_id',
+        'administrator_id',
+        'employee_id'
       ],
       trampoline: trampoline,
-    );
+    );}
   }
 
   @override

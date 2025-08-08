@@ -21,6 +21,8 @@ class DrivingLicenceMigration extends Migration {
       table.varChar('title', length: 64);
       table.varChar("path", length:256);
       table.declare('driver_id', ColumnType('int')).references('people', 'id');
+      table.declare('photo_id', ColumnType('int')).references('photos', 'id');
+
     });
   }
 
@@ -37,9 +39,13 @@ class DrivingLicenceMigration extends Migration {
 class DrivingLicenceQuery
     extends Query<DrivingLicence, DrivingLicenceQueryWhere> {
   DrivingLicenceQuery({super.parent, Set<String>? trampoline}) {
+    trampoline ??= <String>{};    bool isActive = !(trampoline?.contains(tableName) ?? false);
+
     trampoline ??= <String>{};
+
     trampoline.add(tableName);
     _where = DrivingLicenceQueryWhere(this);
+if(isActive){
     leftJoin(
       _driver = PersonQuery(trampoline: trampoline, parent: this),
       'driver_id',
@@ -57,6 +63,22 @@ class DrivingLicenceQuery
       ],
       trampoline: trampoline,
     );
+    leftJoin(
+      _photo = PhotoQuery(trampoline: trampoline, parent: this),
+      'photo_id',
+      'id',
+      additionalFields: const [
+        'id',
+        'created_at',
+        'updated_at',
+        'title',
+        'uri',
+        'description',
+        'photo',
+      ],
+      trampoline: trampoline,
+    );
+  }
   }
 
   @override
@@ -67,6 +89,7 @@ class DrivingLicenceQuery
   DrivingLicenceQueryWhere? _where;
 
   late PersonQuery _driver;
+  late PhotoQuery _photo;
 
   @override
   Map<String, String> get casts {
@@ -87,6 +110,7 @@ class DrivingLicenceQuery
       'driver_id',
       'identification_number',
       'document_pdf',
+      'photo_id',
       'title',
       'path'
     ];
@@ -126,8 +150,9 @@ class DrivingLicenceQuery
           fields.contains('identification_number') ? mapToInt(row[3]) : 0,
       documentPdf:
           fields.contains('document_pdf') ? Uint8ListJsonConverter().jsonStrToUint(row[4]) : null,
-      title: fields.contains('title') ? (row[5] as String) : '',
-      path: fields.contains('path') ? (row[6] as String) : '',
+      photoId: fields.contains('photo_id')? int.parse(row[5]): null,
+      title: fields.contains('title') ? (row[6] as String) : '',
+      path: fields.contains('path') ? (row[7] as String) : '',
 
     );
     if (row.length > 8) {
@@ -160,6 +185,7 @@ class DrivingLicenceQueryWhere extends QueryWhere {
         'identification_number',
       ),
       documentPdf = ListSqlExpressionBuilder(query, 'document_pdf'),
+      photoId = NumericSqlExpressionBuilder<int>(query, 'photo_id'),
       title = StringSqlExpressionBuilder(query, 'title'),
       path = StringSqlExpressionBuilder(query, 'path');
 
@@ -175,6 +201,8 @@ class DrivingLicenceQueryWhere extends QueryWhere {
 
   final ListSqlExpressionBuilder documentPdf;
 
+  final NumericSqlExpressionBuilder<int> photoId;
+
   final StringSqlExpressionBuilder title;
 
   final StringSqlExpressionBuilder path;
@@ -188,6 +216,7 @@ class DrivingLicenceQueryWhere extends QueryWhere {
       driverId,
       identificationNumber,
       documentPdf,
+      photoId,
       title,
       path
     ];
@@ -218,6 +247,12 @@ class DrivingLicenceQueryValues extends MapQueryValues {
 
   set updatedAt(DateTime? value) => values['updated_at'] = value;
 
+  Driver get driver {
+    return values['driver_id'] ;
+  }
+
+  set driver(Driver value) => values['driver_id'] = value;
+
   int get driverId {
     return (values['driver_id'] as int);
   }
@@ -238,6 +273,21 @@ class DrivingLicenceQueryValues extends MapQueryValues {
   set documentPdf(Uint8List? value) =>
       values['document_pdf'] = json.encode(value);
 
+  Photo? get photo {
+    return values['photo'] ;
+  }
+
+  set photo(Photo? value) =>
+      values['photo'] = value;
+
+
+  int? get photoId {
+    return values['photo_id'] ;
+  }
+
+  set photoId(int? value) =>
+      values['photo_id'] = value;
+
   String get title {
     return (values['title'] as String);
   }
@@ -256,10 +306,19 @@ class DrivingLicenceQueryValues extends MapQueryValues {
     updatedAt = model.updatedAt;
     identificationNumber = model.identificationNumber!;
     documentPdf = model.documentPdf;
+    if (model.photoId != null) {
+      values['photo_id'] = model.photo?.id;
+    }
+    if (model.photo != null) {
+      values['photo'] = model.photo;
+    }
     title = model.title;
     path = model.path;
-    if (model.driver != null) {
+    if (model.driverId != null) {
       values['driver_id'] = model.driver?.id;
+    }
+    if (model.driver != null) {
+      values['driver'] = model.driver;
     }
   }
 }
@@ -275,9 +334,11 @@ class DrivingLicence extends DrivingLicenceEntity {
     this.createdAt,
     this.updatedAt,
     this.driver,
+    this.driverId,
     required this.identificationNumber,
     this.documentPdf,
     this.photo,
+    this.photoId,
     required this.title,
     this.path
   });
@@ -296,6 +357,7 @@ class DrivingLicence extends DrivingLicenceEntity {
 
   @override
   DriverEntity? driver;
+  int? driverId;
 
   @override
   int? identificationNumber;
@@ -308,6 +370,7 @@ class DrivingLicence extends DrivingLicenceEntity {
 
   @override
   PhotoEntity? photo;
+  int? photoId;
 
   @override
   String? title;
@@ -316,11 +379,12 @@ class DrivingLicence extends DrivingLicenceEntity {
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? id_Int,
     DriverEntity? driver,
+    int? driverId,
     int? identificationNumber,
     Uint8List? documentPdf,
     PhotoEntity? photo,
+    int? photoId,
     String? title,
     String? path
 
@@ -333,6 +397,7 @@ class DrivingLicence extends DrivingLicenceEntity {
       identificationNumber: identificationNumber ?? this.identificationNumber,
       documentPdf: documentPdf ?? this.documentPdf,
       photo: photo ?? this.photo,
+      photoId: photoId ?? this.photoId,
       title: title ?? this.title,
       path: path ?? this.path,
     );
@@ -345,9 +410,11 @@ class DrivingLicence extends DrivingLicenceEntity {
         other.createdAt == createdAt &&
         other.updatedAt == updatedAt &&
         other.driver == driver &&
+        other.driverId == driverId &&
         other.identificationNumber == identificationNumber &&
         ListEquality().equals(other.documentPdf, documentPdf) &&
         other.photo == photo &&
+        other.photoId == photoId &&
         other.title == title &&
         other.path == path;
   }
@@ -359,9 +426,11 @@ class DrivingLicence extends DrivingLicenceEntity {
       createdAt,
       updatedAt,
       driver,
+      driverId,
       identificationNumber,
       documentPdf,
       photo,
+      photoId,
       title,
       path
     ]);
@@ -369,7 +438,7 @@ class DrivingLicence extends DrivingLicenceEntity {
 
   @override
   String toString() {
-    return 'DrivingLicence(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, driver=$driver, identificationNumber=$identificationNumber, documentPdf=$documentPdf, photo=$photo, title=$title, path=$path)';
+    return 'DrivingLicence(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, driver=$driver, driverId=$driverId, identificationNumber=$identificationNumber, documentPdf=$documentPdf, photo=$photo,photoId=$photoId , title=$title, path=$path)';
   }
 
   Map<String, dynamic> toJson() {
@@ -455,10 +524,12 @@ class DrivingLicenceSerializer extends Codec<DrivingLicence, Map> {
       'created_at': model.createdAt?.toIso8601String(),
       'updated_at': model.updatedAt?.toIso8601String(),
       'driver': DriverSerializer.toMap(model.driver),
+      'driverId': model.driverId,
       'identification_number': model.identificationNumber,
       'document_pdf':
           model.documentPdf != null ? base64.encode(model.documentPdf!) : null,
       'photo': PhotoSerializer.toMap(model.photo),
+      'photoId':model.photoId,
       'title': model.title,
       'path': model.path
     };
@@ -471,9 +542,11 @@ abstract class DrivingLicenceFields {
     createdAt,
     updatedAt,
     driver,
+    driverId,
     identificationNumber,
     documentPdf,
     photo,
+    photoId,
     title,
     path
   ];
@@ -485,12 +558,14 @@ abstract class DrivingLicenceFields {
   static const String updatedAt = 'updated_at';
 
   static const String driver = 'driver';
+  static const String driverId = 'driver_id';
 
   static const String identificationNumber = 'identification_number';
 
   static const String documentPdf = 'document_pdf';
 
   static const String photo = 'photo';
+  static const String photoId = 'photo_id';
 
   static const String title = 'title';
 

@@ -29,9 +29,11 @@ abstract class ItineraryEntity extends Model implements EntityInterface {
 
   @HasOne(foreignKey: 'address_departure_id', foreignTable: 'addresses')
   a.AddressEntity?  get addressDeparture;
+  int? get addressDepartureId;
 
   @HasOne(foreignKey: 'address_arrival_id', foreignTable: 'addresses')
   a.AddressEntity? get  addressArrival;
+  int? get addressArrivalId;
 
   @DefaultsTo(false)
   bool?  get  eco;
@@ -44,6 +46,7 @@ abstract class ItineraryEntity extends Model implements EntityInterface {
 
   @BelongsTo()
   TravelEntity? get  travel;
+  int? get travelId;
 
   //ItineraryEntity ({ this.price, this.addressDeparture,this.addressArrival,this.geoPointList, this.eco,this.duration,this.travel});
 

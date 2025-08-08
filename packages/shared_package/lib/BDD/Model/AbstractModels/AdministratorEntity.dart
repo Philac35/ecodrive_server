@@ -13,6 +13,7 @@ import '../Abstract/PersonEntity.dart';
 
 
 
+import 'AddressEntity.dart';
 import 'Modules/Authentication/Entities/AuthUserEntity.dart';
 import 'UserEntity.dart';
 import 'EmployeeEntity.dart';
@@ -35,14 +36,14 @@ abstract class AdministratorEntity extends PersonEntity  implements EntityInterf
 
 
 
-
   @BelongsTo()
   PersonEntity? get person;
+  int? personId;
 
   @HasOne(foreignTable:'auth_users',foreignKey: 'auth_users_id')
   @override
   AuthUserEntity? get authUserEntity ;
-
+  int? AuthUserEntityId;
 
   bool  delete(PersonEntity  person);
   bool   suspend(PersonEntity  person);

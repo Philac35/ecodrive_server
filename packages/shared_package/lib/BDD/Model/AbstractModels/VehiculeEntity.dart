@@ -50,15 +50,18 @@ abstract class VehiculeEntity extends Model implements EntityInterface{
 
   @HasMany()
   List<PhotoEntity>? get photoList;
+  //List<int?> get photoIdList; cf if fonctionnal
 
   //Owner
   @BelongsTo()
   DriverEntity? get  driver;
+  int? get driverId;
 
   List<String>?  get preferences;
 
-  @HasOne(foreignTable: 'assurances', foreignKey: 'assurance_id')
-  AssuranceEntity? get assurance;
+  //@HasOne(foreignTable: 'assurances', foreignKey: 'assurance_id')
+  //AssuranceEntity? get assurance;
+  //int? get assuranceId;
 
 
 

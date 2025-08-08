@@ -42,14 +42,16 @@ abstract class PhotoEntity extends Model  implements EntityInterface{
 
   @BelongsTo()
   PersonEntity?  get person;
+  int? get personId;
 
 
   @BelongsTo()
   VehiculeEntity ? get vehicule;
-
+  int? get vehiculeId;
 
   @BelongsTo()
   DrivingLicenceEntity ? get drivingLicence;
+  int? get drivingLicenceId ;
 
  //PhotoEntity ({this.title,this.uri,this.description,this.photo, this.person_id, this.person,this.vehicule_id, this.vehicule, this.driving_licence_id,this.drivingLicence, String? id});
 

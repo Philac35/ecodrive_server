@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/DriverEntity.dart';
@@ -10,6 +12,7 @@ import '../Abstract/PersonEntity.dart';
 
 import '../../Interface/entityInterface.dart';
 
+import 'AddressEntity.dart';
 import 'AdministratorEntity.dart';
 import 'CommandEntity.dart';
 import 'EmployeeEntity.dart';
@@ -34,14 +37,20 @@ abstract class UserEntity extends PersonEntity   implements EntityInterface{
 
 
 
+
   @BelongsTo()
   PersonEntity? get person;
+  int? get personId;
+
 
   @HasOne(foreignTable:'drivers',foreignKey: 'driver_id' )
   DriverEntity? get driver;
+  int? get driverId;
 
   @HasMany(foreignKey:'command_id', foreignTable:'commands')
   List<CommandEntity>? get commandList;
+
+  List<int>? get commandIdList; //cf if  fonctionnal
 
   /*
  static    UserEntity  create(Map<String, dynamic> parameters) {

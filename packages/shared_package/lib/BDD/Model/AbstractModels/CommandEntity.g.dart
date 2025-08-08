@@ -36,6 +36,7 @@ class CommandMigration extends Migration {
 class CommandQuery extends Query<Command, CommandQueryWhere> {
   CommandQuery({super.parent, Set<String>? trampoline}) {
     trampoline ??= <String>{};
+    if (trampoline.contains(tableName)) return; // Modification E.H 6/08/2025 17h56 Prevent recursion!
     trampoline.add(tableName);
     _where = CommandQueryWhere(this);
     leftJoin(

@@ -34,6 +34,7 @@ abstract class DrivingLicenceEntity extends  Model implements  Document {
  @BelongsTo()
   @override
   DriverEntity? get driver;
+  int? driverId;
 
   @override
   int? get identificationNumber;
@@ -42,9 +43,10 @@ abstract class DrivingLicenceEntity extends  Model implements  Document {
   @override
   Uint8List? get documentPdf;
 
- @HasOne(foreignTable:'photos',foreignKey: 'driving_licence_id')
+  @HasOne(foreignTable:'photos',foreignKey: 'driving_licence_id')
   @override
   PhotoEntity ? get photo;
+  int? photoId;
 
   @override
   @Column(length: 64)

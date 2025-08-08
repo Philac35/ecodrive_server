@@ -36,6 +36,7 @@ class EmployeeMigration extends Migration {
 class EmployeeQuery extends Query<Employee, EmployeeQueryWhere> {
   EmployeeQuery({super.parent, Set<String>? trampoline}) {
     trampoline ??= <String>{};
+    if (trampoline.contains(tableName)) return; // Modification E.H 6/08/2025 17h56 Prevent recursion!
     trampoline.add(tableName);
     _where = EmployeeQueryWhere(this);
     leftJoin(
@@ -52,6 +53,10 @@ class EmployeeQuery extends Query<Employee, EmployeeQueryWhere> {
         'gender',
         'credits',
         'email',
+        'address_id',
+        'photo_id',
+        'auth_user_id',
+        'user_id',
       ],
       trampoline: trampoline,
     );
@@ -128,10 +133,10 @@ class EmployeeQuery extends Query<Employee, EmployeeQueryWhere> {
       gender: fields.contains('gender') ? (row[6] as String?) : null,
       credits: fields.contains('credits') ? mapToDouble(row[7]) : 0.0,
       email: fields.contains('email') ? (row[8] as String?) : null,
-      person: {} as PersonEntity,
+      personId: fields.contains('email') ? int.parse(row[9] ) : null,
     );
     if (row.length > 10) {
-      var modelOpt = PersonQuery().parseRow(row.skip(10).take(9).toList());
+      var modelOpt = PersonQuery().parseRow(row.skip(10).take(15).toList());
       modelOpt.ifPresent((m) {
         model = model.copyWith(person: m);
       });
@@ -274,8 +279,11 @@ class EmployeeQueryValues extends MapQueryValues {
     gender = model.gender;
     credits = model.credits;
     email = model.email;
+    if (model.personId != null) {
+      values['person_id'] = model.personId;
+    }
     if (model.person != null) {
-      values['person_id'] = model.person?.id;
+      values['person'] =model.person;
     }
   }
 }
@@ -296,12 +304,17 @@ class Employee extends EmployeeEntity {
     this.gender,
     required this.credits,
     this.email,
+    this.address,
+    this.addressId,
     this.photo,
-    this.authUser,
+    this.photoId,
+    //this.authUser,
     this.user,
-    this.administrator,
-    this.employee,
-    required this.person,
+    this.userId,
+    //this.administrator,
+    //this.employee,
+     this.person,
+    this.personId
   }) ;
 
   /// A unique identifier corresponding to this item.
@@ -335,22 +348,38 @@ class Employee extends EmployeeEntity {
   String? email;
 
   @override
-  PhotoEntity? photo;
+  AddressEntity? address;
+
+  int? addressId;
+
 
   @override
-  AuthUserEntity? authUser;
+  PhotoEntity? photo;
+
+
+  @override
+  int? photoId;
+
+  @override
+  AuthUserEntity? get authUser=> throw(UnimplementedError);
 
   @override
   UserEntity? user;
+  int? userId;
+
 
   @override
-  AdministratorEntity? administrator;
+  AdministratorEntity? get administrator=> throw(UnimplementedError);
 
   @override
-  EmployeeEntity? employee;
+  EmployeeEntity? get employee=> throw(UnimplementedError);
+
 
   @override
   PersonEntity? person;
+
+  @override
+  int? personId;
 
   Employee copyWith({
     String? id,
@@ -362,12 +391,17 @@ class Employee extends EmployeeEntity {
     String? gender,
     double? credits,
     String? email,
+    AddressEntity? address,
+    int? addressId,
     PhotoEntity? photo,
+    int? photoId,
     AuthUserEntity? authUser,
+    int? AuthUserEntityId,
     UserEntity? user,
-    AdministratorEntity? administrator,
+    int? userId,
     EmployeeEntity? employee,
     PersonEntity? person,
+    int? personId
   }) {
     return Employee(
       id: id ?? this.id,
@@ -379,12 +413,17 @@ class Employee extends EmployeeEntity {
       gender: gender ?? this.gender,
       credits: credits ?? this.credits,
       email: email ?? this.email,
+      address: address?? this.address,
+      addressId: addressId?? this.addressId,
       photo: photo ?? this.photo,
-      authUser: authUser ?? this.authUser,
-      user: user ?? this.user,
-      administrator: administrator ?? this.administrator,
-      employee: employee ?? this.employee,
+      photoId: photoId ?? this.photoId,
+     // authUser: authUser ?? this.authUser,
+       user: user ?? this.user,
+       userId: userId ?? this.userId,
+    //  administrator: administrator ?? this.administrator,
+     // employee: employee ?? this.employee,
       person: person ?? this.person,
+      personId: personId ?? this.personId,
     );
   }
 
@@ -400,12 +439,17 @@ class Employee extends EmployeeEntity {
         other.gender == gender &&
         other.credits == credits &&
         other.email == email &&
+        other.address == address &&
+        other.addressId == addressId &&
         other.photo == photo &&
-        other.authUser == authUser &&
+        other.photoId == photoId &&
+       // other.authUser == authUser &&
         other.user == user &&
-        other.administrator == administrator &&
-        other.employee == employee &&
-        other.person == person;
+        other.userId == userId &&
+        //other.administrator == administrator &&
+        //other.employee == employee &&
+        other.person == person &&
+        other.personId == personId;
   }
 
   @override
@@ -421,17 +465,20 @@ class Employee extends EmployeeEntity {
       credits,
       email,
       photo,
-      authUser,
+      photoId,
+      //authUser,
       user,
-      administrator,
-      employee,
+      userId,
+      //administrator,
+      //employee,
       person,
+      personId,
     ]);
   }
 
   @override
   String toString() {
-    return 'Employee(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email, photo=$photo, authUser=$authUser, user=$user, administrator=$administrator, employee=$employee, person=$person)';
+    return 'Employee(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email, photo=$photo, authUser=$authUser,authUserId=$authUserId,user=$user, userId=$userId,person=$person,personId=$personId)';    //administrator=$administrator, //employee=$employee,
   }
 
   Map<String, dynamic> toJson() {
@@ -495,23 +542,25 @@ class EmployeeSerializer extends Codec<Employee, Map> {
           map['photo'] != null
               ? PhotoSerializer.fromMap(map['photo'] as Map)
               : null,
-      authUser:
+      photoId: map['photo_id'] as int?,
+     /* authUser:
           map['auth_user'] != null
               ? AuthUserSerializer.fromMap(map['auth_user'] as Map)
-              : null,
+              : null, */
       user:
           map['user'] != null
               ? UserSerializer.fromMap(map['user'] as Map)
               : null,
-
-      employee:
+      userId:map['user_id'] as int?,
+     /* employee:
           map['employee'] != null
               ? EmployeeSerializer.fromMap(map['employee'] as Map)
-              : null,
+              : null,*/
       person:
           map['person'] != null
               ? PersonSerializer.fromMap(map['person'] as Map) as PersonEntity
               : null,
+      personId: map['person_id'] as int?
     );
   }
 
@@ -531,11 +580,16 @@ class EmployeeSerializer extends Codec<Employee, Map> {
       'credits': model.credits,
       'email': model.email,
       'photo': PhotoSerializer.toMap(model.photo),
-      'auth_user': AuthUserSerializer.toMap(model.authUser),
+      'photoId': model.photoId,
+      'authUser': AuthUserSerializer.toMap(model.authUser),
+      'authUserId':model.authUserId,
       'user': UserSerializer.toMap(model.user),
-      'administrator': AdministratorSerializer.toMap(model.administrator),
-      'employee': EmployeeSerializer.toMap(model.employee),
+      'userId':model.userId,
+     // 'administrator': AdministratorSerializer.toMap(model.administrator),
+      //'employee': EmployeeSerializer.toMap(model.employee),
+
       'person': PersonSerializer.toMap(model.person),
+      'personId': model.personId
     };
   }
 }
@@ -552,11 +606,15 @@ abstract class EmployeeFields {
     credits,
     email,
     photo,
-    authUser,
+    photoId,
+    //authUser,
+    //authUserId,
     user,
-    administrator,
-    employee,
+    userId,
+    //administrator,
+    //employee,
     person,
+    personId
   ];
 
   static const String id = 'id';
@@ -579,13 +637,19 @@ abstract class EmployeeFields {
 
   static const String photo = 'photo';
 
-  static const String authUser = 'auth_user';
+  static const String photoId = 'photo_id';
+
+  //static const String authUser = 'auth_user';
 
   static const String user = 'user';
 
-  static const String administrator = 'administrator';
+  static const String userId = 'user_id';
 
-  static const String employee = 'employee';
+  //static const String administrator = 'administrator';
+
+  //static const String employee = 'employee';
 
   static const String person = 'person';
+
+  static const String personId = 'person_id';
 }

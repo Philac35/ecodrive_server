@@ -28,6 +28,7 @@ abstract class NoticeEntity extends Model implements EntityInterface{
   int? get  note;
   @BelongsTo()
   DriverEntity?  get driver;
+  int? get driverId;
 
 
 //NoticeEntity ({ required this.title,required this.description, this.note,this.driver});
