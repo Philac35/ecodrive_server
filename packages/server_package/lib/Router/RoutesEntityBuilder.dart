@@ -112,12 +112,12 @@ class RouteEntityBuilder<T> {
         Iterable<MapEntry<String, String>> entries;
         String path = "";
 
-
-    queryType.forEach((key,value){
+        //Index Routes List
+        queryType.forEach((key,value){
           var path2=getPath(value);
           registeredRoutes.add('${value} [GET] : $path2');
         });
-        //Index Routes List
+
 
         //  print('Request :${req} [GET] : $path');
 
