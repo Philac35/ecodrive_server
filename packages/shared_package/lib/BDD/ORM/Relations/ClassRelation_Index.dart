@@ -31,7 +31,7 @@ final Map<String, List<RelationMeta>> ClassRelationsIndex = {
   'Driver': [
     RelationMeta(fieldName:'notices', relatedType:'get',type:RelationType.hasMany, foreignKey: 'notices_id', findBy: const ['title','description']),
     RelationMeta(fieldName:'user', relatedType:'User',type:RelationType.isA, foreignKey: 'user_id', findBy: const ['firstname','lastname','email']),//eq relation : is a
-    RelationMeta(fieldName:'drivingLicence', relatedType:'DrivingLicence',type:RelationType.hasOne, foreignKey: 'drivingLicence_id', findBy: const ['identification_number']),
+    RelationMeta(fieldName:'drivingLicence', relatedType:'DrivingLicence',type:RelationType.hasOne, foreignKey: 'driving_licence_id', findBy: const ['identification_number']),
     RelationMeta(fieldName:'vehicule', relatedType:'Vehicule',type:RelationType.hasOne, foreignKey: 'vehicule_id', findBy: const ['immatriculation']),
   ],
   'DrivingLicence': [
@@ -50,16 +50,16 @@ final Map<String, List<RelationMeta>> ClassRelationsIndex = {
     RelationMeta(fieldName:'driver', relatedType:'Driver',type:RelationType.belongsTo, foreignKey: 'driver_id', findBy: const ['firstname','lastname','email']),
   ],
   'Person': [
-    RelationMeta(fieldName:'photo', relatedType:'Photo',type:RelationType.hasOne, foreignKey: 'photo_id', findBy: const ['title','uri']),
-    RelationMeta(fieldName:'authUser', relatedType:'AuthUser',type:RelationType.hasOne, foreignKey: 'authUser_id', findBy: const ['identifiant']),
-    RelationMeta(fieldName:'user', relatedType:'User',type:RelationType.hasOne, foreignKey: 'user_id', findBy: const ['firstname','lastname','email']),
-    RelationMeta(fieldName:'administrator', relatedType:'Administrator',type:RelationType.hasOne, foreignKey: 'administrator_id', findBy: const ['firstname','lastname','email']),
-    RelationMeta(fieldName:'employee', relatedType:'Employee',type:RelationType.hasOne, foreignKey: 'employee_id', findBy: const ['firstname','lastname','email']),
+    RelationMeta(fieldName:'photo', relatedType:'Photo',type:RelationType.hasOne, foreignKey: 'photo_id', findBy: const ['title','uri'],cascadeOnDelete:false),
+    RelationMeta(fieldName:'authUser', relatedType:'AuthUser',type:RelationType.hasOne, foreignKey: 'authUser_id', findBy: const ['identifiant'],cascadeOnDelete:false),
+    RelationMeta(fieldName:'user', relatedType:'User',type:RelationType.hasOne, foreignKey: 'user_id', findBy: const ['firstname','lastname','email'],cascadeOnDelete:false),
+    RelationMeta(fieldName:'administrator', relatedType:'Administrator',type:RelationType.hasOne, foreignKey: 'administrator_id', findBy: const ['firstname','lastname','email'],cascadeOnDelete:false),
+    RelationMeta(fieldName:'employee', relatedType:'Employee',type:RelationType.hasOne, foreignKey: 'employee_id', findBy: const ['firstname','lastname','email'],cascadeOnDelete:false),
   ],
   'Photo': [
     RelationMeta(fieldName:'person', relatedType:'Person',type:RelationType.belongsTo, foreignKey: 'person_id', findBy: const ['firstname','lastname','email']),
     RelationMeta(fieldName:'vehicule', relatedType:'Vehicule',type:RelationType.belongsTo, foreignKey: 'vehicule_id', findBy: const ['immatriculation']),
-    RelationMeta(fieldName:'drivingLicence', relatedType:'DrivingLicence',type:RelationType.belongsTo, foreignKey: 'drivingLicence_id', findBy: const ['identification_number']),
+    RelationMeta(fieldName:'drivingLicence', relatedType:'DrivingLicence',type:RelationType.belongsTo, foreignKey: 'driving_licence_id', findBy: const ['identification_number']),
   ],
   'Travel': [
     RelationMeta(fieldName:'driver', relatedType:'Driver',type:RelationType.belongsTo, foreignKey: 'driver_id', findBy: const ['firstname','lastname','email']),
@@ -67,9 +67,9 @@ final Map<String, List<RelationMeta>> ClassRelationsIndex = {
     RelationMeta(fieldName:'user', relatedType:'List',type:RelationType.hasMany, foreignKey: 'user_id', findBy: const ['firstname','lastname','email']),
   ],
   'User': [
-    RelationMeta(fieldName:'person', relatedType:'Person',type:RelationType.isA, foreignKey: 'person_id', findBy: const ['firstname','lastname','email']), //eq relation : is a
-    RelationMeta(fieldName:'driver', relatedType:'Driver',type:RelationType.hasOne, foreignKey: 'driver_id', findBy: const ['firstname','lastname','email']),
-    RelationMeta(fieldName:'commandList', relatedType:'Command',type:RelationType.hasMany, foreignKey: 'commandList_id', findBy: const ['reference']),
+    RelationMeta(fieldName:'person', relatedType:'Person',type:RelationType.isA, foreignKey: 'person_id', findBy: const ['firstname','lastname','email'],cascadeOnDelete:true),  //eq relation : is a
+    RelationMeta(fieldName:'driver', relatedType:'Driver',type:RelationType.hasOne, foreignKey: 'driver_id', findBy: const ['firstname','lastname','email'],cascadeOnDelete:false),
+    RelationMeta(fieldName:'commandList', relatedType:'Command',type:RelationType.hasMany, foreignKey: 'commandList_id', findBy: const ['reference'],cascadeOnDelete:false),
   ],
   'UserNoticeMtoM': [
     RelationMeta(fieldName:'notice', relatedType:'Notice',type:RelationType.belongsTo, foreignKey: 'notice_id', findBy: const ['title','description']),
