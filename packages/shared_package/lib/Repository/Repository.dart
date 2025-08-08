@@ -148,10 +148,13 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 
   @override
   Future<int?> getLastId() async {
+
+
     var query = queryFactory()
       ..select(['id'])
       ..orderBy('id', descending: true)
       ..limit(1);
+
     var res = await query.getOne(executor); // This is Optional<Entity>
     return (res != null && res.isPresent) ? int.tryParse(res.value.id): null;
     }
@@ -254,10 +257,11 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
     //addWhereRawForAllParams(query); Not really needed
     print('Repository L256 : persist: $query');
     Optional<T> insertedRow;
-
+    print('Repository L257 : entity: $entity');
     try {
 
        insertedRow = await query.insert(executor!); //return Future<Optional<T>> is  from class Query, it doesn't return the result of executor that is a List<List<T?>>
+       print('Repository L261 : row inserted: $insertedRow');
     }catch(e,stack){ print('Repository L259 INSERT FAILED! error: $e');
                      print('stack: $stack');
       return null;}
@@ -338,11 +342,12 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 
     bool exit =false;
     if(id!=null) {
-      //print("delete L199: entity id:${id}");
-      query.where.id.equals(id);
-      query.delete(executor);
-
+     query.where.id.equals(id);
+     var entity= await query.delete(executor);
+     if (entity.first !=null){exit=true;}
+      //print("delete L345: type: ${entity.first.runtimeType}, entity:${entity.first}, ");
     }else{
+      print("delete L347: entity id:${id}");
       //TOTEST
       query.copyFrom(entity);
       query.delete(executor);

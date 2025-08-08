@@ -141,18 +141,21 @@ import 'Index/Controller_index.dart';
   @override
   Future<bool> delete(int? id )async {
     bool exit=false;
+
     try {
       ORM orm=ORM();
      // await repository;
 
          if((await ready) == false){await initRepository();}
-         else{
-           await orm.deleteWithCascade(T.toString(),entity);
-      //var a= await repository!.delete(id);
-           }
-      exit = true;
+      print(' Controller L151, childId Type:${id.runtimeType.toString()}, id: ${id}');
+
+         //  print("Controller L151, id ${id}");
+        exit=   await orm.deleteWithCascade(T.toString(),id);
+         //  exit= await repository!.delete(id);
+
+
     } catch (e) {
-      print('Error deleting entity id ${id.toString()}: $e');
+      print('Error deleting entity ${T.toString()}, id ${id.toString()}: $e');
     }
     return exit;
   }
@@ -181,12 +184,11 @@ import 'Index/Controller_index.dart';
 
 
   @override
-  Future<bool> update(Map<Symbol,dynamic>parameters)async {
+  Future<bool> update(Map<String,dynamic>parameters)async {
     bool exit=false;
-    Map<String, dynamic> parameter =SymbolToStringConverter.convertSymbolKeysToString(parameters);
 
     try {
-      var a=   await repository?.update( parameters: parameter,whereClause:{'id':parameter['id']});  //TODO Check if it works
+      var a=   await repository?.update( parameters: parameters,whereClause:{'id':parameters['id']});  //TODO Check if it works
       exit = true; // Creation successful
     } catch (e) {
       print('Controller L193: Error creating entity: $e');

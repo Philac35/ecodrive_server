@@ -15,7 +15,7 @@ class AssuranceController extends controller.Controller<Assurance>{
 
   @override
   Future<EntityInterface?> save(entity)async {
-    print('AssuranceController L18 updatedEntity : ${(entity as Assurance).vehicule_id}');
+    print('AssuranceController L18 updatedEntity : ${(entity as Assurance).vehiculeId}');
     var exit;
     try {
 
