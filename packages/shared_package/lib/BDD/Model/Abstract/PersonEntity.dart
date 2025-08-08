@@ -5,6 +5,7 @@ import "package:optional/optional_internal.dart";
 
 
 import "../../Interface/entityInterface.dart";
+import "../AbstractModels/AddressEntity.dart";
 import "../AbstractModels/EmployeeEntity.dart";
 import "../AbstractModels/Modules/Authentication/Entities/AuthUserEntity.dart";
 import "../AbstractModels/PhotoEntity.dart";
@@ -37,28 +38,35 @@ abstract class PersonEntity extends Model implements EntityInterface{
 
   double? get credits; //render app more evolutive != only user and admin has credits
 
-  // @HasOne(foreignKey: 'person_id')
-  //AddressEntity? get address;
+  @HasOne(foreignTable:"Addresses", foreignKey: 'address_id')
+  AddressEntity? get address;
+  int? get addressId;
+
+
   @Column(length: 128)
   String? get email;
 
 
   @HasOne(foreignKey: 'photo_id', foreignTable:'photos')
   PhotoEntity? get photo;
+  int? photoId;
 
   @HasOne(foreignTable:'auth_users',foreignKey: 'auth_users_id')
   AuthUserEntity? get authUser;
-
+  int? authUserId;
 
 
   @HasOne(foreignTable: 'users', foreignKey: 'user_id')
   UserEntity? get user;
+  int? userId;
 
   @HasOne(foreignTable: 'administrators', foreignKey: 'administrators_id')
   AdministratorEntity? get administrator;
+  int? administratorId;
 
   @HasOne(foreignTable: 'employees', foreignKey: 'employees_id')
   EmployeeEntity? get employee;
+  int? employeeId;
 
   //Person <=> authUser  : User, Administrator, Employee
   //User   : User, Driver

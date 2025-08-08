@@ -111,19 +111,18 @@ class RouteEntityBuilder<T> {
 
         Iterable<MapEntry<String, String>> entries;
         String path = "";
-        if (req == 'getEntity' || req == 'delete') {
-          path ='/${"$base/"}${T.toString().toLowerCase()}/${queryT.value}/<id>';
-        }
-        else {
-          path = '/${"$base/"}${T.toString().toLowerCase()}/${queryT.value}';
-        }
 
 
+    queryType.forEach((key,value){
+          var path2=getPath(value);
+          registeredRoutes.add('${value} [GET] : $path2');
+        });
         //Index Routes List
-        registeredRoutes.add('${req} [GET] : $path');
+
         //  print('Request :${req} [GET] : $path');
 
         //Declare Routes
+         path=getPath(queryT.value);
         if (req == 'getEntity' || req == 'delete') {
           router.get(path , (await buildEntityHandler(withId: true, queryT: queryT, path:path))!);
         } else {
@@ -207,7 +206,16 @@ class RouteEntityBuilder<T> {
         List<String> queryType = ["update"];
       }
 
-
+    String getPath(String entry){
+    String path;
+      if (entry == 'getEntity' || entry == 'delete') {
+        path ='/${"$base/"}${T.toString().toLowerCase()}/${entry}/<id>';
+      }
+      else {
+        path = '/${"$base/"}${T.toString().toLowerCase()}/${entry}';
+      }
+    return path;
+    }
 
     Future<Map<String, dynamic>> extractJson(Request request) async {
       final bodyString = await request.readAsString();

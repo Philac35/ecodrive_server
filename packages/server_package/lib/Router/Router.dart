@@ -54,7 +54,7 @@ class FRouter {
     Iterable<MapEntry<String, dynamic>> classList=Entity_Index.entries ;
      for (var c in classList){
         RouteEntityBuilder<dynamic>? routeEntity ;
-  print("Router : ${c.value['type'].toString()}");
+       //print("Router : ${c.value['type'].toString()}");
      var entity= c.value['type'].toString();
      if(entity=="Person") continue;
         //print(router);
