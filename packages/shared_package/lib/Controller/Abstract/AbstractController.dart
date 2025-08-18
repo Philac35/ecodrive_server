@@ -10,19 +10,21 @@ import '../../Repository/Repository.dart';
   late Controller<T>? controller;
   late Repository<T>? repository;
 
-  AbstractController({ this.repository, required Function(dynamic map) entityFactory});
-  // CRUD Functions
 
+
+  AbstractController({ this.repository, required Function(dynamic map) entityFactory});
+
+  // CRUD Functions
   Future<EntityInterface?>?  save(T entity);
   Future<bool> delete(int? id);
-  Future<bool> update(Map<String,dynamic>parameters);
+  Future<bool> update({EntityInterface? entity,Map<String,dynamic>? parameters});
   static T create<T extends EntityInterface>(Map<String, dynamic> parameters) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
   //Fetch Functions
-  Future<List<EntityInterface>?> getEntities();
+  Future<List<EntityInterface?>?> getEntities();
   //Future<Map<String, dynamic>>
   Future<EntityInterface?>  getEntity(int id);
   Future<EntityInterface?>  getLast();

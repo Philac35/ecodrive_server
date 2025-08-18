@@ -31,7 +31,7 @@ import 'Index/Controller_index.dart';
   Controller( {
     this.entity,
     this.executor,
-    required this.entityFactory,
+   this.entityFactory,
 
   })  :
    super(entityFactory: (map)=>Entity_Index[T.toString()]['fromMap']!(map)){
@@ -91,6 +91,7 @@ import 'Index/Controller_index.dart';
        final qClass=indexEntity["queryClass"];
        if(qClass==null){ throw Exception('No queryClass for $typeEntry');}
 
+
        repository= await Repository<T>(entity: entity,
            executor: executor!,
            queryFactory: qClass as dynamic Function(),
@@ -122,21 +123,21 @@ import 'Index/Controller_index.dart';
     if(parameters['id']!=null) {
       parameters['id'] = parameters['id'] is int ? parameters['id'].toString() : parameters['id'];
     }
-   // parameters= SymbolToStringConverter.convertStringKeysToSymbol(parameter);
-    // print("Controller L126, create , parameters :  ${parameters.toString()}");
+     print("Controller L126, create , parameters :  ${parameters.toString()}");
 
   var fromMap=indexEntity['fromMap'] as Function;
   T entity= fromMap(parameters);
 
     //T entity = entityFactory!(parameter);
 
-    print("Controller L148, entity ${entity.toString()}");
+    print("Controller L133, entity ${entity.toString()}");
 
     ORM orm= ORM();
     ret=  await orm.persist(entity)!=null ? true:false;
 
     return ret;
   }
+
 
   @override
   Future<bool> delete(int? id )async {
@@ -161,21 +162,25 @@ import 'Index/Controller_index.dart';
   }
 
 
+
   @override
-  Future<EntityInterface?> save(entity)async {
+  Future<EntityInterface?>? save(EntityInterface  entity)async {
 
     var exit;
     try {
       //print('Controller L169 debug,Entity : $entity');
       // if( repository?.connexionPool ==null){  print('Controller, L180 ConnexionPool is null');}else{print('Controller, L180 ConnexionPool in repository exist');}
 
- exit= await repository?.persist(entity);
 
+
+
+
+ exit= await repository?.persist(entity);
       // Creation successful
-     // print('Controler L169,  creating entity: $exit');
+      print('Controler L180,  creating entity: $exit');
 
     } catch (e) {
-      print('Controler L172, Error creating entity: $e');
+      print('Controler L183, Error creating entity: $e');
     }
       exit != null? print("entity persisted !"):print("entity not persisted!");
 
@@ -184,11 +189,11 @@ import 'Index/Controller_index.dart';
 
 
   @override
-  Future<bool> update(Map<String,dynamic>parameters)async {
+  Future<bool> update({EntityInterface? entity,Map<String,dynamic>? parameters})async {
     bool exit=false;
-
+ if(entity!=null){parameters= entity.toJson();}
     try {
-      var a=   await repository?.update( parameters: parameters,whereClause:{'id':parameters['id']});  //TODO Check if it works
+      var a=   await repository?.update( parameters: parameters!,whereClause:{'id':parameters['id']});  //TODO Check if it works
       exit = true; // Creation successful
     } catch (e) {
       print('Controller L193: Error creating entity: $e');
@@ -219,7 +224,7 @@ import 'Index/Controller_index.dart';
 
   //FETCH Function
   @override
-  Future<List<EntityInterface>?> getEntities() async {
+  Future<List<EntityInterface?>?> getEntities() async {
     return await repository?.findAll();
   }
 
@@ -235,7 +240,7 @@ import 'Index/Controller_index.dart';
 
 
 
-  Future<List<EntityInterface>?> findBy(Map<String,dynamic> parameters) async {
+  Future<List<EntityInterface?>?> findBy(Map<String,dynamic> parameters) async {
        return await repository?.findBy(parameters);
   }
 
@@ -243,8 +248,14 @@ import 'Index/Controller_index.dart';
 
   Future<EntityInterface?> findByFields(Map<String,dynamic> parameters) async {
     var ret;
+
+
     try{
+      bool repReady=await this.ready;
+      if (repReady==false){ await initRepository();}
+
      ret= (await repository?.findBy(parameters))?.first;
+
     print(' type of findByFields, retour type:${ret.runtimeType}');
     }catch(e){print("Controller L249, FindByFields error: ${e}");
        print("Controller L250 Parameters: ${parameters}");}
@@ -259,7 +270,14 @@ import 'Index/Controller_index.dart';
   }
 
   @override
-  Future<int?> getLastId() async { return await repository?.getLastId();}
+  Future<int?> getLastId() async {
+    try {
+      return await repository?.getLastId();
+    }catch(e,stack){
+      print("Controller, getLastId error:$e");
+      print("Controller, getLastId stack:$stack");
+
+    }}
 }
 
 

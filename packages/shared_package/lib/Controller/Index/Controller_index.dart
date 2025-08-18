@@ -20,11 +20,14 @@ import '../PhotoController.dart';
 import '../TravelController.dart';
 import '../UserController.dart';
 import '../VehiculeController.dart';
+import 'package:shared_package/Modules/Authentication/Controllers/AuthUserController.dart';
+
 
 final Map<String,dynamic > ControllerIndex = {
   'AddressController':()=> AddressController(),
   'AdministratorController': ()=>  AdministratorController(),
   'AssuranceController': ()=>  AssuranceController(),
+  'AuthUserController': ()=>  AuthUserController(),  //From module Authentication
   'CommandController':  ()=> CommandController(),
   'DriverController':  ()=> DriverController(),
   'DrivingLicenceController':  ()=> DrivingLicenceController(),

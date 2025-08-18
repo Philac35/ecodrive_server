@@ -54,14 +54,9 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
    ) {}
 
 
-  @override
-  Future<T?> find() {
-    // TODO: implement find
-    throw UnimplementedError();
-  }
 
   @override
-  Future<List<T>> findAll() async {
+  Future<List<T?>?> findAll() async {
 
     return await queryFactory().get(executor) as List<T>;
 
@@ -88,7 +83,7 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
   }
 
   @override
-  Future<List<T>> findBy(Map<String, dynamic> parameters) async {
+  Future<List<T?>?> findBy(Map<String, dynamic> parameters) async {
     var query = queryFactory();
     final columnNames=query.fields;
 
@@ -255,23 +250,23 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
     else{print('Repository L241 : No connexion neither MysqlConnection nor PoolConnection ');}
 
     //addWhereRawForAllParams(query); Not really needed
-    print('Repository L256 : persist: $query');
+    print('Repository L253 : persist: $query');
     Optional<T> insertedRow;
-    print('Repository L257 : entity: $entity');
+    print('Repository L255 : entity: $entity');
     try {
 
        insertedRow = await query.insert(executor!); //return Future<Optional<T>> is  from class Query, it doesn't return the result of executor that is a List<List<T?>>
-       print('Repository L261 : row inserted: $insertedRow');
-    }catch(e,stack){ print('Repository L259 INSERT FAILED! error: $e');
+     //  print('Repository L259 : row inserted: $insertedRow');
+    }catch(e,stack){ print('Repository L260 INSERT FAILED! error: $e');
                      print('stack: $stack');
       return null;}
 
     if(insertedRow!=null){
-      print('Repository L263, debug:  type : ${insertedRow?.first!.runtimeType.toString()}, insertedRow :${insertedRow.value}   ');
+      print('Repository L265, debug:  type : ${insertedRow?.first!.runtimeType.toString()}, insertedRow :${insertedRow.value}   ');
       return insertedRow.value;
     }
     else{
-      throw Exception("Repository L270, Entity was not saved, insertRow is null");
+      throw Exception("Repository L269, Entity was not saved, insertRow is null");
     }
 
 
@@ -336,7 +331,7 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 */
 
   @override
-  Future<bool> delete(int? id)async {  // Could be EntityInterface but it doesn't have id field.
+  Future<bool> delete({int? id})async {  // Could be EntityInterface but it doesn't have id field.
     //checkConnection()
     final query = queryFactory();
 

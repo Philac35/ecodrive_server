@@ -14,14 +14,15 @@ AbstractRepository({this.repository,
 
 // Fetch entities Functions
 
-Future<T?> find();
+
 Future<T?> findById(int id);
-Future<List<T>> findAll();
-Future<List<T>> findBy(Map<String, dynamic> parameters);
+Future<List<T?>?> findAll();
+Future<List<T?>?> findBy(Map<String, dynamic> parameters);
 Future<T?> findLast();
 Future<int?> getLastId();
-Future<dynamic> query(String query,Map<String, dynamic>? substitutionValues);
+Future<dynamic> query(String query, Map<String, dynamic>? substitutionValues);
 Future<dynamic> queries(List<String> queries);
-  Future<EntityInterface?>?  persist(T entity);
-  Future<bool> delete(int? id);
+Future<EntityInterface?>?  persist(T entity);
+Future<bool> delete({int? id});
+
 }
