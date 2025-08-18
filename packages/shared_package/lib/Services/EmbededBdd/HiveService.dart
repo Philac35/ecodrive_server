@@ -51,7 +51,7 @@ class HiveService implements Service {
     final box =  boxName != null? await openBox(boxName):await openBox(_defaultBoxName);
 
     final timestamp = DateTime.now().toIso8601String();
-    final tuple = '$timestamp: ${ParserJson(entry).encode(null)}';
+    final tuple = '$timestamp: ${ParserJson(jsonObject:entry).encode(null)}';
      try {
        // Store entry with a specific key
        await box.put(entryKey, tuple);

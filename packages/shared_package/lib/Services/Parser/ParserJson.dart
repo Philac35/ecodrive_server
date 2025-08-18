@@ -2,9 +2,9 @@ import 'Interface/ParserJsonInterface.dart';
 import 'dart:convert';
 
 class ParserJson<T> implements ParserJsonInterface {
-  T? jsonObject;
+   T? jsonObject;
 
-  ParserJson(this.jsonObject);
+  ParserJson({this.jsonObject});
 
   @override
   Map<String, dynamic>? decode(String jsonString) {

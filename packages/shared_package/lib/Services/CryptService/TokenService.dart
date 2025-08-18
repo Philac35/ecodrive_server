@@ -1,6 +1,7 @@
 import "dart:convert";
 import "dart:io";
 import "dart:math";
+import "dart:typed_data";
 
 import "package:asn1lib/asn1lib.dart";
 import 'package:basic_utils/basic_utils.dart';
@@ -9,9 +10,9 @@ import 'package:pointycastle/export.dart';
 
 import "package:shared_package/Library/CryptageLibrary/CryptageLibrary.dart";
 import "package:shared_package/Services/LogSystem/LogSystem.dart";
-import "package:shared_package/Services/LogSystem/LogSystemBDD.dart";
+//import "package:shared_package/Services/LogSystem/LogSystemBDD.dart";
 import "package:pointycastle/api.dart" as pointycasteldapi;
-import 'package:flutter/foundation.dart';
+
 
 import "package:pointycastle/signers/rsa_signer.dart" as pointycastelsigner;
 
@@ -171,8 +172,8 @@ class TokenService implements Service {
       //  File writedfile = privateKeyFile.writeAsStringSync(privateKeyPEM);
       // if( writedfile.existsSync()){print('privateKey wrote  in file successfully');};
     } catch (e) {
-      debugPrint("TokenService L109, Pb to generate privateKey, error : $e");
-      debugPrint("Error writing private key: $e");
+      print("TokenService L109, Pb to generate privateKey, error : $e");
+      print("Error writing private key: $e");
     }
 
     try {
@@ -184,17 +185,17 @@ class TokenService implements Service {
         print("publicKey wasn't wrote in file");
       }
     } catch (e) {
-      if (kIsWeb) {
+     /* if (kIsWeb) {
         LogSystemBDD().error(
             "TokenService L118, Pb to generate publicKey, error : $e",
             stackTrace: StackTrace.current.toString());
-      } else {
+      } else {*/
         LogSystem().error(
           "TokenService L118, Pb to generate publicKey, error : $e",
         );
-      }
-      debugPrint("TokenService L118, Pb to generate publicKey, error : $e");
-      debugPrint("Error writing public key: $e");
+      //}
+      print("TokenService L118, Pb to generate publicKey, error : $e");
+      print("Error writing public key: $e");
     }
   }
 
@@ -271,30 +272,29 @@ class TokenService implements Service {
       try {
         signature = await SignToken()
             .signData(pemPrivateKey, '$headerBase64.$payloadBase64');
-        if (kDebugMode) {
-          print('Signature generated successfully');
-        }
-      } catch (e, stackTrace) {
-        if (kDebugMode) {
-          print('Error in SignToken().signData(): $e');
 
+          print('Signature generated successfully');
+
+      } catch (e, stackTrace) {
+
+          print('Error in SignToken().signData(): $e');
           print('Stack trace: $stackTrace');
-        }
+
         throw Exception('Error signing data: $e');
       }
       final signatureBase64 = base64Url.encode(signature);
 
       // Print debug information
 
-      if (kDebugMode) {
+
         print('generateJWT - headerBase64: $headerBase64');
         print('generateJWT - payloadBase64: $payloadBase64');
         print('generateJWT - signatureBase64: $signatureBase64');
-      }
+
       var outValue = '$headerBase64.$payloadBase64.$signatureBase64';
-      if (kDebugMode) {
+
         print(outValue);
-      }
+
       return outValue;
     } catch (e) {
       throw Exception('Error generating JWT: $e');
@@ -546,7 +546,7 @@ class TokenService implements Service {
     try {
       SecureStorage().record('token', token!);
     } catch (e) {
-      debugPrint(
+      print(
           "TokenService L85, There was an issue with token record in EmbededBDD : $e");
     }
   }
