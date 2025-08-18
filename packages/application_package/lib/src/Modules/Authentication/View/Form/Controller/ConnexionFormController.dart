@@ -4,7 +4,8 @@ import 'package:get/get.dart';
 
 
 import 'package:shared_package/BDD/Model/AbstractModels/UserEntity.dart';
-import '../../../Controllers/AuthUserController.dart';
+import 'package:shared_package/Modules/Authentication/Controllers/AuthUserController.dart';
+
 import 'ControllerFormInterface.dart';
 import 'package:flutter/foundation.dart';
 
@@ -90,7 +91,7 @@ class ConnexionFormController  extends GetxController implements ControllerFormI
   Future< Map<String, dynamic>> processInformations() async {
     Iterable<RxString> rXvalues = fieldValues.values;
  //   debugPrint("ConnexionFormController L88 rXvalues identifiant: "+rXvalues.elementAt(0).toString());
-   authController.reifyAuthUser(username:rXvalues.elementAt(0).toString(), password:rXvalues.elementAt(1).toString() );
+   authController.reifyAuthUser(identifiant:rXvalues.elementAt(0).toString(), password:rXvalues.elementAt(1).toString() );
  //   debugPrint("ConnexionFormController L88"+authController.toString());
     return authController.authUser!.toJson();
   }

@@ -1,6 +1,6 @@
 import 'package:application_package/src/Modules/Authentication/View/Form/Controller/AccountCreationController.dart';
 
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -56,9 +56,9 @@ class AccountCreationFormState extends State<AccountCreationForm> {
   @override
   Widget build(BuildContext context) {
 
-    if (kDebugMode) {
+
       print(" ConnexionForm key : ${_formKey.toString()}");
-    }
+
     // Build a Form widget using the _formKey created above.
     return Form(
       key: _formKey,

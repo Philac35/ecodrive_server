@@ -25,6 +25,7 @@ List<String>? get role;
 
 @BelongsTo()
 PersonEntity? get person;
+int? get personId;
 
 
 

@@ -222,11 +222,11 @@ class AuthUserQueryValues extends MapQueryValues {
 
   set role(List<String>? value) => values['role'] = json.encode(value);
 
-  int get personId {
+  int? get personId {
     return (values['person_id'] as int);
   }
 
-  set personId(int value) => values['person_id'] = value;
+  set personId(int? value) => values['person_id'] = value;
 
   void copyFrom(AuthUser model) {
     createdAt = model.createdAt;
@@ -237,6 +237,7 @@ class AuthUserQueryValues extends MapQueryValues {
     if (model.person != null) {
       values['person_id'] = model.person?.id;
     }
+    personId= model.personId;
   }
 }
 
@@ -254,6 +255,8 @@ class AuthUser extends AuthUserEntity {
     this.password,
     List<String>? role = const [],
     this.person,
+    this.personId,
+
   }) : role = List.unmodifiable(role ?? []);
 
   /// A unique identifier corresponding to this item.
@@ -280,6 +283,9 @@ class AuthUser extends AuthUserEntity {
   @override
   PersonEntity? person;
 
+  @override
+  int? personId;
+
   AuthUser copyWith({
     String? id,
     DateTime? createdAt,
@@ -288,6 +294,7 @@ class AuthUser extends AuthUserEntity {
     String? password,
     List<String>? role,
     PersonEntity? person,
+    int? personId
   }) {
     return AuthUser(
       id: id ?? this.id,
@@ -297,6 +304,7 @@ class AuthUser extends AuthUserEntity {
       password: password ?? this.password,
       role: role ?? this.role,
       person: person ?? this.person,
+      personId: personId ?? this.personId,
     );
   }
 
@@ -311,7 +319,8 @@ class AuthUser extends AuthUserEntity {
         ListEquality<String>(
           DefaultEquality<String>(),
         ).equals(other.role, role) &&
-        other.person == person;
+
+        other.personId == personId;
   }
 
   @override
@@ -329,7 +338,7 @@ class AuthUser extends AuthUserEntity {
 
   @override
   String toString() {
-    return 'AuthUser(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, identifiant=$identifiant, password=$password, role=$role, person=$person)';
+    return 'AuthUser(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, identifiant=$identifiant, password=$password, role=$role, personId=$personId)';
   }
 
   Map<String, dynamic> toJson() {
@@ -367,7 +376,9 @@ class AuthUserSerializer extends Codec<AuthUser, Map> {
   AuthUserDecoder get decoder => const AuthUserDecoder();
 
   static AuthUser fromMap(Map map) {
-    return AuthUser(
+
+    print('AuthUserEntity L380: fromMap , AuthUser map : $map');
+    var ret= AuthUser(
       id: map['id'] as String?,
       createdAt:
           map['created_at'] != null
@@ -392,6 +403,8 @@ class AuthUserSerializer extends Codec<AuthUser, Map> {
               ? PersonSerializer.fromMap(map['person'] as Map)
               : null,
     );
+    print('AuthUserEntity L743: fromMap , AuthUser map : $ret');
+    return ret;
   }
 
   static Map<String, dynamic> toMap(AuthUserEntity? model) {

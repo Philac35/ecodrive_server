@@ -15,7 +15,7 @@ import 'package:shared_package/Services/HTMLService/HTMLService.dart';
 
 import 'package:shared_package/Controller/DriverController.dart';
 import 'package:shared_package/Controller/UserController.dart';
-import '../../../Controllers/AuthUserController.dart';
+import 'package:shared_package/Modules/Authentication/Controllers/AuthUserController.dart';
 import 'ControllerFormInterface.dart';
 import 'package:flutter/foundation.dart';
 
@@ -111,10 +111,10 @@ class AccountCreationController extends GetxController implements ControllerForm
     // Relation OneToMany   une table autherController is binded to several other table
     if(isCreated == true) {
       // Reification
-      AuthUserController authController= AuthUserController();
+      AuthUserController authController= AuthUserController();  //entityFactory: authEntity().toMap()
       Pattern p = RegExp("[-|,]");
       List<String> role=  (entityMap['role'] as String).split(p);
-      isCreated=authController.createAuthUser(username: entityMap['identifiant'], password:entityMap['password'],role:role );
+      isCreated=authController.createAuthUser(identifiant: entityMap['identifiant'], password:entityMap['password'],role:role );
       //res.addAll(authUserEntry);
     }
 
