@@ -1,6 +1,13 @@
 
 
 class DateTimeLocal {
+
+  /**
+   * Function parseDate
+   *  Detect if it is an English or French date format
+   *  @String dateStr
+   *  @Return DateTime?
+   */
   DateTime? parseDate(String dateStr) {
     var ret;
     if (dateStr == null || dateStr.isEmpty) return null;
@@ -28,6 +35,9 @@ class DateTimeLocal {
 
   /**
    * Function parseDateLg
+   * @Param String dateStr
+   * @Param String lang
+   * @Return DateTime?
    */
   DateTime? parseDateLg(String dateStr, String lang) {
     var day, month, year;

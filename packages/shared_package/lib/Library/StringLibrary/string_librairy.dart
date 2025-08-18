@@ -4,16 +4,39 @@ import './str_extension.dart';
 class StringLib {
 
 
-
+  /**
+   * Function camelToSnakeKeyFromMap
+   * Convert keys from camelCase to snake_case
+   * @Param Map<String, dynamic>
+   * @Return Map
+   */
   Map camelToSnakeKeyFromMap(Map map){
     final newMap = <String, dynamic>{};
 
     map.forEach((key, value) {
-//Convert keys from camelCase to snake_case
       final keyStr = key.toString();
       final snakeKey = camelToSnake(keyStr);
-//Put into new map
+
       newMap[snakeKey] = value;
+    });
+    return newMap;
+  }
+
+
+  /**
+   * Function snakeToCamelKeyFromMap
+   * Convert keys from snake_case  to camelCase
+   * @Param Map<String, dynamic>
+   * @Return Map
+   */
+  Map snakeToCamelKeyFromMap(Map map){
+    final newMap = <String, dynamic>{};
+
+    map.forEach((key, value) {
+      final keyStr = key.toString();
+      final camelKey = snakeToCamel(keyStr);
+
+      newMap[camelKey] = value;
     });
     return newMap;
   }
