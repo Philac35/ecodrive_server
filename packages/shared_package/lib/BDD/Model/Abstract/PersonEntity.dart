@@ -4,6 +4,7 @@ import "package:shared_package/BDD/Model/AbstractModels/AdministratorEntity.dart
 import "package:optional/optional_internal.dart";
 
 
+import "../../../Library/StringLibrary/string_librairy.dart";
 import "../../Interface/entityInterface.dart";
 import "../AbstractModels/AddressEntity.dart";
 import "../AbstractModels/EmployeeEntity.dart";

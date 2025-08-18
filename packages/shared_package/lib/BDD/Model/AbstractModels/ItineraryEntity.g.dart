@@ -39,9 +39,10 @@ class ItineraryMigration extends Migration {
 class ItineraryQuery extends Query<Itinerary, ItineraryQueryWhere> {
   ItineraryQuery({super.parent, Set<String>? trampoline}) {
     trampoline ??= <String>{};
-    if (trampoline.contains(tableName)) return; // Modification E.H 6/08/2025 17h56 Prevent recursion!
+    bool isActive = !(trampoline?.contains(tableName) ?? false);
     trampoline.add(tableName);
     _where = ItineraryQueryWhere(this);
+   if(isActive){
     leftJoin(
       _addressDeparture = AddressQuery(trampoline: trampoline, parent: this),
       'address_departure_id',
@@ -96,7 +97,7 @@ class ItineraryQuery extends Query<Itinerary, ItineraryQueryWhere> {
         'arrival_time',
       ],
       trampoline: trampoline,
-    );
+    );}
   }
 
   @override

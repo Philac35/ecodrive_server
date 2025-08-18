@@ -301,7 +301,8 @@ class Command extends CommandEntity {
     required this.totalHT,
     required this.totalTTC,
     required this.status,
-     this.user, //required
+    this.userId,
+    this.user, //required
   });
 
   /// A unique identifier corresponding to this item.
@@ -337,6 +338,9 @@ class Command extends CommandEntity {
   @override
   UserEntity? user;
 
+  @override
+  int? userId;
+
   Command copyWith({
     String? id,
     DateTime? createdAt,
@@ -348,6 +352,7 @@ class Command extends CommandEntity {
     double? totalTTC,
     String? status,
     UserEntity? user,
+    int? userId
   }) {
     return Command(
       id: id ?? this.id,
@@ -360,6 +365,7 @@ class Command extends CommandEntity {
       totalTTC: totalTTC ?? this.totalTTC,
       status: status ?? this.status,
       user: user ?? this.user,
+        userId: userId ?? this.userId
     );
   }
 
@@ -375,7 +381,8 @@ class Command extends CommandEntity {
         other.totalHT == totalHT &&
         other.totalTTC == totalTTC &&
         other.status == status &&
-        other.user == user;
+        other.user == user &&
+        other.userId== userId;
   }
 
   @override
@@ -391,12 +398,13 @@ class Command extends CommandEntity {
       totalTTC,
       status,
       user,
+      userId
     ]);
   }
 
   @override
   String toString() {
-    return 'Command(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, reference=$reference, credits=$credits, unitaryPrice=$unitaryPrice, totalHT=$totalHT, totalTTC=$totalTTC, status=$status, user=$user)';
+    return 'Command(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, reference=$reference, credits=$credits, unitaryPrice=$unitaryPrice, totalHT=$totalHT, totalTTC=$totalTTC, status=$status, user=$user , userId=$userId)';
   }
 
   Map<String, dynamic> toJson() {
@@ -460,6 +468,10 @@ class CommandSerializer extends Codec<Command, Map> {
           map['user'] != null
               ? UserSerializer.fromMap(map['user']) as UserEntity
               : null,
+      userId:   map['user_id'] != null
+                  ? map['user_id']is String
+                      ? int.parse(map['user_id'] ):map['user_id']
+               :null
     );
   }
 
@@ -479,6 +491,7 @@ class CommandSerializer extends Codec<Command, Map> {
       'total_t_t_c': model.totalTTC,
       'status': model.status,
       'user': UserSerializer.toMap(model.user),
+      'userId': model.userId
     };
   }
 }
@@ -495,6 +508,7 @@ abstract class CommandFields {
     totalTTC,
     status,
     user,
+    userId
   ];
 
   static const String id = 'id';
@@ -516,4 +530,6 @@ abstract class CommandFields {
   static const String status = 'status';
 
   static const String user = 'user';
+
+  static const String userId = 'user_id';
 }

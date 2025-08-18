@@ -33,7 +33,15 @@ abstract class UserEntity extends PersonEntity   implements EntityInterface{
   UserEntity() ;
 
 
-//required super.firstname,   required super.lastname,   super.age,   super.gender,   super.address,   super.email,   super.photo,super.photo_id,   required super.authUser, super.createdAt
+//required super.firstname,
+// required super.lastname,
+// super.age,
+// super.gender,
+// super.address,
+// super.email,
+// super.photo,super.photo_id,
+// required super.authUser,
+// super.createdAt
 
 
 

@@ -229,12 +229,15 @@ class PersonQuery extends Query<Person, PersonQueryWhere> {
     return PersonQueryWhere(this);
   }
 
+
   Optional<Person> parseRow(List row) {
     if (row.every((x) => x == null)) {
       return Optional.empty();
     }
+
+
     var model = Person(
-      id: fields.contains('id') ? row[0].toString() : null,
+      id: fields.contains('id') ? row[0] : null,
       createdAt:
           fields.contains('created_at') ? mapToNullableDateTime(row[1]) : null,
       updatedAt:
@@ -245,12 +248,12 @@ class PersonQuery extends Query<Person, PersonQueryWhere> {
       gender: fields.contains('gender') ? (row[6] as String?) : null,
       credits: fields.contains('credits') ? mapToDouble(row[7]) : 0.0,
       email: fields.contains('email') ? (row[8] as String?) : null,
-      addressId: fields.contains('address_id') ?  (int.parse(row[9]) as int?): null,
-      photoId: fields.contains('photo_id') ?  (int.parse(row[10]) as int?): null,
-      authUserId:fields.contains('auth_user_id') ?  (int.parse(row[11]) as int?): null,
-      userId:  fields.contains('user_id') ?  (int.parse(row[12]) as int?): null,
-      administratorId:fields.contains('administrator_id') ?  (int.parse(row[13]) as int?): null,
-      employeeId:   fields.contains('employee_id') ?  (int.parse(row[14]) as int?): null,
+      addressId: fields.contains('address_id') ? row[9] is String ?  (int.parse(row[9]) as int?):row[9]: null,
+      photoId: fields.contains('photo_id') ?row[10] is String ?   (int.parse(row[10]) as int?):row[10]: null,
+      authUserId:fields.contains('auth_user_id') ? row[11] is String ?  (int.parse(row[11]) as int?):row[11]: null,
+      userId:  fields.contains('user_id') ? row[12] is String ?  (int.parse(row[12]) as int?):row[12]: null,
+      administratorId:fields.contains('administrator_id') ?  row[13] is String ? (int.parse(row[13]) as int?): row[13]:null,
+      employeeId:   fields.contains('employee_id') ? row[14] is String ?  (int.parse(row[14]) as int?): row[14]:null,
 
 
     );
@@ -694,7 +697,7 @@ class Person extends PersonEntity {
 
   @override
   String toString() {
-    return 'Person(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email,address=$address, photo=$photo,photoId=$photoId, authUser=$authUser,authUserId=$authUserId, user=$user,userId=$userId, administrator=$administrator,administratorId=$administratorId, employee=$employee, employeeId=$employeeId)';
+    return 'Person(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email,address=$address, photoId=$photoId,authUser=$authUser,authUserId=$authUserId, userId=$userId, administratorId=$administratorId, employeeId=$employeeId)';
   }
 
   Map<String, dynamic>? toJson() {
@@ -734,7 +737,11 @@ class PersonSerializer extends Codec<Person, Map> {
   PersonDecoder get decoder => const PersonDecoder();
 
   static Person fromMap(Map map) {
-    return Person(
+
+    map=StringLib().camelToSnakeKeyFromMap(map);
+
+    print('PersonEntity L743: fromMap , Person map : $map');
+     var a=Person(
       id: map['id'] as String?,
       createdAt:
           map['created_at'] != null
@@ -771,23 +778,50 @@ class PersonSerializer extends Codec<Person, Map> {
           map['photo'] != null
               ? PhotoSerializer.fromMap(map['photo'] as Map)
               : null,
+      photoId: map['photo_id'] != null
+          ? map['photo_id'] is String
+          ? int.parse(map['photo_id'])
+          :map['photo_id']
+          :null ,
       authUser:
           map['auth_user'] != null
               ? AuthUserSerializer.fromMap(map['auth_user'] as Map)
               : null,
+      authUserId: map['auth_user_id'] != null
+          ? map['auth_user_id'] is String
+          ? int.parse(map['auth_user_id'])
+          :map['auth_user_id']
+          :null ,
       user:
           map['user'] != null
               ? UserSerializer.fromMap(map['user'] as Map)
               : null,
+      userId: map['user_id'] != null
+          ? map['user_id'] is String
+          ? int.parse(map['user_id'])
+          :map['user_id']
+          :null ,
       administrator:
           map['administrator'] != null
               ? AdministratorSerializer.fromMap(map['administrator'] as Map)
               : null,
+      administratorId: map['administrator_id'] != null
+          ? map['administrator_id'] is String
+          ? int.parse(map['administrator_id'])
+          :map['administrator_id']
+          :null ,
       employee:
           map['employee'] != null
               ? EmployeeSerializer.fromMap(map['employee'] as Map)
               : null,
+      employeeId: map['employee_id'] != null
+          ? map['employee_id'] is String
+          ? int.parse(map['employee_id'])
+          :map['employee_id']
+          :null ,
     );
+    print('PersonEntity L823: fromMap , Person entity : $a');
+     return a;
   }
 
   static Map<String, dynamic>? toMap(PersonEntity? model) {
@@ -807,7 +841,7 @@ class PersonSerializer extends Codec<Person, Map> {
       'email': model.email,
       'photo': PhotoSerializer.toMap(model.photo),
       'photoId':model.photoId,
-      'auth_user': AuthUserSerializer.toMap(model.authUser),
+      'authUser': AuthUserSerializer.toMap(model.authUser),
       'authUserId':model.authUserId,
       'user': UserSerializer.toMap(model.user),
       'userId': model.userId,

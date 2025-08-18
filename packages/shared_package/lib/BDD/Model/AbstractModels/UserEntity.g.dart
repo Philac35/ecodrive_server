@@ -161,20 +161,22 @@ class UserQuery extends Query<User, UserQueryWhere> {
       gender: fields.contains('gender') ? (row[6] as String?) : null,
       credits: fields.contains('credits') ? mapToDouble(row[7]) : 0.0,
       email: fields.contains('email') ? (row[8] as String?) : null,
-      photoId:fields.contains('photo_id')  && row[9]!=null? row[9] is String ?  int.parse(row[9]):row[9] as int: null,
+      //addressId:fields.contains('address_id') && row[10]!=null? row[10] is String ? int.parse(row[10]):row[10] as int: null,
+      photoId:fields.contains('photo_id') && row[9]!=null? row[9] is String ? int.parse(row[9]):row[9] as int: null,
       personId:fields.contains('person_id')  && row[10]!=null? row[10] is String ? int.parse(row[10]):row[10] as int: null,
-      driverId:fields.contains('driver_id')  && row[11]!=null? row[11] is String ? int.parse(row[11]):row[11] as int: null,
-      commandIdList: fields.contains('command_id_list')  && row[12]!=null? List<int>.of(jsonDecode(row[12])): null,
+      driverId:fields.contains('driver_id') && row[11]!=null? row[11] is String ? int.parse(row[11]):row[11] as int: null,
+      commandIdList: fields.contains('command_id_list')  && row[12]!=null? List<int>.of(jsonDecode(row[12]) as List<int>): null,
+      userId:fields.contains('user_id') && row[13]!=null? row[13] is String ? int.parse(row[13]):row[13] as int: null,
     );
-    if (row.length > 11) {
-      var modelOpt = PersonQuery().parseRow(row.skip(11).take(15).toList());
+    if (row.length > 14) {
+      var modelOpt = PersonQuery().parseRow(row.skip(14).take(15).toList());
       modelOpt.ifPresent((m) {
         model = model.copyWith(person: m);
       });
 
     }
-    if (row.length > 27) {
-      var modelOpt = DriverQuery().parseRow(row.skip(27).take(9).toList());
+    if (row.length > 29) {
+      var modelOpt = DriverQuery().parseRow(row.skip(29).take(9).toList());
       modelOpt.ifPresent((m) {
         model = model.copyWith(driver: m);
       });
@@ -376,6 +378,8 @@ class UserQueryValues extends MapQueryValues {
 
   set personId(int value) => values['person_id'] = value;
 
+
+
   int get driverId {
     return (values['driver_id'] as int);
   }
@@ -397,11 +401,11 @@ class UserQueryValues extends MapQueryValues {
 
     if (model.person != null) {
       values['person_id'] = int.parse(model.person!.id!);
-      values['person'] = model.person ;
+
     }
     if (model.driver != null) {
       values['driver_id'] = int.parse(model.driver!.id!);
-      values['driver']= model.driver ;
+
     }
 
     if (model.driverId != null) {
@@ -434,12 +438,14 @@ class User extends UserEntity {
     this.photo,
     this.photoId,
     this.authUser,
+    this.authUserId,
     this.person,
     this.personId,
     this.driver,
     this.driverId,
     List<CommandEntity>? commandList = const [],
-    this. commandIdList
+    this. commandIdList,
+    this.userId
   //  this.authUserEntity,
   }) : commandList = List.unmodifiable(commandList ?? []);
 
@@ -490,6 +496,9 @@ class User extends UserEntity {
   AuthUserEntity? authUser;
 
   @override
+  int? authUserId;
+
+  @override
   PersonEntity? person;
 
   @override
@@ -507,6 +516,9 @@ class User extends UserEntity {
   @override
   List<int>? commandIdList;
 
+  @override
+  int? userId;
+
   /*@override
   AuthUserEntity? authUserEntity;
  */
@@ -520,17 +532,16 @@ class User extends UserEntity {
     String? gender,
     double? credits,
     String? email,
-    AddressEntity? address,
-    int? addressId,
     PhotoEntity? photo,
-    AuthUserEntity? authUser,
+    int? photoId,
     PersonEntity? person,
     int? personId,
     DriverEntity? driver,
     int? driverId,
     List<CommandEntity>? commandList,
     List<int>? commandIdList,
-   // AuthUserEntity? authUserEntity,
+    int? userId
+
   }) {
     return User(
       id: id ?? this.id,
@@ -542,17 +553,16 @@ class User extends UserEntity {
       gender: gender ?? this.gender,
       credits: credits ?? this.credits,
       email: email ?? this.email,
-      address: address ?? this.address,
-      addressId: addressId ?? this.addressId,
       photo: photo ?? this.photo,
       photoId: photoId ?? this.photoId,
-      authUser: authUser ?? this.authUser,
+
       person: person ?? this.person,
       personId: personId ?? this.personId,
       driver: driver ?? this.driver,
       driverId: driverId ?? this.driverId,
       commandList: commandList ?? this.commandList,
       commandIdList: commandIdList ?? this.commandIdList,
+      userId: userId ?? this.userId,
    //   authUserEntity: authUserEntity ?? this.authUserEntity,
     );
   }
@@ -569,19 +579,16 @@ class User extends UserEntity {
         other.gender == gender &&
         other.credits == credits &&
         other.email == email &&
-        other.address== address &&
-        other.addressId == addressId &&
-        other.photo == photo &&
-        other.authUser == authUser &&
-        other.person == person &&
-        other.driver == driver &&
+        other.photoId == photoId &&
+        other.personId == personId &&
+        other.driverId == driverId &&
         ListEquality<CommandEntity>(
           DefaultEquality<CommandEntity>(),
         ).equals(other.commandList, commandList)&&
         ListEquality<int?>(
           DefaultEquality<int?>(),
-        ).equals(other.commandIdList, commandIdList)
-
+        ).equals(other.commandIdList, commandIdList)&&
+         other.userId== userId
     ;
     //    other.authUserEntity == authUserEntity;
   }
@@ -598,19 +605,19 @@ class User extends UserEntity {
       gender,
       credits,
       email,
-      photo,
-      authUser,
-      user,
-      person,
-      driver,
-      commandList,
+      photoId,
+      userId,
+      personId,
+      driverId,
+      commandIdList,
+
     //  authUserEntity,
     ]);
   }
 
   @override
   String toString() {
-    return 'User(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email, address=$address, addressId=$addressId ,authUser=$authUser, personId=$personId, driverId=$driverId)';
+    return 'User(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email,person=$person,personId=$personId, driverId=$driverId)';
   }
 
   static User fromJson(Map userData){
@@ -687,17 +694,14 @@ class UserSerializer extends Codec<User, Map> {
       gender: map['gender'] as String?,
 
       credits: map['credits']!=null ?
-              map['credits'] is String ? double.parse(map['credits']) as double :map['credits']
+              map['credits'] is String ? double.parse(map['credits'])  :map['credits'] as double
             : 0.0,
       email: map['email'] as String?,
       photo:
           map['photo'] != null
               ? PhotoSerializer.fromMap(map['photo'] as Map)
               : null,
-      authUser:
-          map['auth_user'] != null
-              ? AuthUserSerializer.fromMap(map['auth_user'] as Map)
-              : null,
+
       person:
           map['person'] != null
               ? PersonSerializer.fromMap(map['person'] )
@@ -745,7 +749,7 @@ class UserSerializer extends Codec<User, Map> {
       'credits': model.credits,
       'email': model.email,
       'photo': PhotoSerializer.toMap(model.photo),
-      'auth_user': AuthUserSerializer.toMap(model.authUser),
+
       'person': PersonSerializer.toMap(model.person),
       'person_id': model.personId ,
       'driver': DriverSerializer.toMap(model.driver),
@@ -753,7 +757,7 @@ class UserSerializer extends Codec<User, Map> {
       'command_list':
           model.commandList?.map((m) => CommandSerializer.toMap(m)).toList(),
       'command_id_list': model.commandIdList,
-    //  'auth_user_entity': AuthUserSerializer.toMap(model.authUserEntity),
+      //'auth_user_entity': AuthUserSerializer.toMap(model.authUserEntity),
     };
   }
 }
@@ -770,7 +774,6 @@ abstract class UserFields {
     credits,
     email,
     photo,
-    authUser,
     user,
     userId,
     person,
@@ -801,8 +804,6 @@ abstract class UserFields {
   static const String email = 'email';
 
   static const String photo = 'photo';
-
-  static const String authUser = 'auth_user';
 
   static const String user = 'user';
 

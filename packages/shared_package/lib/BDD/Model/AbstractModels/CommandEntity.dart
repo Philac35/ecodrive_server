@@ -34,6 +34,6 @@ abstract class CommandEntity extends Model implements EntityInterface {
 
   @BelongsTo()
   UserEntity? get user;
-
+  int? get userId;
 
 }

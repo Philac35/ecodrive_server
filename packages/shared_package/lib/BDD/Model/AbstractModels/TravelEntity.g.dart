@@ -38,9 +38,11 @@ class TravelMigration extends Migration {
 class TravelQuery extends Query<Travel, TravelQueryWhere> {
   TravelQuery({super.parent, Set<String>? trampoline}) {
     trampoline ??= <String>{};
-    if (trampoline.contains(tableName)) return; // Modification E.H 6/08/2025 17h56 Prevent recursion!
+    bool isActive = !(trampoline?.contains(tableName) ?? false);
     trampoline.add(tableName);
+
     _where = TravelQueryWhere(this);
+    if(isActive){
     leftJoin(
       _driver = PersonQuery(trampoline: trampoline, parent: this),
       'driver_id',
@@ -75,7 +77,7 @@ class TravelQuery extends Query<Travel, TravelQueryWhere> {
         'travel_id',
       ],
       trampoline: trampoline,
-    );
+    );}
   }
 
   @override
