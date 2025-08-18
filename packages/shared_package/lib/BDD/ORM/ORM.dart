@@ -18,7 +18,9 @@ class ORM {
   Map<String, dynamic> classRelationsIndex;
 
   late EntityInterface? relatedPersisted;
-  late Map updatedMap;
+  late Map<String,dynamic> updatedMap;  //Should be a named map different for each child and parent entities
+  late Map<String, Map<String,dynamic> > updatedMaps;
+
 
   MySQLConnectionPool? connexionPool;
   QueryExecutor? executor;
@@ -30,6 +32,7 @@ class ORM {
     initMySqlPoolConnection();
     executor = MySqlPoolExecutor(connexionPool!);
     updatedMap={};
+    updatedMaps={};
   }
 
   initMySqlPoolConnection() {
@@ -41,26 +44,63 @@ class ORM {
   //Implementation persist Entity with cascading abilities
   Future<EntityInterface?> persist(dynamic entity) async {
     //print("ORM L40, entity:  ${entity}");
-    final entityType = entity.runtimeType.toString();
-
-    Map<String, dynamic> entityMap = entity.toJson();
-    //print("ORM L44, entity:  ${entityMap}");
-    final relations = classRelationsIndex[entityType] ?? [];
-
-     updatedMap = Map<String, dynamic>.from(entityMap);
+    updatedMap=entity.toJson();   //updatedMap become main entity
+   var relations=getRelations(entity);
 
     // Parents (belongsTo / hasOne)
     await cascadeParentsR(relations);
 
+       //Reify entity to be sur of Type
+       final entityType = entity.runtimeType.toString();
+       final fromMap = entityIndex[entityType]['fromMap'] as Function;
+
+       await isAwReuse(relations, fromMap(updatedMap));
+
+     EntityInterface? persistedEntity=await save(relations,entity);// //Peut avoir été updated
+
+
+    //After parent insert we manage child Entities and check each relations:
+    _cascadeChildren(relations,  persistedEntity) ;
+
+    return persistedEntity;
+  }
+
+
+  Future<void> _cascadeChildren(relations,  persistedEntity) async {
+    await hasOne(relations,  persistedEntity);
+    await hasMany(relations, persistedEntity);
+    await belongTo(relations, persistedEntity);
+
+
+  }
+  getRelations(dynamic entity){
+    final entityType = entity.runtimeType.toString();
+
+
+    //print("ORM L44, entity:  ${entityMap}");
+    final relations = classRelationsIndex[entityType] ?? [];
+    return relations;
+  }
+
+  /**
+   * Function save
+   * @Param relations
+   * @Param EntityInterface entity
+   */
+  Future<EntityInterface?>save(List<RelationMeta> relations, EntityInterface entity)async{
+    final entityType = entity.runtimeType.toString();
+
+   // Map<String, dynamic> entityMap = entity.toJson();
+    //updatedMap = Map<String, dynamic>.from(entityMap);
+    mergeMapsShallow(updatedMap,entity.toJson()!);
+
     // print("ORM L53, entity:  ${updatedMap}");
-    // Main entity save
+    // Main entity save (can be updated in cascadingParent)
     final fromMap = entityIndex[entityType]['fromMap'] as Function;
     var updatedEntity = fromMap(updatedMap);
 
-    var updatedMa = await isAwReuse(relations, updatedEntity);
-    if (updatedMa != null) {
-      updatedEntity = fromMap(updatedMa);
-    }
+     updatedEntity = fromMap(await isAwReuse(relations, updatedEntity)!);
+
     print('ORM L63, debug, superEntity :  $updatedEntity!');
 
     final controller = controllerIndex["${entityType}Controller"]?.call();
@@ -74,14 +114,9 @@ class ORM {
 
     final persistedEntity = await controller.save(updatedEntity);
     print('ORM L75, Main Entity Persisted in DB: $persistedEntity');
-
-    //After parent insert we manage child Entities and check each relations:
-    await hasOne(relations,  persistedEntity);
-    await hasMany(relations, persistedEntity);
-    await belongTo(relations, persistedEntity);
-
     return persistedEntity;
   }
+
 
   /**
    * Function cascadeParentsSaved
@@ -157,6 +192,7 @@ class ORM {
         r.type == RelationType.belongsTo || r.type == RelationType.hasOne)) {
       final relatedType = rel.relatedType;
 
+
       final entityIndexEntry = Entity_Index[relatedType];
       if (entityIndexEntry == null) continue;
       final relatedFromMap = entityIndexEntry['fromMap'] as Function;
@@ -200,21 +236,27 @@ class ORM {
         r.type == RelationType.belongsTo || r.type == RelationType.hasOne)) {
       final relatedType = rel.relatedType;
 
-      final entityIndexEntry = Entity_Index[relatedType];
-      if (entityIndexEntry == null) continue;
+      if(relatedType=='AuthUser'){print("ORM L233,CascadeParents AuthUser will be persisted");}
 
+      final entityIndexEntry = Entity_Index[relatedType];
+
+      if (entityIndexEntry == null) {
+        continue;
+      } else{print("ORM L237, CascadeParents $relatedType");}
       final relatedFromMap = entityIndexEntry['fromMap'] as Function;
       //print("ORM L92, related entity ${relatedFromMap} ");
-      var related = updatedMap[rel.fieldName];
+
+      //Fetch fields of entity from updatedMap;
+      var related = updatedMap[rel.fieldName];  //here updatedMap is related to Main Entity not Child
 
       //print("ORM L208,debug related entity ${related.runtimeType.toString()} belongsTo}");
-
+      if(relatedType=='AuthUser'){print("ORM L243,CascadeParents AuthUser :$related");}
       if (related != null) {
         if (related is Map) related = relatedFromMap(related);
         EntityInterface? relatedPersisted;
 
         //ReuseIfExits -> reuse child in parent record if it preexist
-        relatedPersisted= reUseIfExist(related, rel);
+        relatedPersisted= await reUseIfExist(related, rel);
 
           print('ORM: L120 relatedPersisted or Reused $relatedPersisted');
 
@@ -247,26 +289,99 @@ class ORM {
 
     if (relation.reuseIfExists && relation.findBy.isNotEmpty) {
       //Create a Map<key,value> to pass in findByFields
-      var existing = await findByFields(relation, entity);
-      print("ORM 118 findByFields ${existing}");
+      EntityInterface? existing = await findByFields(relation, entity);
+      print("ORM 251 findByFields ${existing}");
       if (existing != null) {
+
+        //Upsert if we need to update preexisting entity
+        if(relation.updateIfExist) {
+          upsert(entity, existing, relatedController, relation);
+        }
+
         updatedMap[relation.foreignKey] = existing.id;
         updatedMap[relation.fieldName] =  null; //The related entity was persisted, we delete the content of rel.fieldName
         relatedPersisted = existing;
       } else {
         print(
-            "ORM L124, No entity was found with findByFields we persist bared related Entity");
+            "ORM L258, No entity was found with Fields we persist bared related Entity");
         relatedPersisted = await persist(entity);
       }
       print(
-          "ORM L127, Reuse related entity ${entity.runtimeType.toString()}");
+          "ORM L262, Reuse related entity ${entity.runtimeType.toString()}");
     } else {
       print(
-          "ORM L130, related entity ${entity.runtimeType.toString()} persist triggered}");
+          "ORM L265, related entity ${entity.runtimeType.toString()} persist triggered}");
       relatedPersisted = await persist(entity);
     }
     return relatedPersisted;
     }
+  }
+
+  /*
+  * Function mergeMapsShallow
+  * mergeShallow nested map of nested Entity
+  * @Param Map target
+  * @Param Map source
+  */
+  void mergeMapsShallow(Map target, Map source) {
+    source.forEach((key, value) {
+      if (value != null) {
+        if (value is Map && target[key] is Map) {
+          mergeMapsShallow(target[key], value);
+        } else {
+          target[key] = value;
+        }
+      }
+    });
+  }
+
+
+
+
+  /**
+   * Function upsert
+   * @Param EntityInterface entity (from the query)
+   * @Param EntityInterface existing (preexist in BDD
+   * @Param Controller<EntityInterface> relatedController
+   * @Param RelationMeta relation
+   */
+  Future<bool> upsert( dynamic entity,EntityInterface existing, relatedController,RelationMeta relation   )async {
+    var ret;
+    final existingMap = existing.toJson() ?? {};
+    final entityMap = entity.toJson() ?? {};
+    print('ORM L342: upsert ,  entityMap : $entityMap');
+    // Merge: overwrite only non-null values
+    final mergedMap = Map<String, dynamic>.from(existingMap);
+
+    //Deep merge of nested entity
+    mergeMapsShallow(mergedMap, entityMap);
+
+    /* or you can use (only merge level 1)
+    entityMap.forEach((key, value) {
+      if (value != null) mergedMap[key] = value;
+    });*/
+    Type typeRelated = relatedController.runtimeType;
+    print('ORM L354: upsert ,  controllertypeRelated : $typeRelated.toString');
+    print('ORM L355: upsert ,  typeRelated : $mergedMap');
+    if (existingMap.containsKey('id')) {
+       //Update
+       mergedMap['id'] = existingMap['id'];
+      ret = await relatedController.update(parameters: mergedMap);
+    } else {
+      //Create
+      var createRet = await relatedController.create(mergedMap);
+      mergedMap['authUserId'] = createRet.value.id;
+      var controller = controllerIndex["${entity.runtimeType
+          .toString()}Controller"]?.call();
+      if (controller != null) {  await controller.ready;}
+      print('ORM L364: upsert ,  typeRelated : $mergedMap');
+        ret = await controller.update(parameters: mergedMap);
+        ret = createRet != null ? true : false;
+      }
+     updatedMap=mergedMap;// /!\
+      return ret; //Update accept Map<string,dynamic>
+
+
   }
 
   /**
@@ -281,6 +396,7 @@ class ORM {
     final relatedType = relation.relatedType;
     var relatedController = controllerIndex["${relatedType}Controller"]?.call();
     final lookupMap = <String, dynamic>{};
+    print('ORM L386:  findByFields entity :${entity.toString()}');
     for (final key in relation.findBy) {
       lookupMap[key] = (entity as dynamic).toJson()[key];
     }
@@ -302,14 +418,14 @@ class ORM {
         if (superEntity != null && updatedMap != null) {
           // Recursively cascade persist the super entity
 
-          await cascadeParents(
+          await cascadeParentsR(
               classRelationsIndex[superEntity.runtimeType.toString()]);
           final persistedSuper = await persist(superEntity);
 
           // Update foreign key / IDs if needed
           String foreignKey = rel.foreignKey.camelToSnake();
           updatedMap[foreignKey] = persistedSuper?.id;
-          print('ORM L165, debug, function isA , updatedMap :  $updatedMap!');
+          print('ORM L312, debug, function isA , updatedMap :  $updatedMap!');
           return updatedMap;
         }
       }
@@ -327,20 +443,32 @@ class ORM {
       List<RelationMeta> relations, EntityInterface entity) async {
     for (final rel in relations.where((r) => r.type == RelationType.isA)) {
       if (rel.type == RelationType.isA) {
+                                                  //injection User
         EntityInterface? superEntity = getSuperEntity(entity, rel);
+
+
+        print('ORM L439: isAwReuse ,  entity : ${entity.toString()}');
+        print('ORM L440: isAwReuse ,  superEntity : ${superEntity.toString()}');
         if (superEntity != null && updatedMap != null) {
           // Recursively cascade persist the super entity
           //TODO We must have a ReuseIfExist
-          await cascadeParents(
+          await cascadeParentsR(
               classRelationsIndex[superEntity.runtimeType.toString()]);
 
+
+        relatedPersisted=  await reUseIfExist(superEntity!, rel);
+          /* No need to make it twice
+             then it return updatedMap that is done in reUseIfExist
+
            superEntity=(await reUseIfExist(superEntity!, rel))??superEntity;
-          final persistedSuper = await persist(superEntity);
+         // final persistedSuper = await persist(superEntity);
 
           // Update foreign key / IDs if needed
           String foreignKey = rel.foreignKey.camelToSnake();
           updatedMap[foreignKey] = persistedSuper?.id;
-          print('ORM L165, debug, function isA , updatedMap :  $updatedMap!');
+          print('ORM L343, debug, function isA , updatedMap :  $updatedMap!');
+          */
+         // it returns updatedMap that is done in reUseIfExist
           return updatedMap;
         }
       }
@@ -348,10 +476,18 @@ class ORM {
   }
 
 //Helper isA functions
+  /**
+   * Function getSuperEntity
+   * @Param EntityInterface entity
+   * @Param RelationMeta rel
+   */
   getSuperEntity(EntityInterface entity, RelationMeta rel) {
-
+    print('ORM L469: fromMap , map : ${entity.toString()}');
     var fromMap = Entity_Index[rel.relatedType]["fromMap"] as Function;
-    return fromMap(entity.toJson()!);
+    Map<String, dynamic>? mappedEntity=entity.toJson(); //main entity User
+    String relatedEntity= rel.fieldName;
+   return  fromMap(mappedEntity?[relatedEntity]);
+
   }
 
   /**
@@ -440,7 +576,7 @@ class ORM {
             print("ORM L230, related entity persisted");
           } else {
             childEntityPersisted = await persist(child);
-            print("ORM L230, related entity persisted");
+            print("ORM L443, related entity persisted");
           }
           final childId = childEntityPersisted.toJson()['id'];
           if (childId == null)
@@ -637,4 +773,54 @@ class ORM {
     if (executor == null) throw Exception('executor not set');
     await executor!.query(table, sql, {'id': id});
   }
+
+
+  //Helper
+
+    void storeUpdatedMap(EntityInterface entity) {
+      updatedMaps[_getOrAssignKey(entity)] = entity.toJson()!;
+    }
+
+    Map<String, dynamic>? getUpdatedMap(EntityInterface entity) {
+      return updatedMaps[_getOrAssignKey(entity)];
+    }
+
+ //Entity identifiant with persist resilience
+
+
+  /**
+   * Function getOrAssignKey
+   * @Param EntityInterface e
+   * get unique id key if exist or assign temporary key
+   */
+  String _getOrAssignKey(EntityInterface e) {
+    final id = e.toJson()!['id'];
+    if (id != null) {
+      return '${e.runtimeType}#$id';
+    }
+    // Check if entity already has a temp key
+    if (!(e as dynamic).cascadeTempKey) {
+      (e as dynamic).cascadeTempKey = identityHashCode(e);
+    }
+    return '${e.runtimeType}@temp${(e as dynamic). cascadeTempKey}';
+  }
+
+
+  /**
+   * Function replaceKey
+   * Must be used after persistence to reference entities
+   * @Param EntityInterface oldEntity
+   *  @Param EntityInterface newEntity
+   */
+  void replaceKey(EntityInterface oldEntity, EntityInterface newEntity) {
+    final oldKey = _getOrAssignKey(oldEntity);
+    final newKey = _getOrAssignKey(newEntity);
+    if (updatedMaps.containsKey(oldKey)) {
+      updatedMaps[newKey] = updatedMaps.remove(oldKey)!;
+    }
+  }
+
+
 }
+
+

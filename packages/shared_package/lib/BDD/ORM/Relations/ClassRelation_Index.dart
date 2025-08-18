@@ -7,8 +7,9 @@ class RelationMeta {
   final String foreignKey;
   final bool cascadeOnDelete;
   final bool reuseIfExists;
+  final bool updateIfExist;   //use upsert system
   final List<String> findBy;  //Needed for reuseIfExist BDD search
-  const RelationMeta({required this.fieldName,required this.relatedType,required this.type,required this.foreignKey, this.cascadeOnDelete= false,this.reuseIfExists=true, this.findBy= const []});
+  const RelationMeta({required this.fieldName,required this.relatedType,required this.type,required this.foreignKey, this.cascadeOnDelete= false,this.reuseIfExists=true, this.updateIfExist=true, this.findBy= const []});
 }
 final Map<String, List<RelationMeta>> ClassRelationsIndex = {
   'Address': [
@@ -51,7 +52,7 @@ final Map<String, List<RelationMeta>> ClassRelationsIndex = {
   ],
   'Person': [
     RelationMeta(fieldName:'photo', relatedType:'Photo',type:RelationType.hasOne, foreignKey: 'photo_id', findBy: const ['title','uri'],cascadeOnDelete:false),
-    RelationMeta(fieldName:'authUser', relatedType:'AuthUser',type:RelationType.hasOne, foreignKey: 'authUser_id', findBy: const ['identifiant'],cascadeOnDelete:false),
+    RelationMeta(fieldName:'authUser', relatedType:'AuthUser',type:RelationType.hasOne, foreignKey: 'auth_user_id', findBy: const ['identifiant'],cascadeOnDelete:true),
     RelationMeta(fieldName:'user', relatedType:'User',type:RelationType.hasOne, foreignKey: 'user_id', findBy: const ['firstname','lastname','email'],cascadeOnDelete:false),
     RelationMeta(fieldName:'administrator', relatedType:'Administrator',type:RelationType.hasOne, foreignKey: 'administrator_id', findBy: const ['firstname','lastname','email'],cascadeOnDelete:false),
     RelationMeta(fieldName:'employee', relatedType:'Employee',type:RelationType.hasOne, foreignKey: 'employee_id', findBy: const ['firstname','lastname','email'],cascadeOnDelete:false),
