@@ -45,7 +45,7 @@ class FRouter {
       return Response.ok('Hello-World');
     });
 
-    router.get('/ecodrive-api/user/<userName>', (Request request)async {
+    router.get('/ecodrive-api/userName/<userName>', (Request request)async {
 
         var userName = request.params['userName'];
       return Response.ok('>Hello $userName');

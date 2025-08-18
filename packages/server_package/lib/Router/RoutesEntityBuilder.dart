@@ -45,7 +45,10 @@ class RouteEntityBuilder<T> {
         return (Request request, String id) async {
           // handle with id
           try {
-            var controller=ControllerIndex[controllerName]!() ;
+            var controller;
+
+            if(ControllerIndex[controllerName]!=null){controller=ControllerIndex[controllerName]() ;}
+            else{throw('Controller not found for ${T.toString()}');}
             await controller?.ready; //Check that repository is initialized.
             ret = await Function.apply(controller?.functionMap![req]!,
                 [int.parse(id!)]);
@@ -64,7 +67,10 @@ class RouteEntityBuilder<T> {
           try {
             //call Entity.functionMap      //call function     //We can provide a list of parameters or a Map cf null, Map<Symbol,dynamic>
 
-            var controller=ControllerIndex[controllerName]!() ;
+            var controller;
+
+            if(ControllerIndex[controllerName]!=null){controller=ControllerIndex[controllerName]() ;}
+            else{throw('Controller not found for ${T.toString()}');}
             await controller?.ready; //Check that repository is initialized.
             ret = await Function.apply(
                 controller?.functionMap![req]!,
@@ -79,7 +85,8 @@ class RouteEntityBuilder<T> {
                // print('RoutesEntityBuilder L80 : ${ret}');
 
             return Response.ok(jsonEncode(ret), headers: headers);
-          } catch (e) {
+          } catch (e,stack) {
+            print("stack: $stack ");
             return Response.internalServerError(body: 'An error occurred: $e');
           }
         };
@@ -179,7 +186,7 @@ class RouteEntityBuilder<T> {
 
             // print("RoutesEntityBuilder L123, debug NamedParameter (Symbol):  $namedParams");
             //var controller=controllerIndex[controllerName];
-           // print("RoutesEntityBuilder L182, debug Request:${data.toString()}");
+           print("RoutesEntityBuilder L182, debug Request:${data.toString()}");
 
 
 

@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 
 //import '../Modules/Authentication/View/Modal/Route/ConnexionModalPage.dart';
 import 'package:application_package/src/Modules/Guard/AuthGuard.dart';
-import 'package:application_package/src/Modules/Authentication/Provider/Listenable/AuthProvider.dart';
+import 'package:shared_package/Modules/Authentication/Provider/Listenable/AuthProvider.dart';
 
 import './AppRouter.gr.dart';
 
