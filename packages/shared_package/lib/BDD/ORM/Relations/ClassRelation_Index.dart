@@ -5,11 +5,17 @@ class RelationMeta {
   final String relatedType;
   final RelationType type;
   final String foreignKey;
+   dynamic joinParentForeignKey;
+   dynamic joinChildForeignKey;
   final bool cascadeOnDelete;
   final bool reuseIfExists;
   final bool updateIfExist;   //use upsert system
   final List<String> findBy;  //Needed for reuseIfExist BDD search
-  const RelationMeta({required this.fieldName,required this.relatedType,required this.type,required this.foreignKey, this.cascadeOnDelete= false,this.reuseIfExists=true, this.updateIfExist=true, this.findBy= const []});
+   RelationMeta({required this.fieldName,required this.relatedType,required this.type,required this.foreignKey,this.joinParentForeignKey, this.joinChildForeignKey, this.cascadeOnDelete= false,this.reuseIfExists=true, this.updateIfExist=true, this.findBy= const []});
+
+   String toString(){
+     return "RelationMeta(fieldName:$fieldName, relatedType:$relatedType, type:$type, foreignKey:$foreignKey,joinParentForeignKey:$joinParentForeignKey, joinChildForeignKey:$joinChildForeignKey,cascadeOnDelete:$cascadeOnDelete,reuseIfExists:$reuseIfExists,updateIfExist:$updateIfExist,findBy:${findBy.toString()})";
+   }
 }
 final Map<String, List<RelationMeta>> ClassRelationsIndex = {
   'Address': [
@@ -30,7 +36,7 @@ final Map<String, List<RelationMeta>> ClassRelationsIndex = {
     RelationMeta(fieldName:'user', relatedType:'User',type:RelationType.belongsTo, foreignKey: 'user_id', findBy: const ['firstname','lastname','email']),
   ],
   'Driver': [
-    RelationMeta(fieldName:'notices', relatedType:'get',type:RelationType.hasMany, foreignKey: 'notices_id', findBy: const ['title','description']),
+    RelationMeta(fieldName:'notices', relatedType:'Notice',type:RelationType.hasMany, foreignKey: 'notices_id', findBy: const ['title','description']),
     RelationMeta(fieldName:'user', relatedType:'User',type:RelationType.isA, foreignKey: 'user_id', findBy: const ['firstname','lastname','email']),//eq relation : is a
     RelationMeta(fieldName:'drivingLicence', relatedType:'DrivingLicence',type:RelationType.hasOne, foreignKey: 'driving_licence_id', findBy: const ['identification_number']),
     RelationMeta(fieldName:'vehicule', relatedType:'Vehicule',type:RelationType.hasOne, foreignKey: 'vehicule_id', findBy: const ['immatriculation']),
