@@ -251,6 +251,8 @@ class Notice extends NoticeEntity {
   @override
   String? id;
 
+  String? cascadeTempKey;
+
   /// The last time at which this item was updated.
   @override
   DateTime? updatedAt;

@@ -20,9 +20,11 @@ class EnvironmentLoader{
 
  Map<String, String>? gnlConfigurationf() {
     try {
-      //String path='packages/server_package/lib/Bin';
-      String path='packages/shared_package/lib/Configuration';
-      //String path='../Configuration';
+
+       path='packages/shared_package/lib/Configuration';
+       //String path='../Configuration';
+      // path='packages:shared_package/lib/Configuration';
+
       String file='$path/ConfigurationServer.env';
      // print("EnvironmentLoader L26 debug : ${file}");
       var env = DotEnv(includePlatformEnvironment: true)
@@ -38,7 +40,7 @@ class EnvironmentLoader{
  Map<String, String>? loadBDD()  {
     gnlConfigurationf();
     //print("EnvironmentLoader L35 debug : ${environment}");
-    final file = "${path ?? ''}/ConfigurationBDD.$environment.env";
+    final file = "${path ?? ''}/Bdd/ConfigurationBDD.$environment.env";
     //print("EnvironmentLoader L40, debug, ConfigurationBDD File: ${file.toString()}");
     //print("EnvironmentLoader L41, debug, Current directory : ${Directory.current.path}");
 

@@ -347,6 +347,8 @@ class DrivingLicence extends DrivingLicenceEntity {
   @override
   String? id;
 
+  String? cascadeTempKey;
+
   /// The time at which this item was created.
   @override
   DateTime? createdAt;

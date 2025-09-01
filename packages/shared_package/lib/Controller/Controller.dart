@@ -113,7 +113,7 @@ import 'Index/Controller_index.dart';
 
 
   @override
-  Future<bool> create(Map<dynamic, dynamic> parameters) async {
+  Future<bool> create({required Map<dynamic, dynamic> parameters}) async {
   bool ret= false;
 
     //Map<String, dynamic> parameter =SymbolToStringConverter.convertSymbolKeysToString(parameters);
@@ -172,15 +172,13 @@ import 'Index/Controller_index.dart';
       // if( repository?.connexionPool ==null){  print('Controller, L180 ConnexionPool is null');}else{print('Controller, L180 ConnexionPool in repository exist');}
 
 
-
-
-
  exit= await repository?.persist(entity);
       // Creation successful
       print('Controler L180,  creating entity: $exit');
 
-    } catch (e) {
+    } catch (e,stack) {
       print('Controler L183, Error creating entity: $e');
+      print("Stack: $stack");
     }
       exit != null? print("entity persisted !"):print("entity not persisted!");
 
@@ -192,15 +190,17 @@ import 'Index/Controller_index.dart';
   Future<bool> update({EntityInterface? entity,Map<String,dynamic>? parameters})async {
     bool exit=false;
  if(entity!=null){parameters= entity.toJson();}
+  var initready=await ready;
+ if(initready==false){initRepository();}
     try {
       var a=   await repository?.update( parameters: parameters!,whereClause:{'id':parameters['id']});  //TODO Check if it works
       exit = true; // Creation successful
-    } catch (e) {
-      print('Controller L193: Error creating entity: $e');
+    } catch (e,stack) {
+      print('Controller L200: Error creating entity: $e');
+      print('Controller L201, stack: $stack');
     }
     return exit;
   }
-
 
 
 

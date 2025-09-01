@@ -61,5 +61,23 @@ class StringLib {
   }
 
 
-}
+  /**
+   * Function firstToUpperCase
+   */
+  firstToUpperCase(String str) {
+    if (str.startsWith(RegExp(r'[a-z]'))) {
+      return "${str.substring(0, 1).toUpperCase()}${str.substring(1, str.length)}";
+    }
+  }
+
+  /**
+   * Function firstToLowerCase
+   */
+  firstToLowerCase(String str) {
+    if (str.startsWith(RegExp('[A-Z]'))) {
+      return "${str.substring(0, 1).toLowerCase()}${str.substring(
+          1, str.length)}";
+    }
+  }
+  }
 

@@ -309,6 +309,8 @@ class Command extends CommandEntity {
   @override
   String? id;
 
+  String? cascadeTempKey;
+
   /// The time at which this item was created.
   @override
   DateTime? createdAt;

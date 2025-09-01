@@ -134,8 +134,8 @@ class AdministratorQuery extends Query<Administrator, AdministratorQueryWhere> {
       credits: fields.contains('credits') ? mapToDouble(row[7]) : 0.0,
       email: fields.contains('email') ? (row[8] as String?) : null,
       personId:fields.contains('person_id')
-           ? row[8] is String
-             ? int.parse(row[8]):row[8]
+           ? row[9] is String
+             ? int.parse(row[9]):row[9]
             :null
     );
     if (row.length > 10) {  // We could have a solution based on EntityQuery().fields.length. here administrator
@@ -315,17 +315,25 @@ class Administrator extends AdministratorEntity {
     this.address,
     this.addressId,
     this.authUser,
+    this.authUserId,
     this.user,
+    this.userId,
     this.administrator,
+    this.administratorId,
     this.employee,
+    this.employeeId,
     this.person,
     this.personId,
     this.authUserEntity,
+    this.authUserEntityId,
   }) ;
 
   /// A unique identifier corresponding to this item.
   @override
   String? id;
+
+
+  String? cascadeTempKey;
 
   /// The time at which this item was created.
   @override
@@ -366,14 +374,21 @@ class Administrator extends AdministratorEntity {
   @override
   AuthUserEntity? authUser;
 
+  int? authUserId;
+
   @override
   UserEntity? user;
+
+  int? userId;
 
   @override
   AdministratorEntity? administrator;
 
+  int? administratorId;
+
   @override
   EmployeeEntity? employee;
+  int? employeeId;
 
   @override
   PersonEntity? person;
@@ -383,6 +398,9 @@ class Administrator extends AdministratorEntity {
 
   @override
   AuthUserEntity? authUserEntity;
+
+  @override
+  int? authUserEntityId;
 
   Administrator copyWith({
     String? id,
@@ -399,11 +417,17 @@ class Administrator extends AdministratorEntity {
     PhotoEntity? photo,
     int? photoId,
     AuthUserEntity? authUser,
+    int? authUserId,
     UserEntity? user,
+    int? userId,
     AdministratorEntity? administrator,
+    int? administratorId,
     EmployeeEntity? employee,
+    int? employeeId,
     PersonEntity? person,
+    int? personId,
     AuthUserEntity? authUserEntity,
+    int? authUserEntityId,
   }) {
     return Administrator(
       id: id ?? this.id,
@@ -420,10 +444,15 @@ class Administrator extends AdministratorEntity {
       photo: photo ?? this.photo,
       photoId: photoId ?? this.photoId,
       authUser: authUser ?? this.authUser,
+      authUserId: authUserId ?? this.authUserId,
       user: user ?? this.user,
+      userId: userId ?? this.userId,
       administrator: administrator ?? this.administrator,
+      administratorId: administratorId ?? this.administratorId,
       employee: employee ?? this.employee,
+      employeeId: employeeId ?? this.employeeId,
       person: person ?? this.person,
+      personId: personId ?? this.personId,
       authUserEntity: authUserEntity ?? this.authUserEntity,
     );
   }
@@ -445,11 +474,17 @@ class Administrator extends AdministratorEntity {
         other.photo == photo &&
         other.photoId == photoId &&
         other.authUser == authUser &&
+        other.authUserId == authUserId &&
         other.user == user &&
+        other.userId == userId &&
         other.administrator == administrator &&
+        other.administratorId == administratorId &&
         other.employee == employee &&
+        other.employeeId == employeeId &&
         other.person == person &&
-        other.authUserEntity == authUserEntity;
+        other.personId == personId &&
+        other.authUserEntity == authUserEntity &&
+        other.authUserEntityId == authUserEntityId;
   }
 
   @override
@@ -464,21 +499,21 @@ class Administrator extends AdministratorEntity {
       gender,
       credits,
       email,
-      address,
-      photo,
+      addressId,
       photoId,
       authUser,
-      user,
-      administrator,
-      employee,
-      person,
-      authUserEntity,
+      authUserId,
+      userId,
+      administratorId,
+      employeeId,
+      personId,
+      authUserEntityId,
     ]);
   }
 
   @override
   String toString() {
-    return 'Administrator(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email, address=$address,addressId=$addressId,photo=$photo, authUser=$authUser, user=$user, administrator=$administrator, employee=$employee, person=$person, authUserEntity=$authUserEntity)';
+    return 'Administrator(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email, address=$address,addressId=$addressId,photoId=$photoId, authUserId=$authUserId, userId=$userId, administratorId=$administratorId, employeeId=$employeeId, personId=$personId, authUserEntityId=$authUserEntityId)';
   }
 
   Map<String, dynamic> toJson() {
@@ -553,9 +588,15 @@ class AdministratorSerializer extends Codec<Administrator, Map> {
               : null,
       firstname: map['firstname'] as String?,
       lastname: map['lastname'] as String?,
-      age: map['age'] as int?,
+      age: map['age'] !=null?
+                map['age'] is String
+                    ?int.parse(map['age'])
+                    : map['age'] as int?
+             :null,
       gender: map['gender'] as String?,
-      credits: map['credits'] is Null ? 0.0: map['credits'] as double,
+      credits: map['credits'] != null ?
+                double.parse(map['credits'].toString())
+              :0.0,
       email: map['email'] as String?,
       address:
            map['address'] != null
@@ -568,31 +609,56 @@ class AdministratorSerializer extends Codec<Administrator, Map> {
           map['photo'] != null
               ? PhotoSerializer.fromMap(map['photo'] as Map)
               : null,
+      photoId: map['photo_id'] != null
+          ?  map['photo_id'] as int?
+          :null,
       authUser:
           map['auth_user'] != null
               ? AuthUserSerializer.fromMap(map['auth_user'] as Map)
               : null,
+      authUserId: map['authUser_id'] != null
+          ?  map['authUser_id'] as int?
+          :null,
       user:
           map['user'] != null
               ? UserSerializer.fromMap(map['user'] as Map)
               : null,
+      userId: map['user_id'] != null
+          ?  map['user_id'] as int?
+          :null,
       administrator:
           map['administrator'] != null
               ? AdministratorSerializer.fromMap(map['administrator'] as Map)
               : null,
+      administratorId: map['administrator_id'] != null
+          ?  map['administrator_id'] as int?
+          :null,
       employee:
           map['employee'] != null
               ? EmployeeSerializer.fromMap(map['employee'] as Map)
               : null,
+      employeeId: map['employee_id'] != null
+          ?  map['employee_id'] as int?
+          :null,
       person:
           map['person'] != null
               ? PersonSerializer.fromMap(map['person'] as Map) as PersonEntity
               : null,
+      personId: map['person_id'] != null
+          ?   map['person_id'] is String
+               ? int.parse( map['person_id']):
+               map['person_id'] as int?
+          :null,
+
       authUserEntity:
           map['auth_user_entity'] != null
               ? AuthUserSerializer.fromMap(map['auth_user_entity'] as Map)
               : null,
+      authUserEntityId: map['authUserEntity_id'] != null
+          ?  map['authUserEntity_id'] as int?
+          :null,
     );
+
   }
 
   static Map<String, dynamic>? toMap(AdministratorEntity? model) {
@@ -613,12 +679,20 @@ class AdministratorSerializer extends Codec<Administrator, Map> {
       'address':model.address,
       'addressId':model.addressId,
       'photo': PhotoSerializer.toMap(model.photo),
-      'auth_user': AuthUserSerializer.toMap(model.authUser),
+      'photoId': model.photoId,
+      'authUser': AuthUserSerializer.toMap(model.authUser),
+      'authUserId': model.authUserId,
       'user': UserSerializer.toMap(model.user),
+      'userId':model.userId,
       'administrator': AdministratorSerializer.toMap(model.administrator),
+      'administratorId':model.administratorId,
       'employee': EmployeeSerializer.toMap(model.employee),
+      'employeeId':model.employeeId,
       'person': PersonSerializer.toMap(model.person),
-      'auth_user_entity': AuthUserSerializer.toMap(model.authUserEntity),
+      'personId': model.personId,
+      'authUserEntity': AuthUserSerializer.toMap(model.authUserEntity),
+      'authUserEntityId':model.authUserEntityId
+
     };
   }
 }
@@ -637,12 +711,20 @@ abstract class AdministratorFields {
     address,
     addressId,
     photo,
+    photoId,
     authUser,
+    authUserId,
     user,
+    userId,
     administrator,
+    administratorId,
     employee,
+    employeeId,
     person,
+    personId,
     authUserEntity,
+    authUserEntityId
+
   ];
 
   static const String id = 'id';
@@ -665,19 +747,34 @@ abstract class AdministratorFields {
 
   static const String address = 'address';
 
-  static const String addressId = 'addressId';
+  static const String addressId = 'address_id';
 
   static const String photo = 'photo';
 
+  static const String photoId = 'photo_id';
+
   static const String authUser = 'auth_user';
+
+  static const String authUserId = 'auth_user_id';
 
   static const String user = 'user';
 
+  static const String userId = 'user_id';
+
   static const String administrator = 'administrator';
+
+  static const String administratorId = 'administrator_id';
 
   static const String employee = 'employee';
 
+  static const String employeeId = 'employee_id';
+
   static const String person = 'person';
 
+  static const String personId = 'person_id';
+
   static const String authUserEntity = 'auth_user_entity';
+
+  static const String authUserEntityId = 'auth_user_entity_id';
+
 }

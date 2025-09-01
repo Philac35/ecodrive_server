@@ -66,6 +66,10 @@ class SQLExecutor extends QueryExecutor {
    * transaction are usual sql query,
    * You can send a set of queries as if it was 1.
    * they enforce ACID properties (atomicity, consistency, isolation, durability)
+   *    await executor.transaction((tx) async {
+   *       await query(tableName, query, substitutionValues, executor: tx);
+   *       await AnotherQuery.update(tx);
+   *    });
    */
   @override
     Future<T> transaction<T>(FutureOr<T> Function(QueryExecutor) f) {

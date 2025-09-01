@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:application_package/src/Router/AppRouter.gr.dart';
-
-import '../Authentication/Provider/Listenable/AuthProvider.dart';
+import 'package:shared_package/Modules/Authentication/Provider/Listenable/AuthProvider.dart';
 
 class AuthGuard extends AutoRouteGuard {
   late final AuthProvider authProvider;
@@ -23,4 +22,6 @@ class AuthGuard extends AutoRouteGuard {
       resolver.next(false);
     }
   }
+
+
 }

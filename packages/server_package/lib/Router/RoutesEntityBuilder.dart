@@ -96,8 +96,6 @@ class RouteEntityBuilder<T> {
 
 
 
-
-
     buildGetRoutes() async {
       Map<String, String> queryType = {
         's': 'getEntities',
@@ -194,7 +192,8 @@ class RouteEntityBuilder<T> {
             await controller?.ready; //Check that repository is initialized.
              var createupdate=controller!.functionMap![queryT]! as Function;
 
-           var res=  createupdate(data);
+
+           var res=  createupdate(parameters:data);
            if(res!=null){ret={queryT:await res};}
            else{ ret = {queryT: 'no response'};}
 

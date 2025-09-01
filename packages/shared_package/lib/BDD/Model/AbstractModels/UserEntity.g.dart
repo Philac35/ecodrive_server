@@ -395,14 +395,16 @@ class UserQueryValues extends MapQueryValues {
     gender = model.gender;
     credits = model.credits;
     email = model.email;
+
     if (model.personId != null) {
       values['person_id'] = model.personId;
     }
 
     if (model.person != null) {
-      values['person_id'] = int.parse(model.person!.id!);
+      if(model.person!.id != null)   values['person_id'] = int.parse( model.person!.id! );
 
     }
+
     if (model.driver != null) {
       values['driver_id'] = int.parse(model.driver!.id!);
 
@@ -454,6 +456,8 @@ class User extends UserEntity {
   /// A unique identifier corresponding to this item.
   @override
   String? id;
+
+  String? cascadeTempKey;
 
   /// The time at which this item was created.
   @override
@@ -555,7 +559,6 @@ class User extends UserEntity {
       email: email ?? this.email,
       photo: photo ?? this.photo,
       photoId: photoId ?? this.photoId,
-
       person: person ?? this.person,
       personId: personId ?? this.personId,
       driver: driver ?? this.driver,
@@ -740,8 +743,8 @@ class UserSerializer extends Codec<User, Map> {
     }
     return {
       'id': model.id,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String(),
+      'createdAt': model.createdAt?.toIso8601String(),
+      'updatedAt': model.updatedAt?.toIso8601String(),
       'firstname': model.firstname,
       'lastname': model.lastname,
       'age': model.age,
@@ -751,12 +754,12 @@ class UserSerializer extends Codec<User, Map> {
       'photo': PhotoSerializer.toMap(model.photo),
 
       'person': PersonSerializer.toMap(model.person),
-      'person_id': model.personId ,
+      'personId': model.personId ,
       'driver': DriverSerializer.toMap(model.driver),
-      'driver_id': model.driverId ,
-      'command_list':
+      'driverId': model.driverId ,
+      'commandList':
           model.commandList?.map((m) => CommandSerializer.toMap(m)).toList(),
-      'command_id_list': model.commandIdList,
+      'commandIdList': model.commandIdList,
       //'auth_user_entity': AuthUserSerializer.toMap(model.authUserEntity),
     };
   }

@@ -364,6 +364,8 @@ class Travel extends TravelEntity {
   @override
   String? id;
 
+  String? cascadeTempKey;
+
   @override
   DateTime? createdAt;
 

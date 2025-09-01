@@ -3,7 +3,8 @@
 /// Author E.H 3/07/2025 
 library;
 
-///  Use : Map access in files : 
+import '../../Modules/Authentication/Controllers/AuthUserController.dart';
+///  Use : Map access in files :
 ///        Index_ControllerFunctionMap['entityName']!()
 
 import '../AddressController.dart';
@@ -15,15 +16,18 @@ import '../DrivingLicenceController.dart';
 import '../EmployeeController.dart';
 import '../ItineraryController.dart';
 import '../NoticeController.dart';
+import '../PersonController.dart';
 import '../PhotoController.dart';
 import '../TravelController.dart';
 import '../UserController.dart';
 import '../VehiculeController.dart';
 
 final Map<String, Map<String,Function >> index_ControllerFunctionMap = {
+
   'AddressController': AddressController().functionMap,
   'AdministratorController':  AdministratorController().functionMap,
   'AssuranceController':  AssuranceController().functionMap,
+  'AuthUserController': AuthUserController().functionMap,
   'CommandController':  CommandController().functionMap,
   'DriverController':  DriverController().functionMap,
   'DrivingLicenceController':  DrivingLicenceController().functionMap,
@@ -31,11 +35,10 @@ final Map<String, Map<String,Function >> index_ControllerFunctionMap = {
   'ItineraryController':  ItineraryController().functionMap,
   'NoticeController':  NoticeController().functionMap,
   'PhotoController':  PhotoController().functionMap,
+  'PersonController': PersonController().functionMap,
   'TravelController':  TravelController().functionMap,
   'UserController':  UserController().functionMap,
-  'VehiculeController':  VehiculeController().functionMap,
-
-
+  'VehiculeController':  VehiculeController().functionMap
 
 
 };

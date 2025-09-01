@@ -1,0 +1,2 @@
+Views of Authentication Module are set in package:application/Module/Authentication
+We must separate Flutter view from main implementation of the module.

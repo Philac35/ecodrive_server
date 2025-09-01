@@ -1,26 +1,26 @@
 extension StrExtension on String{
 
 
+  /**
+   * Function firstToUpperCase
+   */
+  firstToUpperCase() {
+    if (startsWith(RegExp(r'[a-z]'))) {
+      return "${substring(0, 1).toUpperCase()}${substring(1, length)}";
+    }
+  }
 
   /**
    * Function firstToLowerCase
    */
   firstToLowerCase() {
-    if (this.startsWith('A-Z')) {
+    if (this.startsWith(RegExp('[A-Z]'))) {
       return "${this.substring(0, 1).toLowerCase()}${this.substring(
           1, this.length)}";
     }
 
-    /**
-     * Function firstToUpperCase
-     */
-    firstToUpperCase() {
-      if (startsWith('A-Z')) {
-        return "${substring(0, 1).toUpperCase()}${substring(
-            1, length)}";
-      }
 
-    }
+
 
     /**
      * Function snakeToCamel
@@ -28,7 +28,7 @@ extension StrExtension on String{
     String snakeToCamel() {
       final reg = RegExp(r'_[a-z]');
 
-      var result = replaceAllMapped(reg, (Match m) => '${m.group(0)!.toUpperCase()}');
+      var result = replaceAllMapped(reg, (Match m) => m.group(0)!.toUpperCase());
       if (result.startsWith('A-Z')) {
         result = result.firstToLowerCase();
       }

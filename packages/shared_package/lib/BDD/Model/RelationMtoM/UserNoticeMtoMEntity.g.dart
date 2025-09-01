@@ -196,6 +196,8 @@ class UserNoticeMtoMQueryValues extends MapQueryValues {
 class UserNoticeMtoM implements UserNoticeMtoMEntity {
   UserNoticeMtoM({this.notice, this.user});
 
+  String? cascadeTempKey;
+
   @override
   NoticeEntity? notice;
 

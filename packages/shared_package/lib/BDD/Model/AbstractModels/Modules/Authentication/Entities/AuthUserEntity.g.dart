@@ -129,7 +129,7 @@ class AuthUserQuery extends Query<AuthUser, AuthUserQueryWhere> {
           fields.contains('updated_at') ? mapToNullableDateTime(row[2]) : null,
       identifiant: fields.contains('identifiant') ? (row[3] as String?) : null,
       password: fields.contains('password') ? (row[4] as String?) : null,
-      role: fields.contains('role') ? (row[5] as List<String>?) : null,
+      role: fields.contains('role') ? (ParserJson().decode(row[5]) as List<String>?) : null,
     );
     if (row.length > 7) {
       var modelOpt = PersonQuery().parseRow(row.skip(7).take(9).toList());
@@ -263,6 +263,7 @@ class AuthUser extends AuthUserEntity {
   @override
   String? id;
 
+  String? cascadeTempKey;
   /// The time at which this item was created.
   @override
   DateTime? createdAt;
@@ -332,7 +333,7 @@ class AuthUser extends AuthUserEntity {
       identifiant,
       password,
       role,
-      person,
+      personId
     ]);
   }
 
@@ -376,7 +377,7 @@ class AuthUserSerializer extends Codec<AuthUser, Map> {
   AuthUserDecoder get decoder => const AuthUserDecoder();
 
   static AuthUser fromMap(Map map) {
-
+    map=StringLib().camelToSnakeKeyFromMap(map);
     print('AuthUserEntity L380: fromMap , AuthUser map : $map');
     var ret= AuthUser(
       id: map['id'] as String?,
@@ -402,6 +403,12 @@ class AuthUserSerializer extends Codec<AuthUser, Map> {
           map['person'] != null
               ? PersonSerializer.fromMap(map['person'] as Map)
               : null,
+
+      personId:
+           map['person_id'] != null
+            ?  map['person_id'] is String
+               ?  int.parse(map['person_id'] ):map['person_id']
+             : null,
     );
     print('AuthUserEntity L743: fromMap , AuthUser map : $ret');
     return ret;
@@ -420,6 +427,7 @@ class AuthUserSerializer extends Codec<AuthUser, Map> {
       'password': model.password,
       'role': model.role,
       'person': PersonSerializer.toMap(model.person),
+      'personId':model.personId
     };
   }
 }
@@ -433,6 +441,7 @@ abstract class AuthUserFields {
     password,
     role,
     person,
+    personId
   ];
 
   static const String id = 'id';
@@ -448,4 +457,6 @@ abstract class AuthUserFields {
   static const String role = 'role';
 
   static const String person = 'person';
+
+  static const String personId = 'person_id';
 }

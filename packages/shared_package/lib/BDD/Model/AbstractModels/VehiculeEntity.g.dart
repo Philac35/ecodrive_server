@@ -174,7 +174,7 @@ class VehiculeQuery extends Query<Vehicule, VehiculeQueryWhere> {
               : null,
       nbPlaces: fields.contains('nb_places') ? mapToInt(row[9]) : null,
       preferences:
-          fields.contains('preferences') ? List<String>.from(json.decode(row[10])) as List<String> : null,
+          fields.contains('preferences') && row[10]!=null? List<String>.from(json.decode(row[10])) as List<String> : null,
       driverId: fields.contains('driver_id') ? mapToInt(row[11]) : null,
     );
     if (row.length > 12) {
@@ -467,6 +467,8 @@ class Vehicule extends VehiculeEntity {
   /// A unique identifier corresponding to this item.
   @override
   String? id;
+
+  String? cascadeTempKey;
 
   /// The time at which this item was created.
   @override

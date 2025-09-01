@@ -43,7 +43,7 @@ abstract class AdministratorEntity extends PersonEntity  implements EntityInterf
   @HasOne(foreignTable:'auth_users',foreignKey: 'auth_users_id')
   @override
   AuthUserEntity? get authUserEntity ;
-  int? AuthUserEntityId;
+  int? authUserEntityId;
 
   bool  delete(PersonEntity  person);
   bool   suspend(PersonEntity  person);

@@ -58,12 +58,12 @@ void main() async {
       //FK are set with alter queries. (We could do it directly in Entity migration if you want to have fun with ordered the classes.
       migrations: [
         //PersonMigration(),
-        //AuthUserMigration(),
+        AuthUserMigration(),
         //AddressMigration(),
         //AdministratorMigration(),
         //AssuranceMigration(),
         //DriverMigration(),
-        DrivingLicenceMigration(),
+       // DrivingLicenceMigration(),
         //EmployeeMigration(),
         //ItineraryMigration(),
         //NoticeMigration(),

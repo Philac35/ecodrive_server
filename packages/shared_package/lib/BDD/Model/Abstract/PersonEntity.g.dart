@@ -416,7 +416,7 @@ class PersonQueryValues extends MapQueryValues {
     return (values['credits'] as double?) ?? 0.0;
   }
 
-  set credits(double value) => values['credits'] = value;
+  set credits(double? value) => values['credits'] = value;
 
   String? get email {
     return (values['email'] as String?);
@@ -490,7 +490,7 @@ class PersonQueryValues extends MapQueryValues {
     lastname = model.lastname;
     age = model.age;
     gender = model.gender;
-    credits = model.credits!;
+    credits = model.credits;
     email = model.email;
 
     if (model.photoId != null) {
@@ -520,7 +520,7 @@ class PersonQueryValues extends MapQueryValues {
 class Person extends PersonEntity {
   Person({
     this.id,
-    this.createdAt,
+    this  .createdAt,
     this.updatedAt,
     this.firstname,
     this.lastname,
@@ -547,6 +547,8 @@ class Person extends PersonEntity {
   /// A unique identifier corresponding to this item.
   @override
   String? id;
+
+  String? cascadeTempKey;
 
   /// The time at which this item was created.
   @override
@@ -686,12 +688,12 @@ class Person extends PersonEntity {
       gender,
       credits,
       email,
-      address,
-      photo,
-      authUser,
-      user,
-      administrator,
-      employee,
+      addressId,
+      photoId,
+      authUserId,
+      userId,
+      administratorId,
+      employeeId,
     ]);
   }
 
@@ -739,8 +741,8 @@ class PersonSerializer extends Codec<Person, Map> {
   static Person fromMap(Map map) {
 
     map=StringLib().camelToSnakeKeyFromMap(map);
+    print('PersonEntity L745: fromMap , Person map (in snake case)  : $map');
 
-    print('PersonEntity L743: fromMap , Person map : $map');
      var a=Person(
       id: map['id'] as String?,
       createdAt:

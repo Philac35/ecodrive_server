@@ -39,19 +39,19 @@ class ListVoyagesState extends State<ListVoyages> {
 
   Future<void> fetchTravels() async {
     Map<String, dynamic> query = {'queryAddress': a.Address};
-    List<Travel>  fetchedTravels = await rep.findBy(query) ;
+    List<Travel?>?  fetchedTravels = await rep.findBy(query) ;
    //dynamic fetchedTravels = (await rep.findBy(query) )as  List<Travel> ;
   Travel example=Travel(
-      departureTime:  DateTime(2025,5,10,9,0),
+        departureTime:  DateTime(2025,5,10,9,0),
         itinerary: Itinerary(
         addressDeparture: a.Address(city: "Paris", address: 'Rue Saint Augustin', postCode: '75000',  createdAt: DateTime(2025,5,9)),
-    addressArrival: a.Address(city: "Lyon", address: 'Rue Saint Pancras', postCode: '69000', createdAt: DateTime(2025,5,9)),
-    duration: DateTime(0, 0, 0, 2,0),
-    ), driver: driver.Driver(firstname: 'Sam', lastname: 'Auburn', authUser: null, credits: 100, person: {} as Person, user: {} as User),
+        addressArrival: a.Address(city: "Lyon", address: 'Rue Saint Pancras', postCode: '69000', createdAt: DateTime(2025,5,9)),
+        duration: DateTime(0, 0, 0, 2,0), ),
+        driver: driver.Driver(firstname: 'Sam', lastname: 'Auburn', authUser: null, credits: 100, person: {} as Person, user: {} as User),
       createdAt: DateTime(2025,5,9));
     setState(() {
       travels=[example];
-    travels .addAll(fetchedTravels);    });
+    travels .addAll(fetchedTravels as Iterable<Travel>);    });
   }
 
   @override
@@ -62,7 +62,7 @@ class ListVoyagesState extends State<ListVoyages> {
         children:  travels!=null? travels.map((travel) {
           return ListTile(
             title: Text(
-              'Heure de départ : ${travel.departureTime}, '
+                  'Heure de départ : ${travel.departureTime}, '
                   'Départ: ${travel.itinerary!.addressDeparture?.city} - '
                   'Arrivée : ${travel.itinerary!.addressArrival?.city}, '
                   'Durée estimée : ${travel.itinerary!.duration}',

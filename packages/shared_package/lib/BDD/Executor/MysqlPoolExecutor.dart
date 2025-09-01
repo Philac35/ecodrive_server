@@ -95,6 +95,7 @@ class MySqlPoolExecutor extends QueryExecutor {
         String resultQuery = '',
         List<String> returningFields = const []}) async {
 
+    //print('MysqlPoolExecutor L98, query: $query');
      late List<List> ret;
     //manage preferences of Vehicule
     if (substitutionValues.containsKey('preferences')) {
@@ -106,7 +107,7 @@ class MySqlPoolExecutor extends QueryExecutor {
       }
       // else if it's already a String, assume it's encoded JSON
     }
-
+    // print('MysqlPoolExecutor L109, query: $query');
     //Substitution system : Change @parameter -> ?
     for (var name in substitutionValues.keys) {
       query = query.replaceAll('@$name', ':$name');
@@ -148,7 +149,7 @@ class MySqlPoolExecutor extends QueryExecutor {
           result = await _pool.execute(query, substitutionValues).timeout(const Duration(minutes: 2));
           print('Insert in BDD: ${stopwatch.elapsedMilliseconds}ms');
 
-          //print("MysqlPoolExecutor L149 result:$result");
+      //    print("MysqlPoolExecutor L149 result:$result");
           print('Last id : ${result.lastInsertID}');
 
         query = returningQuery;
@@ -211,12 +212,11 @@ class MySqlPoolExecutor extends QueryExecutor {
         //return results.rows.map((r) => r.typedAssoc().values.toList()).toList();
 
         var ret =parseSQLResult(results);
-        print('parse 2nd result: ${stopwatch.elapsedMilliseconds}ms');
-        // print('MysqlPoolExecutor L203 , FromResultSet $ret');
+         // print('parse 2nd result: ${stopwatch.elapsedMilliseconds}ms');
+         // print('MysqlPoolExecutor L203 , FromResultSet $ret');
         return ret;
       }
     }).timeout(const Duration(minutes: 3, seconds: 30))
-
         .catchError((e){print("MysqlPoolExecutor L171, Select query : error :$e");});
 
 
@@ -291,6 +291,18 @@ class MySqlPoolExecutor extends QueryExecutor {
   }
   */
 
+
+
+  /*
+   * Function transaction
+   * transaction are usual sql query,
+   * You can send a set of queries as if it was 1.
+   * they enforce ACID properties (atomicity, consistency, isolation, durability)
+   *    await executor.transaction((tx) async {
+   *       await query(tableName, query, substitutionValues, executor: tx);
+   *       await AnotherQuery.update(tx);
+   *    });
+   */
   @override
   Future<T> transaction<T>(FutureOr<T> Function(QueryExecutor) f) async {
     //logger.warning("Transaction");

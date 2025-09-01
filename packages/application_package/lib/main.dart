@@ -1,4 +1,5 @@
-import 'package:application_package/src/Modules/Authentication/Provider/Listenable/AuthProvider.dart';
+
+import 'package:shared_package/Modules/Authentication/Provider/Listenable/AuthProvider.dart';
 import 'package:application_package/src/Modules/Authentication/View/Form/Controller/AccountCreationController.dart';
 import 'package:application_package/src/Modules/Authentication/View/Form/Controller/ConnexionFormController.dart';
 import 'package:application_package/src/Modules/Authentication/View/Form/Controller/ControllerFormInterface.dart';
@@ -15,7 +16,6 @@ void main() {
 
   Get.put(AccountCreationController());
   debugPrint('AccountCreationController registered');
-
   Get.put(ConnexionFormController());//In Authentication form
   debugPrint('ConnexionFormController registered');
   Get.put(ControllerFormInterface);
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
   final _appRouter = AppRouter(); //Router Autoroute
 
 
-   MyApp({super.key});
+  MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
 
         routerConfig: _appRouter.config(
-          reevaluateListenable: AuthProvider(),
+       //   reevaluateListenable: AuthProvider(),
           navigatorObservers: () => [NavigationObserver()],
         ),
       title: 'Flutter Demo',

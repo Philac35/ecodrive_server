@@ -20,7 +20,7 @@ import 'ControllerFormInterface.dart';
 import 'package:flutter/foundation.dart';
 
 // Here we must use Entities
-// AUth Entities
+// Auth Entities
 // Address
 // Driver
 // User
@@ -73,7 +73,7 @@ class AccountCreationController extends GetxController implements ControllerForm
     switch (role) {
       case 'driver':
         driverController = DriverController();
-        isCreated =  driverController?.create(entityMap.cast<Symbol, dynamic >()) ;
+        isCreated =  driverController?.create(parameters: entityMap) ;
         if(isCreated==true){
           Driver  user = await  userController?.repository?.findLast() as Driver ;
           entityId=  int.parse( user.id!) ;}
@@ -81,7 +81,7 @@ class AccountCreationController extends GetxController implements ControllerForm
 
       case 'passenger':
         userController = UserController();
-        isCreated = userController?.create(entityMap.cast<Symbol, dynamic>()) ;
+        isCreated = userController?.create(parameters: entityMap) ;
         if(isCreated==true){
           User  user = await  userController?.repository?.findLast() as User ;
           entityId=  int.parse( user.id!) ;}
@@ -89,7 +89,7 @@ class AccountCreationController extends GetxController implements ControllerForm
 
       case 'passenger-driver' || 'driver-passenger':
         driverController = DriverController();
-        isCreated =driverController?.create(entityMap.cast<Symbol,dynamic >()) ;
+        isCreated =driverController?.create(parameters: entityMap) ;
         if(isCreated==true){
           Driver  user = await  userController?.repository?.findLast() as Driver ;
           entityId=   int.parse(user.id! );}
@@ -98,7 +98,7 @@ class AccountCreationController extends GetxController implements ControllerForm
 
       default:
         userController = UserController();
-        isCreated = userController?.create(entityMap.cast<Symbol,dynamic >()); //Here when you create the Entities they are automatically persisted
+        isCreated = userController?.create(parameters: entityMap); //Here when you create the Entities they are automatically persisted
         if(isCreated == true){
             User  user = await  userController?.repository?.findLast() as User ;
           entityId=   int.parse(user.id!) ;}

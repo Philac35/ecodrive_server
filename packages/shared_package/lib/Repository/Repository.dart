@@ -93,6 +93,11 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
     // It uses a whereFilter_Index present in ORM's directory
     // It is not available by default in
 
+    Iterable<dynamic> val=parameters.values;
+    bool isEmpty=true;
+    for(var entry in val ) { if (entry != null){isEmpty=false;}}
+    if(isEmpty==true) return null ;
+
     _applyDynamicFilters(T.toString(),query.where,parameters);  //We send the property where of EntityQuery that is an instance of EntityQueryWhere
 
     return await query.get(executor);
@@ -250,7 +255,7 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
     else{print('Repository L241 : No connexion neither MysqlConnection nor PoolConnection ');}
 
     //addWhereRawForAllParams(query); Not really needed
-    print('Repository L253 : persist: $query');
+    print('Repository L253 : persist query: $query');
     Optional<T> insertedRow;
     print('Repository L255 : entity: $entity');
     try {

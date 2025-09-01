@@ -155,8 +155,8 @@ class AddressQuery extends Query<Address, AddressQueryWhere> {
       postCode: fields.contains('post_code') ? (row[7] as String?) : null,
       city: fields.contains('city') ? (row[8] as String?) : null,
       country: fields.contains('country') ? (row[9] as String?) : null,
-      personId: fields.contains('person_id') ? int.parse(row[10]) : null,
-      itineraryId: fields.contains('itinerary_id') ? int.parse(row[11]) : null,
+      personId: fields.contains('person_id') && row[10]!=null ? int.parse(row[10]) : null,
+      itineraryId: fields.contains('itinerary_id')&& row[11]!=null ? int.parse(row[11]) : null,
     );
     if (row.length > 12) {
       var modelOpt = PersonQuery().parseRow(row.skip(12).take(15).toList());
@@ -378,6 +378,9 @@ class Address extends AddressEntity {
   /// A unique identifier corresponding to this item.
   @override
   String? id;
+
+
+  String? cascadeTempKey;
 
   /// The time at which this item was created.
   @override

@@ -41,7 +41,7 @@ class MysqlConnection implements ConnectionInterface {
   @override
   loadConfiguration(){
       envloader= EnvironmentLoader(
-              path:'./packages/shared_package/lib/Configuration/Bdd'
+        path:'./packages/shared_package/lib/Configuration/Bdd'
     );
     Map<String, String>? gnlConf=envloader?.gnlConfigurationf();
       envloader?.environment=gnlConf?["env"];
@@ -103,7 +103,6 @@ class MysqlConnection implements ConnectionInterface {
   MySQLConnectionPool? connectPool({int? timeoutMs}) {
 
     try {
-
       connexionPool =  MySQLConnectionPool(
         host: configuration['HOST'] as String ?? 'localhost',
         port: int.parse(configuration['PORT']!) ?? 3306,
@@ -121,8 +120,9 @@ class MysqlConnection implements ConnectionInterface {
 
       // print('MysqlConnection L85 ${connexion}');
       return connexionPool;
-    }catch(error){
-      print("MysqlConnection L86, connect(), Error de connexion to Mysql : $error");
+    }catch(error,stack){
+      print("MysqlConnection L125, connect(), Error de connexion to Mysql : $error");
+      print("MysqlConnection L126, connect(), stack : $stack");
     }
 
   }
