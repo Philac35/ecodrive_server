@@ -19,12 +19,14 @@ Future<void> configureServer(Angel app) async {
     ..container.registerSingleton<QueryExecutor>(PostgreSQLExecutor(connection))
     ..shutdownHooks.add((_) => connection.close());
 }
+ Here, Pool are integrated to regular connections
 */
 
 class PostgreSQLConnection implements ConnectionInterface{
 
   @override
   late Future<Connection> connexion;
+
   late Map<String,String> configuration;
   late final Logger _log = Logger('orm_postgresql');
   MysqlConnection(){
@@ -86,8 +88,12 @@ class PostgreSQLConnection implements ConnectionInterface{
 }
 
 
+
+
   @override
   Logger get log=>_log;
   bool get isDesktop => UniversalPlatform.isWindows || UniversalPlatform.isLinux || UniversalPlatform.isMacOS;
+
+  Session get session => this.session;
 
 }
