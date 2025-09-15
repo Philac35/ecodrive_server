@@ -7,7 +7,7 @@ import 'Repository.dart';
 import '../BDD/Model/AbstractModels/VehiculeEntity.dart'  ;
 import 'package:optional/optional.dart';
 
-//Nous créons des class Repository ssi les Entités ont des besoin spécifique d'accès en BDD.
+//Nous créons des classes Repositories ssi les Entités ont des besoins spécifiques d'accès en BDD.
 class VehiculeRepository extends Repository<Vehicule>{
 
 

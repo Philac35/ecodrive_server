@@ -51,7 +51,7 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
       }
       return queryFactory;
     })()
-   ) {}
+   ) ;
 
 
 
@@ -68,17 +68,19 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
   void _applyDynamicFilters(String entityName, dynamic where, Map<String, dynamic> params) {
     final filter = WhereFilterIndex[entityName];
     if (filter == null) throw UnimplementedError('No filter for $entityName');
-    print("Repository L73 _applyDynamicFilters: EntityName : $entityName , [ $where , $params]");
+    if( params == null) throw("parameters are null in arg map!");
+    print("Repository L72 _applyDynamicFilters: EntityName : $entityName , [ $where , $params]");
     params.forEach((key, value) {
       try{
       //  print("Repository L76 _applyDynamicFilters: key : ${key}");
-      final whereField = filter[key]!['whereField'] as Function;
      // print("Repository L81 _applyDynamicFilters: filter : ${f}");
      // print("Repository L82 _applyDynamicFilters: Value : ${value}");
 
-      if (whereField != null && value!=null) whereField(where,value);
 
-      } catch(e){print("Repository, error of value attribution in whereClause:${e}");};
+      //print('Repository L80, value: $value');
+      final whereField = filter[key]!['whereField'] as Function;
+      if (whereField != null && value != null) whereField(where,value);
+      } catch(e){print("Repository L82, error of value attribution in whereClause:${e}");};
     });
   }
 
@@ -128,7 +130,7 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
 
     ..where?.id!.equals(id);
     var res= (await query.get(executor)).first ;
-    print("Repository L95 : Entity : ${res}");
+    print("Repository L132 : Entity : ${res}");
     return res;
     //return  query.get(executor) as   Future<T?>  ;
     }
@@ -361,12 +363,13 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
     //checkConnection()
     final query = queryFactory();
 
-
     if(parameters.containsKey('id'))
        {
          parameters['id']=parameters['id'].toString();}
        var fromMap= Entity_Index[T.toString()]['fromMap'] as Function;
     final T retEntity =fromMap(parameters);
+
+    print("Repository entity:${retEntity.toString()}");
 
     query.values.copyFrom(retEntity); //had values to be updated
 
@@ -379,8 +382,8 @@ class Repository<T extends EntityInterface> extends AbstractRepository <T> {
       }
     }
 
-   List<T> res= await query.update(executor) ;
-    return res.length > 0;
+   T? res= (await query.update(executor)).first ;
+    return res;
   }  
 
 
