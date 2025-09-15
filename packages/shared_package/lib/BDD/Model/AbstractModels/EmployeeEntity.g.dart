@@ -486,6 +486,50 @@ class Employee extends EmployeeEntity {
   Map<String, dynamic> toJson() {
     return EmployeeSerializer.toMap(this)!;
   }
+
+
+
+Map<String, Map<String,dynamic>> get accessors => {
+  'id': {"get":id,"set":(val) => id = val}, 
+'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val}, 
+'createdAt': {"get":createdAt,"set":(val) => createdAt = val}, 
+'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val}, 
+'firstname': {"get":firstname,"set":(val) => firstname = val}, 
+'lastname': {"get":lastname,"set":(val) => lastname = val}, 
+'age': {"get":age,"set":(val) => age = val}, 
+'gender': {"get":gender,"set":(val) => gender = val}, 
+'credits': {"get":credits,"set":(val) => credits = val}, 
+'email': {"get":email,"set":(val) => email = val}, 
+'address': {"get":address,"set":(val) => address = val}, 
+'addressId': {"get":addressId,"set":(val) => addressId = val}, 
+'photo': {"get":photo,"set":(val) => photo = val}, 
+'photoId': {"get":photoId,"set":(val) => photoId = val}, 
+'user': {"get":user,"set":(val) => user = val}, 
+'userId': {"get":userId,"set":(val) => userId = val}, 
+'person': {"get":person,"set":(val) => person = val}, 
+'personId': {"get":personId,"set":(val) => personId = val}, 
+ };
+
+void setField(String key, dynamic value) {
+  key=StringLib.snakeToCamel(key);
+     accessors[key]!['set'](value);  
+
+     // Optional: update a backing field if your entity has typed fields
+     if (this is dynamic) {
+       try {
+         (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+       } catch (_) {}
+     }
+   }
+    
+
+dynamic getField(String key){
+  try{
+    key=StringLib.snakeToCamel(key);
+    return accessors[key]!['get'];
+  }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
+}
+
 }
 
 // **************************************************************************

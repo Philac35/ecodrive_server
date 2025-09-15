@@ -288,9 +288,10 @@ class AdministratorQueryValues extends MapQueryValues {
     gender = model.gender;
     credits = model.credits;
     email = model.email;
-    if (model.person != null) {
-      values['person_id'] = model.person?.id;
+    if (model.personId != null) {
+      values['person_id'] = model.personId;
     }
+
   }
 }
 
@@ -364,26 +365,31 @@ class Administrator extends AdministratorEntity {
   @override
   AddressEntity? address;
 
+  @override
   int? addressId;
 
   @override
   PhotoEntity? photo;
 
+  @override
   int? photoId;
 
   @override
   AuthUserEntity? authUser;
 
+  @override
   int? authUserId;
 
   @override
   UserEntity? user;
 
+  @override
   int? userId;
 
   @override
   AdministratorEntity? administrator;
 
+  @override
   int? administratorId;
 
   @override
@@ -520,6 +526,8 @@ class Administrator extends AdministratorEntity {
     return AdministratorSerializer.toMap(this)!;
   }
 
+
+
   @override
   bool delete(PersonEntity person) {
     // TODO: implement delete
@@ -537,6 +545,56 @@ class Administrator extends AdministratorEntity {
     // TODO: implement suspend
     throw UnimplementedError();
   }
+
+Map<String, Map<String,dynamic>> get accessors => {
+  'id': {"get":id,"set":(val) => id = val}, 
+'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val}, 
+'createdAt': {"get":createdAt,"set":(val) => createdAt = val}, 
+'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val}, 
+'firstname': {"get":firstname,"set":(val) => firstname = val}, 
+'lastname': {"get":lastname,"set":(val) => lastname = val}, 
+'age': {"get":age,"set":(val) => age = val}, 
+'gender': {"get":gender,"set":(val) => gender = val}, 
+'credits': {"get":credits,"set":(val) => credits = val}, 
+'email': {"get":email,"set":(val) => email = val}, 
+'address': {"get":address,"set":(val) => address = val}, 
+'addressId': {"get":addressId,"set":(val) => addressId = val}, 
+'photo': {"get":photo,"set":(val) => photo = val}, 
+'photoId': {"get":photoId,"set":(val) => photoId = val}, 
+'authUser': {"get":authUser,"set":(val) => authUser = val}, 
+'authUserId': {"get":authUserId,"set":(val) => authUserId = val}, 
+'user': {"get":user,"set":(val) => user = val}, 
+'userId': {"get":userId,"set":(val) => userId = val}, 
+'administrator': {"get":administrator,"set":(val) => administrator = val}, 
+'administratorId': {"get":administratorId,"set":(val) => administratorId = val}, 
+'employee': {"get":employee,"set":(val) => employee = val}, 
+'employeeId': {"get":employeeId,"set":(val) => employeeId = val}, 
+'person': {"get":person,"set":(val) => person = val}, 
+'personId': {"get":personId,"set":(val) => personId = val}, 
+'authUserEntity': {"get":authUserEntity,"set":(val) => authUserEntity = val}, 
+'authUserEntityId': {"get":authUserEntityId,"set":(val) => authUserEntityId = val}, 
+ };
+
+void setField(String key, dynamic value) {
+  key=StringLib.snakeToCamel(key);
+     accessors[key]!['set'](value);  
+
+     // Optional: update a backing field if your entity has typed fields
+     if (this is dynamic) {
+       try {
+         (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+       } catch (_) {}
+     }
+   }
+    
+
+dynamic getField(String key){
+  try{
+    key=StringLib.snakeToCamel(key);
+    return accessors[key]!['get'];
+  }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
+}
+
 }
 
 // **************************************************************************

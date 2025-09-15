@@ -23,9 +23,17 @@ class DriverMigration extends Migration {
         'preferences',
         Column(type: ColumnType('json'), length: 255),
       );
+      table
+          .declare('auth_user_id', ColumnType('int'))
+          .references('authuser', 'id');
       table.declare('person_id', ColumnType('int')).references('people', 'id');
       table.declare('user_id', ColumnType('int')).references('user', 'id');
+      table
+          .declare('vehicule_id', ColumnType('int'))
+          .references('vehicule', 'id');
+     // table.declare('notices_id_list', ColumnType('Json')).references('notices','id'); ou utilisation d'une table pivot
     });
+
   }
 
   @override
@@ -40,68 +48,69 @@ class DriverMigration extends Migration {
 
 class DriverQuery extends Query<Driver, DriverQueryWhere> {
   DriverQuery({super.parent, Set<String>? trampoline}) {
-    trampoline ??= <String>{};    bool isActive = !(trampoline?.contains(tableName) ?? false);
+    trampoline ??= <String>{};
+    bool isActive = !(trampoline?.contains(tableName) ?? false);
 
     trampoline ??= <String>{};
-    if (trampoline.contains(tableName)) return; // Modification E.H 6/08/2025 17h56 Prevent recursion!
+    if (trampoline.contains(tableName))
+      return; // Modification E.H 6/08/2025 17h56 Prevent recursion!
     trampoline.add(tableName);
     _where = DriverQueryWhere(this);
-   if(isActive){
-    leftJoin(
-      _person = PersonQuery(trampoline: trampoline, parent: this),
-      'person_id',
-      'id',
-      additionalFields: const [
+    if (isActive) {
+      leftJoin(
+        _person = PersonQuery(trampoline: trampoline, parent: this),
+        'person_id',
         'id',
-        'created_at',
-        'updated_at',
-        'firstname',
-        'lastname',
-        'age',
-        'gender',
-        'credits',
-        'email',
-        'address_id',
-        'photo_id',
-        'auth_user_id',
-        'user_id',
-
-      ],
-      trampoline: trampoline,
-    );
-    leftJoin(
-      _notices = NoticeQuery(trampoline: trampoline, parent: this),
-      'id',
-      'driver_id',
-      additionalFields: const [
+        additionalFields: const [
+          'id',
+          'created_at',
+          'updated_at',
+          'firstname',
+          'lastname',
+          'age',
+          'gender',
+          'credits',
+          'email',
+          'address_id',
+          'photo_id',
+          'auth_user_id',
+          'user_id',
+        ],
+        trampoline: trampoline,
+      );
+      leftJoin(
+        _notices = NoticeQuery(trampoline: trampoline, parent: this),
         'id',
-        'created_at',
-        'updated_at',
-        'title',
-        'description',
-        'note',
         'driver_id',
-      ],
-      trampoline: trampoline,
-    );
-    leftJoin(
-      _user = PersonQuery(trampoline: trampoline, parent: this),
-      'user_id',
-      'id',
-      additionalFields: const [
+        additionalFields: const [
+          'id',
+          'created_at',
+          'updated_at',
+          'title',
+          'description',
+          'note',
+          'driver_id',
+        ],
+        trampoline: trampoline,
+      );
+      leftJoin(
+        _user = UserQuery(trampoline: trampoline, parent: this),
+        'user_id',
         'id',
-        'created_at',
-        'updated_at',
-        'firstname',
-        'lastname',
-        'age',
-        'gender',
-        'credits',
-        'email',
-      ],
-      trampoline: trampoline,
-    );
-   }
+        additionalFields: const [
+          'id',
+          'created_at',
+          'updated_at',
+          'firstname',
+          'lastname',
+          'age',
+          'gender',
+          'credits',
+          'email',
+        ],
+        trampoline: trampoline,
+      );
+    }
   }
 
   @override
@@ -115,7 +124,7 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
 
   late NoticeQuery _notices;
 
-  late PersonQuery _user;
+  late UserQuery _user;
 
   /*
   @override
@@ -143,6 +152,8 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
       'preferences',
       'person_id',
       'user_id',
+      'auth_user_id',
+      'vehicule_id'
     ];
     return _selectedFields.isEmpty
         ? localFields
@@ -171,51 +182,69 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
       return Optional.empty();
     }
     var model;
-    try{
-     model = Driver(
-      id: fields.contains('id') ? row[0].toString() : null,
-      createdAt:
-          fields.contains('created_at') ? mapToNullableDateTime(row[1]) : null,
-      updatedAt:
-          fields.contains('updated_at') ? mapToNullableDateTime(row[2]) : null,
-      firstname: fields.contains('firstname') ? (row[3] as String?) : null,
-      lastname: fields.contains('lastname') ? (row[4] as String?) : null,
-      age: fields.contains('age') ? mapToInt(row[5]) : null,
-      gender: fields.contains('gender') ? (row[6] as String?) : null,
-      credits: fields.contains('credits') ? mapToDouble(row[7]) : 0.0,
-      email: fields.contains('email') ? (row[8] as String?) : null,
-      preferences:  fields.contains('preferences') ?  row[10] is String ?
-                                                      List<String>.from(json.decode(row[10])):null
-                                                   : null,
-      personId:  fields.contains('person_id') ?row[11] is String ?
-                                 int.parse(row[11]) : null
-                            :null,
-      userId: fields.contains('person_id') ?row[12] is String ?
-                                int.parse(row[12]) : null
-                          :null,
-
-    );
-    if (row.length > 13) {
-      var modelOpt = PersonQuery().parseRow(row.skip(13).take(15).toList());
-      modelOpt.ifPresent((m) {
-        model = model.copyWith(person: m);
-      });
-    }
-    if (row.length > 29) {
-      var modelOpt = NoticeQuery().parseRow(row.skip(29).take(7).toList());
-      modelOpt.ifPresent((m) {
-        model = model.copyWith(notices: [m]);
-      });
-    }
-    if (row.length > 37) {
-      var modelOpt = PersonQuery().parseRow(row.skip(37).take(9).toList());
-     print('DriverEntity L194: type of model Opt ${modelOpt.runtimeType}');
-      modelOpt.ifPresent((m) {
-        model = model.copyWith(user: m as UserEntity);
-      });
-    }}
-    catch(e,s){print('L202,parseRow error : $e');
-    print('Stack:$s ');
+    try {
+      model = Driver(
+        id: fields.contains('id') ? row[0].toString() : null,
+        createdAt: fields.contains('created_at')
+            ? mapToNullableDateTime(row[1])
+            : null,
+        updatedAt: fields.contains('updated_at')
+            ? mapToNullableDateTime(row[2])
+            : null,
+        firstname: fields.contains('firstname') ? (row[3] as String?) : null,
+        lastname: fields.contains('lastname') ? (row[4] as String?) : null,
+        age: fields.contains('age') ? mapToInt(row[5]) : null,
+        gender: fields.contains('gender') ? (row[6] as String?) : null,
+        credits: fields.contains('credits') ? mapToDouble(row[7]) : 0.0,
+        email: fields.contains('email') ? (row[8] as String?) : null,
+        preferences: fields.contains('preferences')
+            ? row[9] is String
+                ? List<String>.from(json.decode(row[9]))
+                : null
+            : null,
+        personId: fields.contains('person_id')
+            ? row[10] is String
+                ? int.parse(row[10])
+                : null
+            : null,
+        userId: fields.contains('user_id')
+            ? row[11] is String
+                ? int.parse(row[11])
+                : null
+            : null,
+        authUserId: fields.contains('auth_user_id')
+            ? row[12] is String
+            ? int.parse(row[12])
+            : null
+            : null,
+        vehiculeId: fields.contains('vehicule_id')
+            ? row[13] is String
+            ? int.parse(row[13])
+            : null
+            : null,
+      );
+      if (row.length > 14) {
+        var modelOpt = PersonQuery().parseRow(row.skip(13).take(15).toList());
+        modelOpt.ifPresent((m) {
+          model = model.copyWith(person: m);
+        });
+      }
+      if (row.length > 30) {
+        var modelOpt = NoticeQuery().parseRow(row.skip(30).take(7).toList());
+        modelOpt.ifPresent((m) {
+          model = model.copyWith(notices: [m]);
+        });
+      }
+      if (row.length > 38) {
+        var modelOpt = UserQuery().parseRow(row.skip(38).take(9).toList());
+        print('DriverEntity L194: type of model Opt ${modelOpt.runtimeType}');
+        modelOpt.ifPresent((m) {
+          model = model.copyWith(user: m as UserEntity);
+        });
+      }
+    } catch (e, s) {
+      print('L202,parseRow error : $e');
+      print('Stack:$s ');
     }
     return Optional.of(model);
   }
@@ -233,7 +262,7 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
     return _notices;
   }
 
-  PersonQuery get user {
+  UserQuery get user {
     return _user;
   }
 
@@ -306,18 +335,20 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
 
 class DriverQueryWhere extends QueryWhere {
   DriverQueryWhere(DriverQuery query)
-    : id = NumericSqlExpressionBuilder<int>(query, 'id'),
-      createdAt = DateTimeSqlExpressionBuilder(query, 'created_at'),
-      updatedAt = DateTimeSqlExpressionBuilder(query, 'updated_at'),
-      firstname = StringSqlExpressionBuilder(query, 'firstname'),
-      lastname = StringSqlExpressionBuilder(query, 'lastname'),
-      age = NumericSqlExpressionBuilder<int>(query, 'age'),
-      gender = StringSqlExpressionBuilder(query, 'gender'),
-      credits = NumericSqlExpressionBuilder<double>(query, 'credits'),
-      email = StringSqlExpressionBuilder(query, 'email'),
-      preferences = ListSqlExpressionBuilder(query, 'preferences'),
-      personId = NumericSqlExpressionBuilder<int>(query, 'person_id'),
-      userId = NumericSqlExpressionBuilder<int>(query, 'user_id');
+      : id = NumericSqlExpressionBuilder<int>(query, 'id'),
+        createdAt = DateTimeSqlExpressionBuilder(query, 'created_at'),
+        updatedAt = DateTimeSqlExpressionBuilder(query, 'updated_at'),
+        firstname = StringSqlExpressionBuilder(query, 'firstname'),
+        lastname = StringSqlExpressionBuilder(query, 'lastname'),
+        age = NumericSqlExpressionBuilder<int>(query, 'age'),
+        gender = StringSqlExpressionBuilder(query, 'gender'),
+        credits = NumericSqlExpressionBuilder<double>(query, 'credits'),
+        email = StringSqlExpressionBuilder(query, 'email'),
+        preferences = ListSqlExpressionBuilder(query, 'preferences'),
+        personId = NumericSqlExpressionBuilder<int>(query, 'person_id'),
+        userId = NumericSqlExpressionBuilder<int>(query, 'user_id'),
+        authUserId = NumericSqlExpressionBuilder<int>(query, 'auth_user_id'),
+        vehiculeId = NumericSqlExpressionBuilder<int>(query, 'vehicule_id');
 
   final NumericSqlExpressionBuilder<int> id;
 
@@ -343,6 +374,10 @@ class DriverQueryWhere extends QueryWhere {
 
   final NumericSqlExpressionBuilder<int> userId;
 
+  final NumericSqlExpressionBuilder<int> authUserId;
+
+  final NumericSqlExpressionBuilder<int> vehiculeId;
+
   @override
   List<SqlExpressionBuilder> get expressionBuilders {
     return [
@@ -355,9 +390,11 @@ class DriverQueryWhere extends QueryWhere {
       gender,
       credits,
       email,
-      personId,
       preferences,
+      personId,
       userId,
+      authUserId,
+      vehiculeId
     ];
   }
 }
@@ -442,6 +479,12 @@ class DriverQueryValues extends MapQueryValues {
 
   set userId(int value) => values['user_id'] = value;
 
+  int get vehiculeId {
+    return (values['vehicule_id'] as int);
+  }
+
+  set vehiculeId(int value) => values['vehicule_id'] = value;
+
   void copyFrom(Driver model) {
     createdAt = model.createdAt;
     updatedAt = model.updatedAt;
@@ -452,11 +495,17 @@ class DriverQueryValues extends MapQueryValues {
     credits = model.credits!;
     email = model.email;
     preferences = model.preferences;
-    if (model.person != null) {
-      values['person_id'] = model.person?.id;
+    if (model.personId != null) {
+      values['person_id'] = model.personId;
     }
-    if (model.user != null) {
-      values['user_id'] = model.user?.id;
+    if (model.userId != null) {
+      values['user_id'] = model.userId;
+    }
+    if (model.authUserId != null) {
+      values['auth_user_id'] = model.authUserId;
+    }
+    if (model.vehiculeId != null) {
+      values['vehicule_id'] = model.vehiculeId;
     }
   }
 }
@@ -467,7 +516,6 @@ class DriverQueryValues extends MapQueryValues {
 
 @generatedSerializable
 class Driver extends DriverEntity {
-
   Driver({
     this.id,
     this.createdAt,
@@ -482,23 +530,26 @@ class Driver extends DriverEntity {
     this.address,
     this.addressId,
     this.authUser,
-     this.person,   //required
+    this.authUserId,
+    this.person, //required
     this.personId,
     List<CommandEntity>? commandList = const [],
     List<int>? commandIdList = const [],
     this.authUserEntity,
     List<NoticeEntity>? notices = const [],
     List<String>? preferences = const [],
-     this.user, //required
+    this.user, //required
     this.userId,
     this.drivingLicence,
+    this.drivingLicenceId,
     this.vehicule,
-  }) : commandList = List.unmodifiable(commandList ?? []),
-       notices = List.unmodifiable(notices ?? []),
-       preferences = List.unmodifiable(preferences ?? []);
+    this.vehiculeId,
+  })  : commandList = List.unmodifiable(commandList ?? []),
+        notices = List.unmodifiable(notices ?? []),
+        preferences = List.unmodifiable(preferences ?? []);
 
+  Driver.empty();
 
-Driver.empty();
   /// A unique identifier corresponding to this item.
   @override
   String? id;
@@ -542,6 +593,8 @@ Driver.empty();
   @override
   AuthUserEntity? authUser;
 
+  @override
+  int? authUserId;
 
   @override
   PersonEntity? person;
@@ -562,6 +615,9 @@ Driver.empty();
   List<NoticeEntity>? notices;
 
   @override
+  List<int>? noticesIdList;
+
+  @override
   List<String>? preferences;
 
   @override
@@ -573,33 +629,41 @@ Driver.empty();
   @override
   DrivingLicenceEntity? drivingLicence;
 
+  int? drivingLicenceId;
+
   @override
   VehiculeEntity? vehicule;
 
-  Driver copyWith({
-    String? id,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    String? firstname,
-    String? lastname,
-    int? age,
-    String? gender,
-    double? credits,
-    String? email,
-    AddressEntity? address,
-    int? addressId,
-    PhotoEntity? photo,
-    AuthUserEntity? authUser,
-    PersonEntity? person,
-    DriverEntity? driver,
-    List<CommandEntity>? commandList,
-    AuthUserEntity? authUserEntity,
-    List<NoticeEntity>? notices,
-    List<String>? preferences,
-    UserEntity? user,
-    DrivingLicenceEntity? drivingLicence,
-    VehiculeEntity? vehicule,
-  }) {
+  @override
+  int? vehiculeId;
+
+  Driver copyWith(
+      {String? id,
+      DateTime? createdAt,
+      DateTime? updatedAt,
+      String? firstname,
+      String? lastname,
+      int? age,
+      String? gender,
+      double? credits,
+      String? email,
+      AddressEntity? address,
+      int? addressId,
+      PhotoEntity? photo,
+      AuthUserEntity? authUser,
+      PersonEntity? person,
+      int? personId,
+      DriverEntity? driver,
+      List<CommandEntity>? commandList,
+      AuthUserEntity? authUserEntity,
+      List<NoticeEntity>? notices,
+      List<String>? preferences,
+      UserEntity? user,
+      int? userId,
+      DrivingLicenceEntity? drivingLicence,
+      int? drivingLicenceId,
+      VehiculeEntity? vehicule,
+      int? vehiculeId}) {
     return Driver(
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
@@ -610,20 +674,25 @@ Driver.empty();
       gender: gender ?? this.gender,
       credits: credits ?? this.credits,
       email: email ?? this.email,
-      address: address?? this.address,
-      addressId: addressId?? this.addressId,
-      photo: photo ?? this.photo,
+      address: address ?? this.address,
+      addressId: addressId ?? this.addressId,
       authUser: authUser ?? this.authUser,
-     //  administrator: administrator ?? this.administrator,
-     // employee: employee ?? this.employee,
+      authUserId: authUserId ?? this.authUserId,
+      //  administrator: administrator ?? this.administrator,
+      // employee: employee ?? this.employee,
       person: person ?? this.person,
+      personId: personId ?? this.personId,
       commandList: commandList ?? this.commandList,
+      commandIdList: commandIdList ?? this.commandIdList,
       authUserEntity: authUserEntity ?? this.authUserEntity,
       notices: notices ?? this.notices,
       preferences: preferences ?? this.preferences,
       user: user ?? this.user,
+      userId: userId ?? this.userId,
       drivingLicence: drivingLicence ?? this.drivingLicence,
+      drivingLicenceId: drivingLicenceId ?? this.drivingLicenceId,
       vehicule: vehicule ?? this.vehicule,
+      vehiculeId: vehiculeId ?? this.vehiculeId,
     );
   }
 
@@ -644,10 +713,10 @@ Driver.empty();
         other.addressId == addressId &&
         other.authUser == authUser &&
         other.person == person &&
-             ListEquality<CommandEntity>(
+        ListEquality<CommandEntity>(
           DefaultEquality<CommandEntity>(),
         ).equals(other.commandList, commandList) &&
-       // other.authUserEntity == authUserEntity &&
+        // other.authUserEntity == authUserEntity &&
         ListEquality<NoticeEntity>(
           DefaultEquality<NoticeEntity>(),
         ).equals(other.notices, notices) &&
@@ -655,8 +724,10 @@ Driver.empty();
           DefaultEquality<String>(),
         ).equals(other.preferences, preferences) &&
         other.user == user &&
-        other.drivingLicence == drivingLicence &&
-        other.vehicule == vehicule;
+        other.userId == userId &&
+        other.drivingLicenceId == drivingLicenceId &&
+        other.vehicule == vehicule &&
+        other.vehiculeId == vehiculeId;
   }
 
   @override
@@ -673,21 +744,21 @@ Driver.empty();
       email,
       address,
       photo,
-      authUser,
-      person,
-      commandList,
+      authUserId,
+      personId,
+      commandIdList,
       authUserEntity,
       notices,
       preferences,
-      user,
-      drivingLicence,
-      vehicule,
+      userId,
+      drivingLicenceId,
+      vehiculeId,
     ]);
   }
 
   @override
   String toString() {
-    return 'Driver(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email,address=$address,addressId=$addressId, photo=$photo, authUser=$authUser, administrator=$administrator, employee=$employee, person=$person,  commandList=$commandList, authUserEntity=$authUserEntity, notices=$notices, preferences=$preferences, user=$user, drivingLicence=$drivingLicence, vehicule=$vehicule)';
+    return 'Driver(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, firstname=$firstname, lastname=$lastname, age=$age, gender=$gender, credits=$credits, email=$email,address=$address,addressId=$addressId, photoId=$photoId, authUserId=$authUserId, administratorId=$administratorId, employee=$employee,employeeId=$employeeId, person=$person,personId=$personId,  commandList=$commandList, authUserEntity=$authUserEntity, notices=$notices, preferences=$preferences, userId=$userId, drivingLicenceId=$drivingLicenceId, vehiculeId=$vehiculeId)';
   }
 
   Map<String, dynamic> toJson() {
@@ -700,19 +771,83 @@ Driver.empty();
 
   @override
   // TODO: implement administrator
-  AdministratorEntity? get administrator => throw UnimplementedError();
+  AdministratorEntity? get administrator => null;
 
   @override
   // TODO: implement employee
-  EmployeeEntity? get employee => throw UnimplementedError();
+  EmployeeEntity? get employee => null;
 
   @override
   // TODO: implement driverId
   int? get driverId => user?.driverId;
 
+  Map<String, Map<String, dynamic>> get accessors => {
+        'id': {"get": id, "set": (val) => id = val},
+        'cascadeTempKey': {
+          "get": cascadeTempKey,
+          "set": (val) => cascadeTempKey = val
+        },
+        'createdAt': {"get": createdAt, "set": (val) => createdAt = val},
+        'updatedAt': {"get": updatedAt, "set": (val) => updatedAt = val},
+        'firstname': {"get": firstname, "set": (val) => firstname = val},
+        'lastname': {"get": lastname, "set": (val) => lastname = val},
+        'age': {"get": age, "set": (val) => age = val},
+        'gender': {"get": gender, "set": (val) => gender = val},
+        'credits': {"get": credits, "set": (val) => credits = val},
+        'email': {"get": email, "set": (val) => email = val},
+        'address': {"get": address, "set": (val) => address = val},
+        'addressId': {"get": addressId, "set": (val) => addressId = val},
+        'photo': {"get": photo, "set": (val) => photo = val},
+        'authUser': {"get": authUser, "set": (val) => authUser = val},
+        'authUserId': {"get": authUser, "set": (val) => authUser = val},
+        'person': {"get": person, "set": (val) => person = val},
+        'personId': {"get": personId, "set": (val) => personId = val},
+        'commandList': {"get": commandList, "set": (val) => commandList = val},
+        'commandIdList': {
+          "get": commandIdList,
+          "set": (val) => commandIdList = val
+        },
+        'authUserEntity': {
+          "get": authUserEntity,
+          "set": (val) => authUserEntity = val
+        },
+        'notices': {"get": notices, "set": (val) => notices = val},
+        'preferences': {"get": preferences, "set": (val) => preferences = val},
+        'user': {"get": user, "set": (val) => user = val},
+        'userId': {"get": userId, "set": (val) => userId = val},
+        'drivingLicence': {
+          "get": drivingLicence,
+          "set": (val) => drivingLicence = val
+        },
+        'drivingLicenceId': {
+          "get": drivingLicenceId,
+          "set": (val) => drivingLicenceId = val
+        },
+        'vehicule': {"get": vehicule, "set": (val) => vehicule = val},
+        'vehiculeId': {"get": vehiculeId, "set": (val) => vehiculeId = val},
+      };
 
+  void setField(String key, dynamic value) {
+    key = StringLib.snakeToCamel(key);
+    accessors[key]!['set'](value);
 
+    // Optional: update a backing field if your entity has typed fields
+    if (this is dynamic) {
+      try {
+        (this as dynamic)
+            .noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+      } catch (_) {}
+    }
+  }
 
+  dynamic getField(String key) {
+    try {
+      key = StringLib.snakeToCamel(key);
+      return accessors[key]!['get'];
+    } catch (e, s) {
+      print("Error to fetch field $key , error:$e, \n stack:$s");
+    }
+  }
 }
 
 // **************************************************************************
@@ -751,84 +886,92 @@ class DriverSerializer extends Codec<Driver, Map> {
           ? AdministratorSerializer.fromMap(map['administrator'] as Map)
           : null,*/
   static Driver fromMap(Map map) {
-    map=StringLib().camelToSnakeKeyFromMap(map);
+    map = StringLib().camelToSnakeKeyFromMap(map);
 
     return Driver(
       id: map['id'] as String?,
-      createdAt:
-      map['created_at'] != null
+      createdAt: map['created_at'] != null
           ? (map['created_at'] is DateTime
-          ? (map['created_at'] as DateTime)
-          : DateTime.parse(map['created_at'].toString()))
+              ? (map['created_at'] as DateTime)
+              : DateTime.parse(map['created_at'].toString()))
           : null,
-      updatedAt:
-      map['updated_at'] != null
+      updatedAt: map['updated_at'] != null
           ? (map['updated_at'] is DateTime
-          ? (map['updated_at'] as DateTime)
-          : DateTime.parse(map['updated_at'].toString()))
+              ? (map['updated_at'] as DateTime)
+              : DateTime.parse(map['updated_at'].toString()))
           : null,
       firstname: map['firstname'] as String?,
       lastname: map['lastname'] as String?,
-      age: map['age'] != null ? map['age'] is String ? int.parse(map['age']) as int?:map['age'] as int?:null,
+      age: map['age'] != null
+          ? map['age'] is String
+              ? int.parse(map['age']) as int?
+              : map['age'] as int?
+          : null,
       gender: map['gender'] as String?,
-      credits: map['credits']!=null ?
-      map['credits'] is String ? double.parse(map['credits']) as double :0.0
+      credits: map['credits'] != null
+          ? map['credits'] is String
+              ? double.parse(map['credits']) as double
+              : 0.0
           : null,
       email: map['email'] as String?,
-      address:
-      map['address'] != null
+      address: map['address'] != null
           ? AddressSerializer.fromMap(map['address'] as Map)
           : null,
-      addressId: map['address_id'] != null
-          ?  map['address_id'] as int?
-          :null,
-      photo:
-      map['photo'] != null
+      addressId: map['address_id'] != null ? map['address_id'] as int? : null,
+      photo: map['photo'] != null
           ? PhotoSerializer.fromMap(map['photo'] as Map)
           : null,
-      authUser:
-      map['auth_user'] != null
+      authUser: map['auth_user'] != null
           ? AuthUserSerializer.fromMap(map['auth_user'] as Map)
           : null,
-      person:
-      map['person'] != null
+      authUserId:
+          map['auth_user_id'] != null ? map['auth_user_id'] as int? : null,
+      person: map['person'] != null
           ? PersonSerializer.fromMap(map['person'] as Map) as PersonEntity
-          : Person.empty,
-      commandList:
-      map['command_list'] is Iterable
-          ? List.unmodifiable(
-        ((map['command_list'] as Iterable).whereType<Map>()).map(
-          CommandSerializer.fromMap,
-        ),
-      )
           : null,
-      authUserEntity:
-      map['auth_user_entity'] != null
+      personId: map['auth_user_id'] != null
+          ? map['auth_user_id'] is String
+              ? int.parse(map['auth_user_id'])
+              : map['auth_user_id'] as int
+          : null,
+      commandList: map['command_list'] is Iterable
+          ? List.unmodifiable(
+              ((map['command_list'] as Iterable).whereType<Map>()).map(
+                CommandSerializer.fromMap,
+              ),
+            )
+          : null,
+      authUserEntity: map['auth_user_entity'] != null
           ? AuthUserSerializer.fromMap(map['auth_user_entity'] as Map)
           : null,
-      notices:
-      map['notices'] is Iterable
+      notices: map['notices'] is Iterable
           ? List.unmodifiable(
-        ((map['notices'] as Iterable).whereType<Map>()).map(
-          NoticeSerializer.fromMap,
-        ),
-      )
+              ((map['notices'] as Iterable).whereType<Map>()).map(
+                NoticeSerializer.fromMap,
+              ),
+            )
           : null,
-      preferences:
-      map['preferences'] is Iterable
+      preferences: map['preferences'] is Iterable
           ? (map['preferences'] as Iterable).cast<String>().toList()
           : null,
-      user:
-      map['user'] != null
+      user: map['user'] != null
           ? UserSerializer.fromMap(map['user'] as Map) as UserEntity
           : null,
-      drivingLicence:
-      map['driving_licence'] != null
+      drivingLicence: map['driving_licence'] != null
           ? DrivingLicenceSerializer.fromMap(map['driving_licence'] as Map)
           : null,
-      vehicule:
-      map['vehicule'] != null
+      drivingLicenceId: map['driving_licence_id'] != null
+          ? map['driving_licence_id'] is String
+              ? int.parse(map['driving_licence_id'])
+              : map['driving_licence_id']
+          : null,
+      vehicule: map['vehicule'] != null
           ? VehiculeSerializer.fromMap(map['vehicule'] as Map)
+          : null,
+      vehiculeId: map['vehicule_id'] != null
+          ? map['vehicule_id'] is String
+              ? int.parse(map['vehicule_id'])
+              : map['vehicule_id']
           : null,
     );
   }
@@ -836,7 +979,7 @@ class DriverSerializer extends Codec<Driver, Map> {
   static Map<String, dynamic>? toMap(DriverEntity? model) {
     if (model == null) {
       return null;
-    //  throw FormatException("DriverEntity L776, Required field [model] cannot be null");
+      //  throw FormatException("DriverEntity L776, Required field [model] cannot be null");
     }
     return {
       'id': model.id,
@@ -848,26 +991,30 @@ class DriverSerializer extends Codec<Driver, Map> {
       'gender': model.gender,
       'credits': model.credits,
       'email': model.email,
-      'address':model.address,
-      'addressId':model.addressId,
+      'address': model.address,
+      'addressId': model.addressId,
       'photo': PhotoSerializer.toMap(model.photo),
       'auth_user': AuthUserSerializer.toMap(model.authUser),
-
+      'auth_user_id': model.authUserId,
       'person': PersonSerializer.toMap(model.person),
+      'personId': model.personId,
       'driver': DriverSerializer.toMap(model.driver),
-      'command_list': model.commandList?.map((m) => CommandSerializer.toMap(m)).toList(),
-     // 'auth_user_entity': AuthUserSerializer.toMap(model.authUserEntity),
+      'command_list':
+          model.commandList?.map((m) => CommandSerializer.toMap(m)).toList(),
+      // 'auth_user_entity': AuthUserSerializer.toMap(model.authUserEntity),
       'notices': model.notices?.map((m) => NoticeSerializer.toMap(m)).toList(),
       'preferences': model.preferences,
       'user': UserSerializer.toMap(model.user),
+      'userId': model.userId,
       'driving_licence': DrivingLicenceSerializer.toMap(model.drivingLicence),
+      'driving_licence_id': model.drivingLicenceId,
       'vehicule': VehiculeSerializer.toMap(model.vehicule),
+      'vehicule_id': model.vehiculeId
     };
   }
 }
 
-class StringLibrary {
-}
+class StringLibrary {}
 
 abstract class DriverFields {
   static const List<String> allFields = <String>[
@@ -884,17 +1031,22 @@ abstract class DriverFields {
     addressId,
     photo,
     authUser,
-  //  administrator,
-   // employee,
+    authUserId,
+    //  administrator,
+    // employee,
     person,
-    driver,
+    personId,
     commandList,
     authUserEntity,
     notices,
+    noticesIdList,
     preferences,
     user,
+    userId,
     drivingLicence,
+    drivingLicenceId,
     vehicule,
+    vehiculeId
   ];
 
   static const String id = 'id';
@@ -923,7 +1075,11 @@ abstract class DriverFields {
 
   static const String authUser = 'auth_user';
 
+  static const String authUserId = 'auth_user_id';
+
   static const String person = 'person';
+
+  static const String personId = 'person_id';
 
   static const String driver = 'driver';
 
@@ -933,11 +1089,19 @@ abstract class DriverFields {
 
   static const String notices = 'notices';
 
+  static const String noticesIdList = 'notices_id_list';
+
   static const String preferences = 'preferences';
 
   static const String user = 'user';
 
+  static const String userId = 'user_id';
+
   static const String drivingLicence = 'driving_licence';
 
+  static const String drivingLicenceId = 'driving_licence_id';
+
   static const String vehicule = 'vehicule';
+
+  static const String vehiculeId = 'vehicule_id';
 }

@@ -17,8 +17,6 @@ import 'PhotoEntity.dart';
 import 'package:angel3_migration/angel3_migration.dart';
 
 import 'UserEntity.dart';
-
-
 part 'EmployeeEntity.g.dart';
 
 

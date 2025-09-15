@@ -481,6 +481,44 @@ class Itinerary extends ItineraryEntity {
   }
 
 
+
+Map<String, Map<String,dynamic>> get accessors => {
+  'id': {"get":id,"set":(val) => id = val}, 
+'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val}, 
+'createdAt': {"get":createdAt,"set":(val) => createdAt = val}, 
+'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val}, 
+'price': {"get":price,"set":(val) => price = val}, 
+'addressDeparture': {"get":addressDeparture,"set":(val) => addressDeparture = val}, 
+'addressDepartureId': {"get":addressDepartureId,"set":(val) => addressDepartureId = val}, 
+'addressArrival': {"get":addressArrival,"set":(val) => addressArrival = val}, 
+'addressArrivalId': {"get":addressArrivalId,"set":(val) => addressArrivalId = val}, 
+'eco': {"get":eco,"set":(val) => eco = val}, 
+'duration': {"get":duration,"set":(val) => duration = val}, 
+'geoPointList': {"get":geoPointList,"set":(val) => geoPointList = val}, 
+'travel': {"get":travel,"set":(val) => travel = val}, 
+'travelId': {"get":travelId,"set":(val) => travelId = val}, 
+ };
+
+void setField(String key, dynamic value) {
+  key=StringLib.snakeToCamel(key);
+     accessors[key]!['set'](value);  
+
+     // Optional: update a backing field if your entity has typed fields
+     if (this is dynamic) {
+       try {
+         (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+       } catch (_) {}
+     }
+   }
+    
+
+dynamic getField(String key){
+  try{
+    key=StringLib.snakeToCamel(key);
+    return accessors[key]!['get'];
+  }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
+}
+
 }
 
 // **************************************************************************

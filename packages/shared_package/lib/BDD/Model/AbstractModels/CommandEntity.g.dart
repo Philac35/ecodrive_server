@@ -412,6 +412,44 @@ class Command extends CommandEntity {
   Map<String, dynamic> toJson() {
     return CommandSerializer.toMap(this)!;
   }
+
+
+
+Map<String, Map<String,dynamic>> get accessors => {
+  'id': {"get":id,"set":(val) => id = val}, 
+'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val}, 
+'createdAt': {"get":createdAt,"set":(val) => createdAt = val}, 
+'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val}, 
+'reference': {"get":reference,"set":(val) => reference = val}, 
+'credits': {"get":credits,"set":(val) => credits = val}, 
+'unitaryPrice': {"get":unitaryPrice,"set":(val) => unitaryPrice = val}, 
+'totalHT': {"get":totalHT,"set":(val) => totalHT = val}, 
+'totalTTC': {"get":totalTTC,"set":(val) => totalTTC = val}, 
+'status': {"get":status,"set":(val) => status = val}, 
+'user': {"get":user,"set":(val) => user = val}, 
+'userId': {"get":userId,"set":(val) => userId = val}, 
+ };
+
+void setField(String key, dynamic value) {
+  key=StringLib.snakeToCamel(key);
+     accessors[key]!['set'](value);  
+
+     // Optional: update a backing field if your entity has typed fields
+     if (this is dynamic) {
+       try {
+         (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+       } catch (_) {}
+     }
+   }
+    
+
+dynamic getField(String key){
+  try{
+    key=StringLib.snakeToCamel(key);
+    return accessors[key]!['get'];
+  }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
+}
+
 }
 
 // **************************************************************************

@@ -118,9 +118,12 @@ class AuthUserQuery extends Query<AuthUser, AuthUserQueryWhere> {
   }
 
   Optional<AuthUser> parseRow(List row) {
+
     if (row.every((x) => x == null)) {
       return Optional.empty();
     }
+
+    print(" pb Error encoding List<dynamic> row5 : ${row[5]}");
     var model = AuthUser(
       id: fields.contains('id') ? row[0].toString() : null,
       createdAt:
@@ -345,6 +348,83 @@ class AuthUser extends AuthUserEntity {
   Map<String, dynamic> toJson() {
     return AuthUserSerializer.toMap(this);
   }
+ /*
+  void setField(String key, dynamic value) {
+    key=StringLib.snakeToCamel(key);
+    var index= Entity_Index[this.runtimeType.toString()];
+    var toMap=index!['toMap'] as Function;
+    final map = toMap(this);
+          var fields= index!['fields']; //is immutable come from class EntityFields
+          var  fields2=fields.map((value)=>StringLib.snakeToCamel(value));
+
+    if (!fields2.contains(key)) {
+      throw ArgumentError('Unknown field: $key');  }
+
+    map![key] = value;
+    var ret= index!['fromMap']!(map!);
+
+    print('AuthUserEntity L362 ${ret}');
+    print('AuthUserEntity L363 ${this.toString()}');
+    print("");
+
+    AuthUserSerializer.fromMap(map!);
+
+    print('AuthUserEntity ${ret}');
+    print('AuthUserEntity ${this.toString()}');
+    print("");
+
+  }*/
+
+  void setFields(Map<String, dynamic> updates) {
+    var index= Entity_Index[this.runtimeType.toString()];
+    var toMap=index!['toMap'] as Function;
+    final map = toMap(this);
+
+    for (final entry in updates.entries) {
+      String key=StringLib.snakeToCamel(entry.key);
+      if (!index!['fields'].contains(key)) {
+        throw ArgumentError('Unknown field: ${key}');
+      }
+      map![key] = entry.value;
+    }
+
+    index!['fromMap']!(map!);
+  }
+
+
+
+Map<String, Map<String,dynamic>> get accessors => {
+'id': {"get":id,"set":(val) => id = val},
+'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val}, 
+'createdAt': {"get":createdAt,"set":(val) => createdAt = val}, 
+'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val}, 
+'identifiant': {"get":identifiant,"set":(val) => identifiant = val}, 
+'password': {"get":password,"set":(val) => password = val}, 
+'role': {"get":role,"set":(val) => role = val}, 
+'person': {"get":person,"set":(val) => person = val}, 
+'personId': {"get":personId,"set":(val) => personId = val}, 
+ };
+
+void setField(String key, dynamic value) {
+     key=StringLib.snakeToCamel(key);
+     accessors[key]!['set'](value);  
+
+     // Optional: update a backing field if your entity has typed fields
+     if (this is dynamic) {
+       try {
+         (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+       } catch (_) {}
+     }
+   }
+    
+
+dynamic getField(String key){
+  try{
+    key=StringLib.snakeToCamel(key);
+    return accessors[key]!['get'];
+  }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
+}
+
 }
 
 // **************************************************************************
@@ -431,6 +511,8 @@ class AuthUserSerializer extends Codec<AuthUser, Map> {
     };
   }
 }
+
+
 
 abstract class AuthUserFields {
   static const List<String> allFields = <String>[

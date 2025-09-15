@@ -508,6 +508,47 @@ class Photo extends PhotoEntity {
   Map<String, dynamic> toJson() {
     return PhotoSerializer.toMap(this)!;
   }
+
+
+
+
+Map<String, Map<String,dynamic>> get accessors => {
+  'id': {"get":id,"set":(val) => id = val}, 
+'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val}, 
+'createdAt': {"get":createdAt,"set":(val) => createdAt = val}, 
+'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val}, 
+'title': {"get":title,"set":(val) => title = val}, 
+'uri': {"get":uri,"set":(val) => uri = val}, 
+'description': {"get":description,"set":(val) => description = val}, 
+'photo': {"get":photo,"set":(val) => photo = val}, 
+'person': {"get":person,"set":(val) => person = val}, 
+'personId': {"get":personId,"set":(val) => personId = val}, 
+'vehicule': {"get":vehicule,"set":(val) => vehicule = val}, 
+'vehiculeId': {"get":vehiculeId,"set":(val) => vehiculeId = val}, 
+'drivingLicence': {"get":drivingLicence,"set":(val) => drivingLicence = val}, 
+'drivingLicenceId': {"get":drivingLicenceId,"set":(val) => drivingLicenceId = val}, 
+ };
+
+void setField(String key, dynamic value) {
+  key=StringLib.snakeToCamel(key);
+     accessors[key]!['set'](value);  
+
+     // Optional: update a backing field if your entity has typed fields
+     if (this is dynamic) {
+       try {
+         (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+       } catch (_) {}
+     }
+   }
+    
+
+dynamic getField(String key){
+  try{
+    key=StringLib.snakeToCamel(key);
+    return accessors[key]!['get'];
+  }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
+}
+
 }
 
 // **************************************************************************

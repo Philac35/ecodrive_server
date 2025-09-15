@@ -449,6 +449,41 @@ class DrivingLicence extends DrivingLicenceEntity {
 
 
 
+Map<String, Map<String,dynamic>> get accessors => {
+  'id': {"get":id,"set":(val) => id = val}, 
+'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val}, 
+'createdAt': {"get":createdAt,"set":(val) => createdAt = val}, 
+'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val}, 
+'driver': {"get":driver,"set":(val) => driver = val}, 
+'driverId': {"get":driverId,"set":(val) => driverId = val}, 
+'identificationNumber': {"get":identificationNumber,"set":(val) => identificationNumber = val}, 
+'documentPdf': {"get":documentPdf,"set":(val) => documentPdf = val}, 
+'path': {"get":path,"set":(val) => path = val}, 
+'photo': {"get":photo,"set":(val) => photo = val}, 
+'photoId': {"get":photoId,"set":(val) => photoId = val}, 
+'title': {"get":title,"set":(val) => title = val}, 
+ };
+
+void setField(String key, dynamic value) {
+  key=StringLib.snakeToCamel(key);
+     accessors[key]!['set'](value);  
+
+     // Optional: update a backing field if your entity has typed fields
+     if (this is dynamic) {
+       try {
+         (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+       } catch (_) {}
+     }
+   }
+    
+
+dynamic getField(String key){
+  try{
+    key=StringLib.snakeToCamel(key);
+    return accessors[key]!['get'];
+  }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
+}
+
 }
 
 // **************************************************************************

@@ -112,14 +112,12 @@ class NoticeQuery extends Query<Notice, NoticeQueryWhere> {
       return Optional.empty();
     }
     var model = Notice(
-      id: fields.contains('id') ? row[0].toString() : null,
-      updatedAt:
-          fields.contains('updated_at') ? mapToNullableDateTime(row[1]) : null,
-      title: fields.contains('title') ? (row[2] as String) : '',
-      description: fields.contains('description') ? (row[3] as String) : '',
-      note: fields.contains('note') ? mapToInt(row[4]) : null,
-      createdAt:
-          fields.contains('created_at') ? mapToNullableDateTime(row[5]) : null,
+      id: fields.contains('id') && row[0]!=null ? row[0].toString() : null,
+      updatedAt:fields.contains('updated_at') && row[1]!=null ? mapToNullableDateTime(row[1]) : null,
+      title: fields.contains('title') && row[2]!=null ? (row[2] as String) : '',
+      description: fields.contains('description') && row[3]!=null ? (row[3] as String) : '',
+      note: fields.contains('note') && row[4]!=null ? mapToInt(row[4]) : null,
+      createdAt: fields.contains('created_at') ? mapToNullableDateTime(row[5]) : null,
     );
     if (row.length > 7) {
       var modelOpt = PersonQuery().parseRow(row.skip(7).take(9).toList());
@@ -331,6 +329,43 @@ class Notice extends NoticeEntity {
   Map<String, dynamic> toJson() {
     return NoticeSerializer.toMap(this)!;
   }
+
+
+
+Map<String, Map<String,dynamic>> get accessors => {
+  'id': {"get":id,"set":(val) => id = val}, 
+'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val}, 
+'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val}, 
+'title': {"get":title,"set":(val) => title = val}, 
+'description': {"get":description,"set":(val) => description = val}, 
+'note': {"get":note,"set":(val) => note = val}, 
+'createdAt': {"get":createdAt,"set":(val) => createdAt = val}, 
+'driver': {"get":driver,"set":(val) => driver = val}, 
+'driverId': {"get":driverId,"set":(val) => driverId = val}, 
+ };
+
+void setField(String key, dynamic value) {
+  key=StringLib.snakeToCamel(key);
+     accessors[key]!['set'](value);  
+
+     // Optional: update a backing field if your entity has typed fields
+     if (this is dynamic) {
+       try {
+         (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+       } catch (_) {}
+     }
+   }
+
+
+  dynamic getField(String key){
+    try{
+      key=StringLib.snakeToCamel(key);
+      var field=accessors[key];
+      if(field!=null) return accessors[key]!['get'];
+      throw("$key doesn't exist in accessors Map of ${this.runtimeType.toString()}");
+    }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
+  }
+
 }
 
 // **************************************************************************

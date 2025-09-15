@@ -14,6 +14,7 @@ import '../../../../Abstract/PersonEntity.dart';
 //Import migration system
 import 'package:angel3_migration/angel3_migration.dart';
 import '../../../../../Interface/entityInterface.dart';
+import '../../../../Index/Entity_Index.dart';
 part 'AuthUserEntity.g.dart';
 
 
@@ -42,6 +43,7 @@ int? get personId;
 
 //To Json
   Map<String, dynamic> toJson() ;
+
 
 
 }

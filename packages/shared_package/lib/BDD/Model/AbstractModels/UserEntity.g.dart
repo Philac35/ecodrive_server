@@ -148,7 +148,7 @@ class UserQuery extends Query<User, UserQueryWhere> {
     if (row.every((x) => x == null)) {
       return Optional.empty();
     }
-
+    print('User L151 parseRow : length: ${row.length}');
     var model = User(
       id: fields.contains('id') ? row[0].toString() : null,
       createdAt:
@@ -630,6 +630,49 @@ class User extends UserEntity {
     return UserSerializer.toMap(this)!;
   }
 
+/*
+  void setField(String key, dynamic value) {
+    key=StringLib.snakeToCamel(key);
+    var index= Entity_Index[this.runtimeType.toString()];
+    var toMap=index!['toMap'] as Function;
+    final map = toMap(this);
+    var fields= index!['fields']; //is immutable come from class EntityFields
+    var  fields2=fields.map((value)=>StringLib.snakeToCamel(value));
+
+    if (!fields2.contains(key)) {
+      throw ArgumentError('Unknown field: $key');  }
+
+    map![key] = value;
+    var ret= index!['fromMap']!(map!);
+
+    print('UserEntity L648 ${ret}');
+    print('AuthUserEntity L649 ${this.toString()}');
+
+    UserSerializer.fromMap(map);
+    print('AuthUserEntity L652 ${this.toString()}');
+
+    print("");
+
+  }
+*/
+
+  void setFields(Map<String, dynamic> updates) {
+    var index= Entity_Index[this.runtimeType.toString()];
+    var toMap=index!['toMap'] as Function;
+    final map = toMap(this);
+
+    for (final entry in updates.entries) {
+      if (!index!['fields'].contains(entry.key)) {
+        throw ArgumentError('Unknown field: ${entry.key}');
+      }
+      map![entry.key] = entry.value;
+    }
+
+    index!['fromMap']!(map!);
+  }
+
+
+
   //Has person User entity inherit of these field
   //but there are not implemented
   @override
@@ -642,6 +685,53 @@ class User extends UserEntity {
 
   @override
   UserEntity? get user =>this;
+
+
+Map<String, Map<String,dynamic>> get accessors => {
+'id': {"get":id,"set":(val) => id = val},
+'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val}, 
+'createdAt': {"get":createdAt,"set":(val) => createdAt = val}, 
+'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val}, 
+'firstname': {"get":firstname,"set":(val) => firstname = val}, 
+'lastname': {"get":lastname,"set":(val) => lastname = val}, 
+'age': {"get":age,"set":(val) => age = val}, 
+'gender': {"get":gender,"set":(val) => gender = val}, 
+'credits': {"get":credits,"set":(val) => credits = val}, 
+'email': {"get":email,"set":(val) => email = val}, 
+'address': {"get":address,"set":(val) => address = val}, 
+'addressId': {"get":addressId,"set":(val) => addressId = val}, 
+'photo': {"get":photo,"set":(val) => photo = val}, 
+'photoId': {"get":photoId,"set":(val) => photoId = val}, 
+'authUser': {"get":authUser,"set":(val) => authUser = val}, 
+'authUserId': {"get":authUserId,"set":(val) => authUserId = val}, 
+'person': {"get":person,"set":(val) => person = val}, 
+'personId': {"get":personId,"set":(val) => personId = val}, 
+'driver': {"get":driver,"set":(val) => driver = val}, 
+'driverId': {"get":driverId,"set":(val) => driverId = val}, 
+'commandList': {"get":commandList,"set":(val) => commandList = val}, 
+'commandIdList': {"get":commandIdList,"set":(val) => commandIdList = val}, 
+'userId': {"get":userId,"set":(val) => userId = val}, 
+ };
+
+void setField(String key, dynamic value) {
+  key=StringLib.snakeToCamel(key);
+     accessors[key]!['set'](value);  
+
+     // Optional: update a backing field if your entity has typed fields
+     if (this is dynamic) {
+       try {
+         (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+       } catch (_) {}
+     }
+   }
+    
+
+dynamic getField(String key){
+  try{
+    key=StringLib.snakeToCamel(key);
+    return accessors[key]!['get'];
+  }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
+}
 
 }
 

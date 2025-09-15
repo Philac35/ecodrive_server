@@ -19,7 +19,12 @@ abstract interface class EntityInterface{
   String get idAsString => id ?? "";
 
   String? get cascadeTempKey;
+
   void set cascadeTempKey(String? key);
+
+  void setField(String key, dynamic value);
+
+  dynamic getField(String key);
 
   // We can't use a factory constructor in an abstract class
   // Instead, we'll define an abstract fromJson method

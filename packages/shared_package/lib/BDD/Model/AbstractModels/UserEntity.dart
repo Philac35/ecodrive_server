@@ -4,6 +4,7 @@ import 'package:angel3_orm/angel3_orm.dart';
 import 'package:angel3_serialize/angel3_serialize.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/DriverEntity.dart';
 import 'package:optional/optional_internal.dart';
+import 'package:shared_package/BDD/Model/Index/Entity_Index.dart';
 
 import '../../../Library/StringLibrary/string_librairy.dart';
 import '../../ORM/ORMExtension/SymbolToStringConverter.dart';

@@ -1,4 +1,6 @@
 
+
+
 import "package:angel3_serialize/angel3_serialize.dart";
 import "package:shared_package/BDD/Model/AbstractModels/AdministratorEntity.dart";
 import "package:optional/optional_internal.dart";
@@ -18,6 +20,8 @@ import "../AbstractModels/UserEntity.dart";
 //Import migration system
 import 'package:angel3_migration/angel3_migration.dart';
 import 'package:angel3_orm/angel3_orm.dart';
+
+import "../Index/Entity_Index.dart";
 
 
 
@@ -68,6 +72,7 @@ abstract class PersonEntity extends Model implements EntityInterface{
   @HasOne(foreignTable: 'employees', foreignKey: 'employees_id')
   EmployeeEntity? get employee;
   int? employeeId;
+
 
   //Person <=> authUser  : User, Administrator, Employee
   //User   : User, Driver

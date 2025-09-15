@@ -52,12 +52,13 @@ abstract class DriverEntity extends UserEntity   implements EntityInterface{
   int? userId;
 
   @HasOne(foreignTable: 'driving_licences', foreignKey: 'driving_licences_id' )
-  DrivingLicenceEntity? get drivingLicence; //will be stocked as Blob in BDD
+  DrivingLicenceEntity? get drivingLicence;
   int? drivingLicenceId;
 
   @HasOne(foreignTable: 'vehicules',foreignKey: 'vehicule_id')
   VehiculeEntity ? get vehicule;
-  int? vehiculeId;
+
+  int? get vehiculeId;
 
 /*
   DriverEntity({

@@ -9,9 +9,7 @@ import '../AbstractModels/NoticeEntity.dart';
 import '../AbstractModels/UserEntity.dart';
 
 
-
 part 'UserNoticeMtoMEntity.g.dart';
-
 
 
 @Orm(generateMigrations:true)

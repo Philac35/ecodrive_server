@@ -520,7 +520,7 @@ class PersonQueryValues extends MapQueryValues {
 class Person extends PersonEntity {
   Person({
     this.id,
-    this  .createdAt,
+    this .createdAt,
     this.updatedAt,
     this.firstname,
     this.lastname,
@@ -540,8 +540,10 @@ class Person extends PersonEntity {
     this.userId,
     this.employee,
     this.employeeId
-  }) ;
- static final empty= Person(credits: 0.0) ;
+  });
+
+ // Not sure this field is necessary
+ // static final empty = Person(credits: 0.0);
 
 
   /// A unique identifier corresponding to this item.
@@ -583,23 +585,29 @@ class Person extends PersonEntity {
 
   @override
   PhotoEntity? photo;
-
+  @override
   int? photoId;
 
   @override
   AuthUserEntity? authUser;
+  @override
   int? authUserId;
 
   @override
   UserEntity? user;
+  @override
   int? userId;
 
   @override
   AdministratorEntity? administrator;
+  @override
   int? administratorId;
 
   @override
   EmployeeEntity? employee;
+
+
+  @override
   int? employeeId;
 
 
@@ -636,7 +644,7 @@ class Person extends PersonEntity {
       credits: credits ?? this.credits,
       email: email ?? this.email,
       address: address ?? this.address,
-      addressId:addressId ?? this.addressId,
+      addressId: addressId ?? this.addressId,
       photo: photo ?? this.photo,
       photoId: photoId ?? this.photoId,
       authUser: authUser ?? this.authUser,
@@ -707,6 +715,148 @@ class Person extends PersonEntity {
   }
 
 
+  late Map<String, dynamic> setters ={
+  'id': (val) => id = val,
+  'createdAt': (val) => this.createdAt = val,
+  'updatedAt': (val) => this.updatedAt = val,
+  'firstname': (val) => this.firstname = val,
+  'lastname': (val) => this.lastname = val,
+  'age': (val) => this.age = val,
+  'gender': (val) => this.gender = val,
+  'credits': (val) => this.credits = val,
+  'email': (val) => this.email = val,
+  'photo': (val) => this.photo = val,
+  'photoId': (val) => this.photoId = val,
+  'authUser': (val) => this.authUser = val,
+  'authUserId': (val) => this.authUserId = val,
+  'user': (val) => this.user = val,
+  'userId': (val) => this.userId = val,
+  'administrator': (val) => this.administrator = val,
+  'administratorId': (val) => this.administratorId = val,
+  'employee': (val) => this.employee = val,
+  'employeeId': (val) => this.employeeId = val
+  };
+/*
+  void setField(String fieldName, dynamic value) {
+    fieldName = StringLib.snakeToCamel(fieldName);
+    if (setters.containsKey(fieldName)) {
+      setters[fieldName]!(value);
+    } else {
+      throw ArgumentError('Unknown field: $fieldName');
+    }
+  }
+
+
+
+
+  //This function shoud be better but create a new entity
+  //It does not update original. It creates new instance
+  void setField2(String key, dynamic value) {
+    key = StringLib.snakeToCamel(key);
+    var index = Entity_Index[this.runtimeType.toString()];
+    var toMap = index!['toMap'] as Function;
+    final map = toMap(this);
+    var fields = index!['fields']; //is immutable come from class EntityFields
+    var fields2 = fields.map((value) => StringLib.snakeToCamel(value));
+
+    if (!fields2.contains(key)) {
+      throw ArgumentError('Unknown field: $key');
+    }
+    map![key] = value;
+    var ret = index!['fromMap']!(map!);
+    PersonSerializer.fromMap(map!);
+
+    print('PersonEntity ${ret}');
+    print('PersonEntity ${this.toString()}');
+    print("");
+  }
+
+
+  void setField3(String key, dynamic value){
+    key = StringLib.snakeToCamel(key);
+    var index = Entity_Index[this.runtimeType.toString()];
+
+    List<String>  fields= index!['fields'];
+      Map<String,dynamic> setters={};
+    for (var field in fields){
+         setters.addAll({field: (val) => this.['field'] = val});  /!\ Don't Work
+
+     }
+    if (setters.containsKey(key)) {
+      setters[key]!(value);
+    } else {
+      throw ArgumentError('Unknown field: $key');
+    }
+  }*/
+
+  void setFields(Map<String, dynamic> updates) {
+    var index= Entity_Index[this.runtimeType.toString()];
+    var serializer=index!['serializerClass'] ;
+    final map = serializer().toMap(this);
+
+    for (final entry in updates.entries) {
+      String key=StringLib.snakeToCamel(entry.key);
+      if (!index!['fields'].contains(key)) {
+        throw ArgumentError('Unknown field: ${key}');
+      }
+      map![key] = entry.value;
+    }
+
+    serializer().fromMap(map!);
+  }
+
+
+Map<String, Map<String,dynamic>> get accessors => {
+
+'id': {"get":id,"set":(val) => id = val}, 
+'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val}, 
+'createdAt': {"get":createdAt,"set":(val) => createdAt = val}, 
+'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val}, 
+'firstname': {"get":firstname,"set":(val) => firstname = val}, 
+'lastname': {"get":lastname,"set":(val) => lastname = val}, 
+'age': {"get":age,"set":(val) => age = val}, 
+'gender': {"get":gender,"set":(val) => gender = val}, 
+'credits': {"get":credits,"set":(val) => credits = val}, 
+'email': {"get":email,"set":(val) => email = val}, 
+'address': {"get":address,"set":(val) => address = val}, 
+'addressId': {"get":addressId,"set":(val) => addressId = val}, 
+'photo': {"get":photo,"set":(val) => photo = val}, 
+'photoId': {"get":photoId,"set":(val) => photoId = val}, 
+'authUser': {"get":authUser,"set":(val) => authUser = val}, 
+'authUserId': {"get":authUserId,"set":(val) => authUserId = val}, 
+'user': {"get":user,"set":(val) => user = val}, 
+'userId': {"get":userId,"set":(val) => userId = val}, 
+'administrator': {"get":administrator,"set":(val) => administrator = val}, 
+'administratorId': {"get":administratorId,"set":(val) => administratorId = val}, 
+'employee': {"get":employee,"set":(val) => employee = val}, 
+'employeeId': {"get":employeeId,"set":(val) => employeeId = val}, 
+
+ };
+
+void setField(String key, dynamic value) {
+  key=StringLib.snakeToCamel(key);
+     accessors[key]!['set'](value);  
+
+     // Optional: update a backing field if your entity has typed fields
+     if (this is dynamic) {
+       try {
+         (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+       } catch (_) {}
+     }
+   }
+    
+
+dynamic getField(String key){
+  try{
+  key=StringLib.snakeToCamel(key);
+  var field=accessors[key];
+    if(field!=null) return accessors[key]!['get'];
+    throw("$key doesn't exist in accessors Map of ${this.runtimeType.toString()}");
+  }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
+  }
+
+
+
 }
 
 // **************************************************************************
@@ -741,7 +891,7 @@ class PersonSerializer extends Codec<Person, Map> {
   static Person fromMap(Map map) {
 
     map=StringLib().camelToSnakeKeyFromMap(map);
-    print('PersonEntity L745: fromMap , Person map (in snake case)  : $map');
+    print('PersonEntity L892: fromMap , Person map (in snake case)  : $map');
 
      var a=Person(
       id: map['id'] as String?,

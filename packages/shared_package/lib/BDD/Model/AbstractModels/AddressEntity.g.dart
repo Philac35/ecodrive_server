@@ -399,6 +399,7 @@ class Address extends AddressEntity {
   @override
   ItineraryEntity? itinerary;
 
+  @override
   int? itineraryId;
 
   @override
@@ -497,6 +498,47 @@ class Address extends AddressEntity {
     print("Address ${a}");
     return a;
   }
+
+
+Map<String, Map<String,dynamic>> get accessors => {
+  'id': {"get":id,"set":(val) => id = val}, 
+'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val}, 
+'createdAt': {"get":createdAt,"set":(val) => createdAt = val}, 
+'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val}, 
+'person': {"get":person,"set":(val) => person = val}, 
+'personId': {"get":personId,"set":(val) => personId = val}, 
+'itinerary': {"get":itinerary,"set":(val) => itinerary = val}, 
+'itineraryId': {"get":itineraryId,"set":(val) => itineraryId = val}, 
+'number': {"get":number,"set":(val) => number = val}, 
+'type': {"get":type,"set":(val) => type = val}, 
+'address': {"get":address,"set":(val) => address = val}, 
+'complementAddress': {"get":complementAddress,"set":(val) => complementAddress = val}, 
+'postCode': {"get":postCode,"set":(val) => postCode = val}, 
+'city': {"get":city,"set":(val) => city = val}, 
+'country': {"get":country,"set":(val) => country = val}, 
+ };
+
+void setField(String key, dynamic value) {
+     key=StringLib.snakeToCamel(key);
+     accessors[key]!['set'](value);  
+
+     // Optional: update a backing field if your entity has typed fields
+     if (this is dynamic) {
+       try {
+         (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+       } catch (_) {}
+     }
+   }
+
+
+dynamic getField(String key){
+  try{
+    key=StringLib.snakeToCamel(key);
+    return accessors[key]!['get'];
+  }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
+}
+
+
 }
 
 // **************************************************************************
@@ -551,12 +593,16 @@ class AddressSerializer extends Codec<Address, Map> {
           map['person'] != null
               ? PersonSerializer.fromMap(map['person'] as Map)
               : null,
-      personId: int.parse( map['person_id']),
+      personId:  map['person_id'] != null?
+                    int.parse( map['person_id'])
+              :null,
       itinerary:
           map['itinerary'] != null
               ? ItinerarySerializer.fromMap(map['itinerary'] as Map)
               : null,
-      itineraryId: int.parse( map['itinerary_id']),
+      itineraryId: map['itinerary_id'] != null?
+                      int.parse( map['itinerary_id'])
+                  :null,
       number: map['number'] as int?,
       type: map['type'] as String?,
       address: map['address'] as String?,
