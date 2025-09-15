@@ -65,12 +65,12 @@ extension StrExtension on String{
   /**
    * Function replaceNieme
    *  @Param RegExp regex
-   *  @Param int nieme element
+   *  @Param int nieme element of Iterable RegExpMatch
    *  @Param String replacement
    *  @Return String
    */
   String replaceNieme(RegExp regex,int nieme, String replacement){
-    Iterable<Match>   matchStr=regex.allMatches(this);
+    Iterable<RegExpMatch>   matchStr=regex.allMatches(this);
     Iterable index=matchStr.indexed;
     final element=index.elementAt(nieme);
     return this.replaceRange(element.start, element.end, replacement);

@@ -1,6 +1,6 @@
+library;
 import 'dart:isolate';
 import 'dart:math';
-
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart' as crypto;

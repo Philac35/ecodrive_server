@@ -1,6 +1,6 @@
+library;
 
-
-class DateTimeLocal {
+ class DateTimeLocal {
 
   /**
    * Function parseDate

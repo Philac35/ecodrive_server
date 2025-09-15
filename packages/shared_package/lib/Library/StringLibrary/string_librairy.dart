@@ -1,3 +1,5 @@
+library;
+
 import './str_extension.dart';
 
 
@@ -15,7 +17,9 @@ class StringLib {
 
     map.forEach((key, value) {
       final keyStr = key.toString();
-      final snakeKey = camelToSnake(keyStr);
+
+      //final snakeKey = camelToSnake(keyStr);
+      final snakeKey = keyStr.camelToSnake();
 
       newMap[snakeKey] = value;
     });
@@ -40,6 +44,36 @@ class StringLib {
     });
     return newMap;
   }
+
+
+  /**
+   * Function camelToSnakFromList
+   */
+  List<String> camelToSnakeFromList(List<String> list){
+    final newlist = <String>[];
+
+    list.forEach((value) {
+
+      final snakeValue = camelToSnake(value);
+
+      newlist.add( snakeValue);
+    });
+    return newlist;
+  }
+
+  List<String> snakeToCamelFromList(List<String> list){
+    final newlist = <String>[];
+
+    list.forEach((value) {
+
+      final camelValue = snakeToCamel(value);
+
+      newlist.add(camelValue);
+    });
+    return newlist;
+  }
+
+
 
   static String camelToSnake(String entry) {
     final reg = RegExp(r'[A-Z]');
