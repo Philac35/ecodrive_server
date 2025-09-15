@@ -86,4 +86,21 @@ class AuthUser extends AuthUserEntity {
     return 'AuthUser(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, identifiant=$identifiant, password=$password, role=$role,  personId=$personId)';
   }
 
+
+  void setField(String key, dynamic value) {
+    final json = toJson();
+    json![key] = value;
+
+    // Optional: update a backing field if your entity has typed fields
+    if (this is dynamic) {
+      try {
+        (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+      } catch (_) {}
+    }
+  }
+
+  dynamic getField(String key){
+    final json = toJson();
+    return json![key];
+  }
 }

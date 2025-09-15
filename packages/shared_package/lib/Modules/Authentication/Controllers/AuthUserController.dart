@@ -45,13 +45,15 @@ class AuthUserController<T extends dynamic> extends Controller<AuthUser> {
    @override
    Repository<EntityInterface>? repository ;
 
+   @override
+ late Future<bool> ready;
 
   AuthUserController(){
 
     print('AuthUserController use of empty controller L51');
-    repository= AuthUserRepository() ;
-      this.authenticator = Authenticator(this);
-
+    //var isInit=super.initRepository();
+    ready=  initRepository();
+    this.authenticator = Authenticator(this);
 
   }
 
@@ -89,25 +91,15 @@ class AuthUserController<T extends dynamic> extends Controller<AuthUser> {
   @override
   Future<bool> initRepository() async{
     bool ret=false;
-    await initMySqlPoolConnection();
+ //  bddService.initMySqlPoolConnection();
 
-    repository= (await AuthUserRepository(connexionPool: connexionPool));
+    repository= (await AuthUserRepository(connexionPool: connectionPool));
 
     if(repository != null) ret==true;
     print("Controller debug L102 :${repository.toString()}");
     return ret;
   }
-  initMySqlConnection() async {
-    MysqlConnection c= MysqlConnection();
-    mySQLConnection=await c.connect();
-  }
 
-  initMySqlPoolConnection()  {
-
-    MysqlConnection c= MysqlConnection();
-    connexionPool = c.connectPool(timeoutMs: 240000);
-
-  }
 
   Future<bool> authenticateAuthUser(AuthUserEntity? authUser) async {
     if (authUser != null) {
@@ -149,8 +141,8 @@ class AuthUserController<T extends dynamic> extends Controller<AuthUser> {
   }
 
 
-  Future<bool> create({required Map<dynamic, dynamic> parameters}) async {
-    bool ret= false;
+  Future<EntityInterface?> create({required Map<dynamic, dynamic> parameters}) async {
+    EntityInterface? ret;
 
     //Map<String, dynamic> parameter =SymbolToStringConverter.convertSymbolKeysToString(parameters);
     parameters['createdAt']=DateTime.now();
@@ -169,8 +161,8 @@ class AuthUserController<T extends dynamic> extends Controller<AuthUser> {
 
     //ORM orm= ORM();
     //ret=  await orm.persist(entity)!=null ? true:false;
-       ret=  await save(entity)!=null ? true:false;
-    return ret;
+
+    return  await save(entity);
 
   }
 
@@ -260,8 +252,10 @@ class AuthUserController<T extends dynamic> extends Controller<AuthUser> {
   @override
   Future<EntityInterface?>? save(EntityInterface?  entity)async {
 
-    var exit;
+    EntityInterface? exit;
     try {
+
+      if((await this.ready)==null){await this.initRepository();}
 
       exit= await repository?.persist(entity as a.AuthUser);
 
@@ -276,12 +270,12 @@ class AuthUserController<T extends dynamic> extends Controller<AuthUser> {
   }
 
   @override
-  Future<bool> update({EntityInterface? entity,Map<String,dynamic>? parameters})async {
-    bool exit=false;
+  Future<EntityInterface?> update({EntityInterface? entity,Map<String,dynamic>? parameters})async {
+    EntityInterface? exit;
     if(entity!=null){parameters= entity.toJson();}
     try {
-      var a=   await repository?.update( parameters: parameters!,whereClause:{'id':parameters['id']});  //TODO Check if it works
-      exit = true; // Creation successful
+      exit=   await repository?.update( parameters: parameters!,whereClause:{'id':parameters['id']});  //TODO Check if it works
+
     } catch (e) {
       print('Controller L193: Error creating entity: $e');
     }
@@ -345,6 +339,6 @@ class AuthUserController<T extends dynamic> extends Controller<AuthUser> {
     tokenService.persist();
   }
 */
-  Map<String, Function> get functionMap => {'create': create,'createAuthUser':createAuthUser, 'createFromUser':createAuthUserFromUser,'delete': delete, 'save': save, 'update': update, 'getEntities': getEntities, 'getEntity': getEntity, 'getLast': getLast, 'getLastId': getLastId, };
+  Map<String, Function> get functionMap => {'create': create, 'delete': delete, 'save': save, 'update': update, 'getEntities': getEntities, 'getEntity': getEntity, 'getLast': getLast, 'getLastId': getLastId,'findByFields':findByFields };
 
 }

@@ -108,11 +108,18 @@ MySQLConnectionPool? connexionPool;
     List <a.AuthUser?> result =[];
     DateTime createdDate=DateTime.now();
 
+
+    if(connexionPool!=null){print('AuthUserRepository L112 : using PoolConnexion $connexionPool');}
+    else if (connexion!=null) {print('AuthUserRepository L113 : using PoolConnexion $connexionPool');}
+    else{print('AuthUserRepository L114 : No connexion neither MysqlConnection nor PoolConnection ');}
+
+
+
     String query= "INSERT INTO auth_users (created_at, updated_at, identifiant, password,role, person_id) VALUES ( :createdAt, :updatedAt, :identifiant, :password,:role, :personId );";
 
-    print("AuthUserRepository L114 : "+query);
+    print("AuthUserRepository L118 : "+query);
 
-    print("AuthUserRepository L115 : ${connexionPool}");
+
 
 
     Map<String, dynamic>? parameters= entity?.toJson();
@@ -127,8 +134,6 @@ MySQLConnectionPool? connexionPool;
 
     //As Insert return nothing we need to send a new request to get last Tuple
     IResultSet? res=await connexionPool?.execute(query,parameters!);
-
-
     return await getLastJustSavedEntry(res!);
   }
 

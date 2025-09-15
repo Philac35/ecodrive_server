@@ -10,6 +10,8 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:shared_package/BDD/Interface/entityInterface.dart';
 
 import '../../../BDD/Model/Abstract/PersonEntity.dart';
+import '../../../BDD/Model/Index/Entity_Index.dart';
+import '../../../Library/StringLibrary/string_librairy.dart';
 import './AuthUser.dart';
 part 'AuthUserEntity.g.dart';
 
@@ -56,6 +58,36 @@ AuthUserEntity({
   @override
   // TODO: implement idAsString
   String get idAsString => throw UnimplementedError();
+
+  void setField(String key, dynamic value) {
+    key=StringLib.snakeToCamel(key);
+    var index= Entity_Index[this.runtimeType.toString()];
+    var toMap=index!['toMap'] as Function;
+    final map = toMap(this);
+    if (!index!['fields'].contains(key)) {
+      throw ArgumentError('Unknown field: $key');  }
+    map![key] = value;
+    index!['fromMap']!(map!);
+    print('AuthUserEntity L69 ${this.toString()}');
+
+  }
+
+  void setFields(Map<String, dynamic> updates) {
+    var index= Entity_Index[this.runtimeType.toString()];
+    var toMap=index!['toMap'] as Function;
+    final map = toMap(this);
+
+    for (final entry in updates.entries) {
+      String key=StringLib.snakeToCamel(entry.key);
+      if (!index!['fields'].contains(key)) {
+        throw ArgumentError('Unknown field: ${key}');
+      }
+      map![key] = entry.value;
+    }
+
+    index!['fromMap']!(map!);
+  }
+
 
 
 }
