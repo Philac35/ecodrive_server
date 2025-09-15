@@ -11,6 +11,7 @@ environment:
 resolution: workspace
 
 dependencies:
+  analyzer: ^7.4.5
   angel3_framework: ^8.5.0
   angel3_orm: ^8.3.1
   angel3_orm_mysql: ^8.3.1
@@ -24,10 +25,10 @@ dependencies:
   dotenv: ^4.2.0
   encrypt: ^5.0.3
   envied: ^1.1.1
-  get: ^4.7.2
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   http_interceptor: ^2.0.0
+  get_it: 8.2.0
   json_annotation: ^4.9.0
   mysql_client: ^0.0.27
   path_provider: ^2.1.5

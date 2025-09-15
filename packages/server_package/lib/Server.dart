@@ -2,9 +2,15 @@
 import 'dart:io';
 import 'dart:io' as io;
 import 'dart:math';
-
+import 'package:get_it/get_it.dart';
+import 'package:shared_package/BDD/Executor/MysqlPoolExecutor.dart';
+import 'package:shared_package/BDD/ORM/EntityMapper.dart';
+import 'package:shared_package/BDD/ORM/ORM.dart';
+import 'package:shared_package/BDD/ORM/PersistenceService/CTIPersistenceService.dart';
 
 import 'package:shared_package/Loader/EnvironmentLoader.dart';
+import 'package:shared_package/Repository/Repository.dart';
+import 'package:shared_package/Services/BDDService/BDDService.dart';
 
 import '../Router/Router.dart';
 import 'package:shelf/shelf_io.dart' as io;
@@ -73,9 +79,23 @@ class Server {
         print("Router.dart server_package fail to start, Error : $error ");
     }
   }
+  static initORM() async {
+    final getIt = GetIt.instance;
+    final mapper = EntityMapper();
 
+    // Register as global singletons (in this order)
+    getIt.registerSingleton<EntityMapper>(EntityMapper());
+
+    var poolConnexion= await BDDService().initMySqlPoolConnection(); //add a poolConnexion to getIt
+    CTIPersistenceService
+    persistence= CTIPersistenceService(MySqlPoolExecutor(poolConnexion));
+  ORM orm= ORM(mapper,persistence);
+    getIt.registerSingleton<ORM>(orm);
+
+  }
 
  static Future startServer() async{
+    initORM();
     Server();
     pidwrite() ;
  }

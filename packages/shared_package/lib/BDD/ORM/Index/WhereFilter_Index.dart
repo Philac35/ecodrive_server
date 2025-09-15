@@ -4,7 +4,8 @@
 ///  Use : Map access in files : 
 ///        WhereFilterIndex['entityName']!()
 
-
+//TODO It contains now only foreign fields.
+//We need sometimes fields from findBy of relationMeta 3/09/2025 See User
 final Map<String, Map<String, Map<String, dynamic>>> WhereFilterIndex = {
   'Address': {
     'number': {
@@ -532,6 +533,21 @@ final Map<String, Map<String, Map<String, dynamic>>> WhereFilterIndex = {
     },
   },
   'User': {
+    'firstname': {
+      'whereField': (where, value) => where.firstname.equals(value),
+      'type': 'String?',
+      'level': 1,
+    },
+    'lastname': {
+      'whereField': (where, value) => where.firstname.equals(value),
+      'type': 'String?',
+      'level': 1,
+    },
+    'email': {
+      'whereField': (where, value) => where.email.equals(value),
+      'type': 'String?',
+      'level': 1,
+    },
     'person': {
       'whereField': (where, value) => where.person.equals(value),
       'type': 'Person?',

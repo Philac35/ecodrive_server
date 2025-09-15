@@ -720,14 +720,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.5"
-  get:
+  get_it:
     dependency: transitive
     description:
-      name: get
-      sha256: c79eeb4339f1f3deffd9ec912f8a923834bec55f7b49c9e882b8fef2c139d425
+      name: get_it
+      sha256: a4292e7cf67193f8e7c1258203104eb2a51ec8b3a04baa14695f4064c144297b
       url: "https://pub.dev"
     source: hosted
-    version: "4.7.2"
+    version: "8.2.0"
   glob:
     dependency: transitive
     description:
