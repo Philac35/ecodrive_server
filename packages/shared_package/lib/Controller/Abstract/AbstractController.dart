@@ -17,7 +17,7 @@ import '../../Repository/Repository.dart';
   // CRUD Functions
   Future<EntityInterface?>?  save(T entity);
   Future<bool> delete(int? id);
-  Future<bool> update({EntityInterface? entity,Map<String,dynamic>? parameters});
+  Future<EntityInterface?> update({EntityInterface? entity,Map<String,dynamic>? parameters});
   static T create<T extends EntityInterface>(Map<String, dynamic> parameters) {
     // TODO: implement create
     throw UnimplementedError();

@@ -1,16 +1,30 @@
 import 'package:angel3_framework/angel3_framework.dart';
+import 'package:mysql_client/mysql_client.dart';
 
 import 'package:shared_package/Controller/Controller.dart' as controller;
 
 import '../BDD/Executor/MysqlPoolExecutor.dart';
 import '../BDD/Model/AbstractModels/VehiculeEntity.dart'  ;
 import '../BDD/Model/Index/Entity_Index.dart';
+import '../BDD/ORM/EntityMapper.dart';
+import '../BDD/ORM/ORM.dart';
 import '../Repository/VehiculeRepository.dart';
+import 'package:get_it/get_it.dart';
+
+import '../Services/BDDService/BDDService.dart';
 
 @Expose('/Vehicule')
 class VehiculeController extends controller.Controller<Vehicule> {
+  late GetIt getIt ;
+  EntityMapper? mapper;
 
-  VehiculeController(): super(entityFactory: (map){print("VehiculeController L13, Initializor , map : ${map}");return VehiculeSerializer.fromMap(map);});
+  VehiculeController(): super(entityFactory: (map){print("VehiculeController L13, Initializor , map : ${map}");return VehiculeSerializer.fromMap(map);}){
+    getIt == GetIt.instance;
+    orm = getIt<ORM>();
+    mapper= getIt<EntityMapper>();
+    connectionPool= getIt<MySQLConnectionPool>();
+
+  }
 
 
 @override
@@ -19,9 +33,9 @@ class VehiculeController extends controller.Controller<Vehicule> {
     bool ret=false;
 
 
-    executor= MySqlPoolExecutor( connexionPool!);
+    executor= MySqlPoolExecutor( connectionPool!);
     //executor==null?print('Controller, L80 executor is null'):print('Controller, L39 executor exist');}
-    print("L24 , I pass in VehiculeController"); //to use specific Rep and process properties field");
+    //print("L24 , I pass in VehiculeController"); //to use specific Rep and process properties field");
     String typeEntry="Vehicule";
     indexEntity=Entity_Index[typeEntry];
     // print("Controller L27 :$indexEntity");
@@ -38,11 +52,11 @@ class VehiculeController extends controller.Controller<Vehicule> {
         executor: executor!,
         queryFactory: qClass as dynamic Function(),
         fromJson: fromMap,
-        connexionPool: connexionPool, connexion: null
+        connexionPool: bddService.pool, connexion: null
     );
 
     if(repository != null) ret==true;
-    print("VehiculeController debug L45 :${repository.toString()}");
+   // print("VehiculeController debug L45 :${repository.toString()}");
     return ret;
   }
 
@@ -55,6 +69,6 @@ class VehiculeController extends controller.Controller<Vehicule> {
 
 
 
-  Map<String, Function> get functionMap => {'create': create, 'delete': delete, 'save': save, 'update': update, 'getEntities': getEntities, 'getEntity': getEntity, 'getLast': getLast, 'getLastId': getLastId, };
+  Map<String, Function> get functionMap => {'create': create, 'delete': delete, 'save': save, 'update': update, 'getEntities': getEntities, 'getEntity': getEntity, 'getLast': getLast, 'getLastId': getLastId,'findByFields':findByFields };
 
 }
