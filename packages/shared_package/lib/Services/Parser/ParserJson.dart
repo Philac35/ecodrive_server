@@ -2,23 +2,35 @@ import 'Interface/ParserJsonInterface.dart';
 import 'dart:convert';
 
 class ParserJson<T> implements ParserJsonInterface {
-   T? jsonObject;
+  T? jsonObject;
 
   ParserJson({this.jsonObject});
 
   @override
-  Map<String, dynamic>? decode(String jsonString) {
+  /**
+   * Function decode
+   * @Param jsonString
+   * @Return either List or Map<String,dynamic>
+   */
+  dynamic decode(String jsonString) {
     try {
       if (jsonObject != null) {
         return jsonObject as Map<String, dynamic>;
       } else {
-        return json.decode(jsonString) as Map<String, dynamic>;
+        var strDecoded = jsonDecode(jsonString);
+        if (strDecoded is List) {
+          return List<String>.from(strDecoded);
+        } else {
+          return strDecoded as Map<String, dynamic>;
+        }
       }
-    } catch (e) {
-      print('Error decoding JSON: $e');
+    } catch (e, s) {
+      print('Error decoding JSON: $e \n $s');
       return null;
     }
   }
+
+  //return json.decode(jsonString) as Map<String, dynamic>;
 
   @override
   Map<String, dynamic>? encode(dynamic input) {
@@ -30,8 +42,8 @@ class ParserJson<T> implements ParserJsonInterface {
       } else {
         return json.decode(json.encode(input)) as Map<String, dynamic>;
       }
-    } catch (e) {
-      print('Error encoding JSON: $e');
+    } catch (e, s) {
+      print('Error encoding JSON: $e \n $s');
       return null;
     }
   }
@@ -40,8 +52,4 @@ class ParserJson<T> implements ParserJsonInterface {
     final encodedMap = encode(input);
     return encodedMap != null ? json.encode(encodedMap) : '{}';
   }
-
-
-
-
 }
