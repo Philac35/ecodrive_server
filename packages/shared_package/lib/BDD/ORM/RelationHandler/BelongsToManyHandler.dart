@@ -83,9 +83,9 @@ class BelongsToManyHandler implements DeletableRelationHandler {
       // Insert into pivot using your method
       await persistence.insertPivotTuple(
         relation,
-        relation.pivotTable!,                 // make sure RelationMeta has this
-        parent.id!,                           // owner
-        persisted!.id!,                       // related
+        parent.id!,         // owner
+        persisted!.id!,    // related
+        joinTable: relation.pivotTable!,  // make sure RelationMeta has this
       );
 
       mapper.storeUpdatedMap(persisted);

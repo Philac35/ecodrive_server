@@ -16,6 +16,7 @@ import '../Combinaison/OneOfTransformer.dart';
 import '../Combinaison/AnyOfTransformer.dart';
 import '../Interface/TransformerAbstract.dart';
 import '../PersonFromUserTransformer.dart';
+import '../PersonToAdministrator.dart';
 import '../PersonToAuthUserTransformer.dart';
 
 /**
@@ -36,6 +37,7 @@ final Map<String, Map<String, TransformerAbstract>> transformerIndex = {
     //  UserToPersonTransformer(), //inherit User > Person
     ]),
    "AuthUser": PersonToAuthUserTransformer(),
+   "Administrator": PersonToAdministrator(),
 },
 
 "User":{

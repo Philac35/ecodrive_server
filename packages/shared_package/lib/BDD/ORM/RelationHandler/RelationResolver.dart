@@ -1,4 +1,5 @@
 
+import 'package:shared_package/BDD/ORM/PersistenceService/PersistenceServiceInterface.dart';
 import 'package:shared_package/BDD/ORM/RelationHandler/Interface/RelationHandlerInterface.dart';
 
 import '../../Interface/entityInterface.dart';
@@ -17,7 +18,7 @@ class RelationResolver {
   **/
 
   final Map<RelationType, RelationHandlerInterface> handlers;
-  CTIPersistenceService persistence;
+  PersistenceServiceInterface persistence;
   RelationResolver(this.handlers, this.persistence);
 
   Future<EntityInterface?> resolve(
