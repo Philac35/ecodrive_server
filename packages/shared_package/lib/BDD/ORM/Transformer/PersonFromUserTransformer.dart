@@ -1,26 +1,22 @@
-
-import 'package:shared_package/BDD/Model/AbstractModels/Modules/Authentication/Entities/AuthUserEntity.dart';
-
-//import '../../../Modules/Authentication/Entities/AuthUser.dart';
 import '../../Interface/entityInterface.dart';
-import '../../Model/AbstractModels/DriverEntity.dart';
+import '../../Model/Abstract/PersonEntity.dart';
 import '../../Model/AbstractModels/UserEntity.dart';
 import '../Relations/RelationMeta.dart';
 import 'Interface/TransformerAbstract.dart';
 import 'Transformer.dart';
 
-class UserFromAuthTransformer extends TransformerAbstract<AuthUser>{
+class PersonFromUserTransformer extends TransformerAbstract<User>{
 
   @override
   Map<String, dynamic>? extract(EntityInterface child, RelationMeta relation) {
     final json = child.toJson();
-    return json!["person"]?["authUser"];
+    return json!["person"];
   }
 
   @override
   void attach(EntityInterface child, dynamic parent, RelationMeta relation) {
     if (child is User) {
-      child.authUser = parent;
+      child.person = parent;
     }
   }
 }

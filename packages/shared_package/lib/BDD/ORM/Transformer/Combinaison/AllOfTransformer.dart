@@ -17,36 +17,46 @@ class AllOfTransformer<T extends EntityInterface>
   Map<String, dynamic>? extract(EntityInterface child, RelationMeta relation) {
     final result = <String, dynamic>{};
     for (final t in transformers) {
-      if ((t as dynamic).canExtract(child)) {
-        final data = t.extract(child, relation);
-      if (data != null) result.addAll(data);}
+      if ((t as dynamic).canExtract(relation.relatedType,child)) {
+        final map = t.extract(child, relation);
+      if (map != null) map.forEach((k,v) {
+        if (v != null) result[k] = v;
+      });
+      }
     }
-    return result;
+    return result.isNotEmpty ? result : null;
   }
 
   @override
-  void attach(EntityInterface child, T parent, RelationMeta relation) {
+  void attach(EntityInterface child, dynamic parent, RelationMeta relation) {
+
+    //final abstractParent = "${relation.relatedType}Entity" ;
+
     for (final t in transformers) {
-      t.attach(child, parent, relation);
+      if (t.canExtract(parent.runtimeType.toString(), child)) {
+        // safe attach, because transformer expects abstract type
+        t.attach(child, parent, relation);
     }
   }
+  }
+
 
   /**
    * Function canExtract
    * Computed dynamically based on the child entity
    **/
-  bool canExtract(EntityInterface parent,EntityInterface child) {
+  bool canExtract(String parentType,EntityInterface child) {
 
     List<String>childFields= Entity_Index[child.runtimeType.toString()]!['fields'];
-    List<String>parentFields= Entity_Index[T.runtimeType.toString()]!['fields'];
-    bool res=true;
+    // String parentType= T.runtimeType.toString();
+    print("AllOfTransformer L49, Generic Type: $parentType");
+    List<String>parentFields= Entity_Index[parentType]!['fields'];
+    print("canExtract? parent=$parentType child=${child.runtimeType} childFields=$childFields parentFields=$parentFields");
 
-    for (final f in childFields) {
-      if (!parentFields.contains(f)) {
-        return false;  // child has a field parent cannot map
-      }
-    }
-    return res;
+    final intersection = childFields.where((f) => parentFields.contains(f)).toList();
+    print("canExtract? parent=$parentType child=${child.runtimeType} "
+        "commonFields=$intersection");
+
+    return intersection.isNotEmpty;
   }
-
 }

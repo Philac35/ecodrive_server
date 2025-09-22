@@ -7,12 +7,13 @@ import '../../Model/Index/Entity_Index.dart';
 import '../Relations/RelationMeta.dart';
 import 'Interface/TransformerAbstract.dart';
 
-class UserToPersonTransformer extends TransformerAbstract<Person> {
+class UserToPersonTransformer extends TransformerAbstract<User> {
 @override
 Map<String, dynamic>? extract(EntityInterface child, RelationMeta relation) {
 final user = child as User;  // could do user.toJson() and use Angel
 var json= user.toJson();
 List<String>fields= Entity_Index["Person"]!['fields'];
+print("UserToPerson.extract: json=$json, Person.fields=$fields");
 
 Map<String, dynamic>? res={};
 
@@ -23,15 +24,23 @@ for (final field in fields) {
 }
 
 // Special case: nested authUser
-if (user.authUser != null) {
-  res["authUser"] = user.authUser!.toJson();
-}
+  // Merge nested authUser (flatten into person fields)
+  if (json['person']!["authUser"] != null) {
+    final authJson = json!['person']!["authUser"] as Map<String, dynamic>;
+    if (authJson["id"] != null) {
+      res["authUserId"] = authJson["id"];
+    }
+    // if you want inline auth_user object for persistence:
+    res["authUser"] = authJson;
+  }
+
+
 return res;
 
 }
 
 @override
-void attach(EntityInterface child, Person parent, RelationMeta relation) {
+void attach(EntityInterface child, dynamic parent, RelationMeta relation) {
 final user = child as User;
 user.person = parent;
 }

@@ -9,7 +9,7 @@ import 'Interface/TransformerAbstract.dart';
 class Transformer<T extends EntityInterface> extends TransformerAbstract {
   EntityInterface? entity;
 
-  Transformer();
+  Transformer(this.entity);
 
   @override
   Map<String, dynamic>? extract(
@@ -28,7 +28,7 @@ class Transformer<T extends EntityInterface> extends TransformerAbstract {
   @override
   void attach(
       EntityInterface entity,
-      EntityInterface related,
+      dynamic related,
       RelationMeta relation,
       ) {
     if (related !=null && entity != null ) {

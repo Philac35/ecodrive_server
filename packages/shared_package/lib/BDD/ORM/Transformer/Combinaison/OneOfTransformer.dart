@@ -23,7 +23,7 @@ class OneOfTransformer<T extends EntityInterface>
   @override
   Map<String, dynamic>? extract(EntityInterface child, RelationMeta relation) {
     for (final t in transformers) {
-      if ((t as dynamic).canExtract(child, child)) {
+      if ((t as dynamic).canExtract(relation.relatedType, child)) {
       final data = t.extract(child, relation);
       if (data != null && data.isNotEmpty) {
         return data;
@@ -33,7 +33,7 @@ class OneOfTransformer<T extends EntityInterface>
   }
 
   @override
-  void attach(EntityInterface child,T parent, RelationMeta relation) {
+  void attach(EntityInterface child,dynamic parent, RelationMeta relation) {
     for (final t in transformers) {
       try {
         t.attach(child, parent, relation);
@@ -48,7 +48,7 @@ class OneOfTransformer<T extends EntityInterface>
    * Function canExtract
    * Computed dynamically based on the child entity
    **/
-  bool canExtract(EntityInterface parent,EntityInterface child) {
+  bool canExtract(String parentType,EntityInterface child) {
 
     List<String>childFields= Entity_Index[child.runtimeType.toString()]!['fields'];
     List<String>parentFields= Entity_Index[T.runtimeType.toString()]!['fields'];

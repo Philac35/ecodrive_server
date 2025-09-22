@@ -13,7 +13,7 @@ import '../../Relations/RelationMeta.dart';
   /// Attaches the parent entity back into the child
   void attach(
     EntityInterface child,
-    T parent,
+    dynamic parent,
     RelationMeta relation,
   );
 
@@ -22,10 +22,20 @@ import '../../Relations/RelationMeta.dart';
    * Function canExtract
    * Computed dynamically based on the child entity
    **/
-  bool canExtract(EntityInterface parent,EntityInterface child) {
+  bool canExtract(String parentType,EntityInterface child) {
 
    List<String>childFields= Entity_Index[child.runtimeType.toString()]!['fields'];
-   List<String>parentFields= Entity_Index[T.runtimeType.toString()]!['fields'];
+  // String parentType= T.runtimeType.toString();
+   print("TransformerAbstract L29, Generic Type: $parentType");
+   List<String>parentFields= Entity_Index[parentType]!['fields'];
+   print("canExtract? parent=$parentType child=${child.runtimeType} childFields=$childFields parentFields=$parentFields");
+
+   final intersection = childFields.where((f) => parentFields.contains(f)).toList();
+   print("canExtract? parent=$parentType child=${child.runtimeType} "
+       "commonFields=$intersection");
+
+   return intersection.isNotEmpty;
+
    bool res=true;
 
    for (final f in childFields) {

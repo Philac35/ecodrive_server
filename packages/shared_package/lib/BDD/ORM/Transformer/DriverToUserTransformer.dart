@@ -8,7 +8,7 @@
   import '../Relations/RelationMeta.dart';
   import 'Interface/TransformerAbstract.dart';
 
-  class DriverToUserTransformer extends TransformerAbstract<User> {
+  class DriverToUserTransformer extends TransformerAbstract<Driver> {
     @override
     Map<String, dynamic>? extract(EntityInterface child, RelationMeta relation) {
       final driver = child as Driver;
@@ -31,7 +31,7 @@
     }
 
     @override
-    void attach(EntityInterface child, User parent, RelationMeta relation) {
+    void attach(EntityInterface child, dynamic parent, RelationMeta relation) {
       final driver = child as Driver;
       driver.user = parent; // link in memory
     }
