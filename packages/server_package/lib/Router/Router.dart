@@ -14,6 +14,7 @@ import 'package:shared_package/BDD/Model/AbstractModels/PhotoEntity.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/TravelEntity.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/UserEntity.dart';
 import 'package:shared_package/BDD/Model/AbstractModels/VehiculeEntity.dart';
+import 'package:shared_package/BDD/Model/RelationMtoM/UserNoticeMtoMEntity.dart';
 import 'package:shared_package/Loader/EnvironmentLoader.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf/shelf.dart';
@@ -58,6 +59,8 @@ class FRouter {
      var entity= c.value['type'].toString();
      if(entity=="Person") continue;
         //print(router);
+
+
         switch(c.value['type'].toString()){   //Les types ne peuvent pas être utilisé via des variable dans un constructeur d'où ce switch
           case 'Address':  routeEntity=  RouteEntityBuilder<Address> (router:router);
           case 'Assurance': routeEntity=  RouteEntityBuilder<Assurance> (router:router);
@@ -73,6 +76,7 @@ class FRouter {
           case 'Photo':  routeEntity=  RouteEntityBuilder<Photo> (router:router);
           case 'Travel':  routeEntity=  RouteEntityBuilder<Travel> (router:router);
           case 'Vehicule':  routeEntity=  RouteEntityBuilder<Vehicule> (router:router);
+          case 'UserNoticeMtoM':  routeEntity=  RouteEntityBuilder<UserNoticeMtoM> (router:router);
         }
 
         routeEntity!.buildGetRoutes();
