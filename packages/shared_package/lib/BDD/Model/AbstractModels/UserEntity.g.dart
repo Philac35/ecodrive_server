@@ -78,6 +78,7 @@ class UserQuery extends Query<User, UserQueryWhere> {
         'gender',
         'credits',
         'email',
+        'preferences',
       ],
       trampoline: trampoline,
     );
@@ -143,12 +144,12 @@ class UserQuery extends Query<User, UserQueryWhere> {
   UserQueryWhere newWhereClause() {
     return UserQueryWhere(this);
   }
-
   Optional<User> parseRow(List row) {
     if (row.every((x) => x == null)) {
       return Optional.empty();
     }
     print('User L151 parseRow : length: ${row.length}');
+    print("User L150, debug parseRow $row");
     var model = User(
       id: fields.contains('id') ? row[0].toString() : null,
       createdAt:
@@ -162,11 +163,12 @@ class UserQuery extends Query<User, UserQueryWhere> {
       credits: fields.contains('credits') ? mapToDouble(row[7]) : 0.0,
       email: fields.contains('email') ? (row[8] as String?) : null,
       //addressId:fields.contains('address_id') && row[10]!=null? row[10] is String ? int.parse(row[10]):row[10] as int: null,
-      photoId:fields.contains('photo_id') && row[9]!=null? row[9] is String ? int.parse(row[9]):row[9] as int: null,
-      personId:fields.contains('person_id')  && row[10]!=null? row[10] is String ? int.parse(row[10]):row[10] as int: null,
-      driverId:fields.contains('driver_id') && row[11]!=null? row[11] is String ? int.parse(row[11]):row[11] as int: null,
-      commandIdList: fields.contains('command_id_list')  && row[12]!=null? List<int>.of(jsonDecode(row[12]) as List<int>): null,
-      userId:fields.contains('user_id') && row[13]!=null? row[13] is String ? int.parse(row[13]):row[13] as int: null,
+     // photoId:fields.contains('photo_id') && row[9]!=null? row[9] is String ? int.parse(row[9]):row[9] as int: null,
+
+      //personId:fields.contains('person_id')  && row[10]!=null? row[10] is String ? int.parse(row[10]):row[10] as int: null,
+      //driverId:fields.contains('driver_id') && row[11]!=null? row[11] is String ? int.parse(row[11]):row[11] as int: null,
+      //commandIdList: fields.contains('command_id_list')  && row[12]!=null? List<int>.of(jsonDecode(row[12]) as List<int>): null,
+      //userId:fields.contains('user_id') && row[13]!=null? row[13] is String ? int.parse(row[13]):row[13] as int: null,
     );
     if (row.length > 14) {
       var modelOpt = PersonQuery().parseRow(row.skip(14).take(15).toList());

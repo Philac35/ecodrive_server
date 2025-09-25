@@ -25,9 +25,6 @@ class PhotoMigration extends Migration {
           .declare('vehicule_id', ColumnType('int'))
           .references('vehicules', 'id');
       table
-          .declare('assurance_id', ColumnType('int'))
-          .references('assurances', 'id');
-      table
           .declare('driving_licence_id', ColumnType('int'))
           .references('driving_licences', 'id');
     });
@@ -290,7 +287,7 @@ class PhotoQueryWhere extends QueryWhere {
 class PhotoQueryValues extends MapQueryValues {
   @override
   Map<String, String> get casts {
-    return { };
+    return {'photo': 'json'};
   }
 
   String? get id {
@@ -390,12 +387,8 @@ class Photo extends PhotoEntity {
       this.personId,
       this.vehicule,
       this.vehiculeId,
-      this.assurance,
-      this.assuranceId,
       this.drivingLicence,
-      this.drivingLicenceId
-
-      });
+      this.drivingLicenceId});
 
   /// A unique identifier corresponding to this item.
   @override
@@ -436,12 +429,6 @@ class Photo extends PhotoEntity {
   int? vehiculeId;
 
   @override
-  AssuranceEntity? assurance;
-
-  @override
-  int? assuranceId;
-
-  @override
   DrivingLicenceEntity? drivingLicence;
 
   @override
@@ -460,8 +447,6 @@ class Photo extends PhotoEntity {
       int? personId,
       VehiculeEntity? vehicule,
       int? vehiculeId,
-      AssuranceEntity? assurance,
-      int? assuranceId ,
       DrivingLicenceEntity? drivingLicence,
       int? drivingLicenceId}) {
     return Photo(
@@ -476,8 +461,6 @@ class Photo extends PhotoEntity {
       personId: personId ?? this.personId,
       vehicule: vehicule ?? this.vehicule,
       vehiculeId: vehiculeId ?? this.vehiculeId,
-      assurance: assurance ?? this.assurance,
-      assuranceId: assuranceId ?? this.assuranceId,
       drivingLicence: drivingLicence ?? this.drivingLicence,
       drivingLicenceId: drivingLicenceId ?? this.drivingLicenceId,
     );
@@ -497,8 +480,6 @@ class Photo extends PhotoEntity {
         other.personId == personId &&
         other.vehicule == vehicule &&
         other.vehiculeId == vehiculeId &&
-        other.assurance == assurance &&
-        other.assuranceId == assuranceId &&
         other.drivingLicence == drivingLicence &&
         other.drivingLicenceId == drivingLicenceId;
   }
@@ -515,24 +496,25 @@ class Photo extends PhotoEntity {
       photo,
       person,
       vehicule,
-      assurance,
       drivingLicence,
     ]);
   }
 
   @override
   String toString() {
-    return 'Photo(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, title=$title, uri=$uri, description=$description, photo=$photo, person=$person,personId=$personId, vehicule=$vehicule, vehiculeId=$vehiculeId,assurance=$assurance,assuranceId=$assuranceId,drivingLicence=$drivingLicence,drivingLicenceId=$drivingLicenceId)';
+    return 'Photo(id=$id, createdAt=$createdAt, updatedAt=$updatedAt, title=$title, uri=$uri, description=$description, photo=$photo, person=$person,personId=$personId, vehicule=$vehicule, vehiculeId=$vehiculeId,drivingLicence=$drivingLicence,drivingLicenceId=$drivingLicenceId)';
   }
 
   Map<String, dynamic> toJson() {
     return PhotoSerializer.toMap(this)!;
   }
 
+    
 
+    
 
 Map<String, Map<String,dynamic>> get accessors => {
- 'id': {"get":id,"set":(val) => id = val},
+  'id': {"get":id,"set":(val) => id = val}, 
 'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val}, 
 'createdAt': {"get":createdAt,"set":(val) => createdAt = val}, 
 'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val}, 
@@ -544,14 +526,11 @@ Map<String, Map<String,dynamic>> get accessors => {
 'personId': {"get":personId,"set":(val) => personId = val}, 
 'vehicule': {"get":vehicule,"set":(val) => vehicule = val}, 
 'vehiculeId': {"get":vehiculeId,"set":(val) => vehiculeId = val}, 
-'assurance': {"get":assurance,"set":(val) => assurance = val},
-'assuranceId': {"get":assuranceId,"set":(val) => assuranceId = val},
-'drivingLicence': {"get":drivingLicence,"set":(val) => drivingLicence = val},
-'drivingLicenceId': {"get":drivingLicenceId,"set":(val) => drivingLicenceId = val},
+'drivingLicence': {"get":drivingLicence,"set":(val) => drivingLicence = val}, 
+'drivingLicenceId': {"get":drivingLicenceId,"set":(val) => drivingLicenceId = val}, 
  };
 
 void setField(String key, dynamic value) {
-  key=StringLib.snakeToCamel(key);
      accessors[key]!['set'](value);  
 
      // Optional: update a backing field if your entity has typed fields
@@ -564,11 +543,8 @@ void setField(String key, dynamic value) {
     
 
 dynamic getField(String key){
-  try{
-    key=StringLib.snakeToCamel(key);
-    return accessors[key]!['get'];
-  }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
-}
+  return accessors[key]!['get'](key);
+  }
 
 }
 
@@ -644,14 +620,6 @@ class PhotoSerializer extends Codec<Photo, Map> {
               ? int.parse(map['vehicule_id'])
               : map['vehicule_id']
           : null,
-      assurance: map['assurance'] != null
-          ? AssuranceSerializer.fromMap(map['assurance'] as Map)
-          : null,
-      assuranceId: map['assurance_id'] != null
-          ? map['assurance_id'] is String
-              ? int.parse(map['assurance_id'])
-              : map['assurance_id']
-          : null,
       drivingLicence: map['driving_licence'] != null
           ? DrivingLicenceSerializer.fromMap(map['driving_licence'] as Map)
           : null,
@@ -681,8 +649,6 @@ class PhotoSerializer extends Codec<Photo, Map> {
       'personId': model.personId,
       'vehicule': VehiculeSerializer.toMap(model.vehicule),
       'vehiculeId': model.vehiculeId,
-      'assurance': AssuranceSerializer.toMap(model.assurance),
-      'assuranceId': model.assuranceId,
       'drivingLicence': DrivingLicenceSerializer.toMap(model.drivingLicence),
       'drivingLicenceId': model.drivingLicenceId
     };
@@ -702,8 +668,6 @@ abstract class PhotoFields {
     personId,
     vehicule,
     vehiculeId,
-    assurance,
-    assuranceId,
     drivingLicence,
     drivingLicenceId
   ];
@@ -729,10 +693,6 @@ abstract class PhotoFields {
   static const String vehicule = 'vehicule';
 
   static const String vehiculeId = 'vehicule_id';
-
-  static const String assurance = 'assurance';
-
-  static const String assuranceId = 'assurance_id';
 
   static const String drivingLicence = 'driving_licence';
 

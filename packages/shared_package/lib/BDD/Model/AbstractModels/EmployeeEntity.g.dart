@@ -57,6 +57,8 @@ class EmployeeQuery extends Query<Employee, EmployeeQueryWhere> {
         'photo_id',
         'auth_user_id',
         'user_id',
+        'administrator_id',
+        'employee_id'
       ],
       trampoline: trampoline,
     );
@@ -118,6 +120,7 @@ class EmployeeQuery extends Query<Employee, EmployeeQueryWhere> {
   }
 
   Optional<Employee> parseRow(List row) {
+    print("Employee parseRow L121 : $row");
     if (row.every((x) => x == null)) {
       return Optional.empty();
     }
@@ -308,7 +311,8 @@ class Employee extends EmployeeEntity {
     this.addressId,
     this.photo,
     this.photoId,
-    //this.authUser,
+    this.authUser,
+    this.authUserId,
     this.user,
     this.userId,
     //this.administrator,
@@ -363,7 +367,10 @@ class Employee extends EmployeeEntity {
   int? photoId;
 
   @override
-  AuthUserEntity? get authUser=> throw(UnimplementedError);
+  AuthUserEntity?  authUser;
+
+  @override
+  int? authUserId;
 
   @override
   UserEntity? user;
@@ -398,7 +405,7 @@ class Employee extends EmployeeEntity {
     PhotoEntity? photo,
     int? photoId,
     AuthUserEntity? authUser,
-    int? AuthUserEntityId,
+    int? authUserId,
     UserEntity? user,
     int? userId,
     EmployeeEntity? employee,
@@ -419,7 +426,8 @@ class Employee extends EmployeeEntity {
       addressId: addressId?? this.addressId,
       photo: photo ?? this.photo,
       photoId: photoId ?? this.photoId,
-     // authUser: authUser ?? this.authUser,
+      authUser: authUser ?? this.authUser,
+      authUserId: authUserId ?? this.authUserId,
        user: user ?? this.user,
        userId: userId ?? this.userId,
     //  administrator: administrator ?? this.administrator,
@@ -445,7 +453,8 @@ class Employee extends EmployeeEntity {
         other.addressId == addressId &&
         other.photo == photo &&
         other.photoId == photoId &&
-       // other.authUser == authUser &&
+        other.authUser == authUser &&
+        other.authUserId == authUserId &&
         other.user == user &&
         other.userId == userId &&
         //other.administrator == administrator &&
@@ -468,7 +477,8 @@ class Employee extends EmployeeEntity {
       email,
       photo,
       photoId,
-      //authUser,
+      authUser,
+      authUserId,
       user,
       userId,
       //administrator,
@@ -503,8 +513,10 @@ Map<String, Map<String,dynamic>> get accessors => {
 'address': {"get":address,"set":(val) => address = val}, 
 'addressId': {"get":addressId,"set":(val) => addressId = val}, 
 'photo': {"get":photo,"set":(val) => photo = val}, 
-'photoId': {"get":photoId,"set":(val) => photoId = val}, 
-'user': {"get":user,"set":(val) => user = val}, 
+'photoId': {"get":photoId,"set":(val) => photoId = val},
+'authUser': {"get":user,"set":(val) => user = val},
+'authUserId': {"get":userId,"set":(val) => userId = val},
+'user': {"get":user,"set":(val) => user = val},
 'userId': {"get":userId,"set":(val) => userId = val}, 
 'person': {"get":person,"set":(val) => person = val}, 
 'personId': {"get":personId,"set":(val) => personId = val}, 
@@ -580,19 +592,27 @@ class EmployeeSerializer extends Codec<Employee, Map> {
               : null,
       firstname: map['firstname'] as String?,
       lastname: map['lastname'] as String?,
-      age: int.parse(map['age'])  as int?,
+      age:  map['age'] != null ?
+               map['age'] is String?
+                int.tryParse(map['age']) :null
+            :null,
       gender: map['gender'] as String?,
-      credits: map['credits']!=null ?  double.parse(map['credits'])  as double:0.0,
+      credits: map['credits'] !=null ?
+                map['credits'] is String?
+                  double.tryParse(map['credits'])
+                    : map['credits']
+                :0.0  ,
       email: map['email'] as String?,
       photo:
           map['photo'] != null
               ? PhotoSerializer.fromMap(map['photo'] as Map)
               : null,
       photoId: map['photo_id'] as int?,
-     /* authUser:
+      authUser:
           map['auth_user'] != null
               ? AuthUserSerializer.fromMap(map['auth_user'] as Map)
-              : null, */
+              : null,
+      authUserId:map['auth_user_id'] as int?,
       user:
           map['user'] != null
               ? UserSerializer.fromMap(map['user'] as Map)
@@ -653,8 +673,8 @@ abstract class EmployeeFields {
     email,
     photo,
     photoId,
-    //authUser,
-    //authUserId,
+    authUser,
+    authUserId,
     user,
     userId,
     //administrator,
@@ -685,7 +705,9 @@ abstract class EmployeeFields {
 
   static const String photoId = 'photo_id';
 
-  //static const String authUser = 'auth_user';
+  static const String authUser = 'auth_user';
+
+  static const String authUserId = 'auth_user_id';
 
   static const String user = 'user';
 

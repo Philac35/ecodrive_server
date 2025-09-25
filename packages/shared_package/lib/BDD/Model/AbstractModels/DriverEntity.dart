@@ -9,6 +9,7 @@ import "package:angel3_serialize/angel3_serialize.dart";
 //import "package:shared_package/Entities/UserEntity.dart";
 import "package:optional/optional_internal.dart";
 import "package:shared_package/BDD/Model/AbstractModels/AddressEntity.dart";
+import "package:shared_package/BDD/Model/RelationMtoM/UserNoticeMtoMEntity.dart";
 
 
 import "../../../Library/StringLibrary/string_librairy.dart";
@@ -41,8 +42,10 @@ abstract class DriverEntity extends UserEntity   implements EntityInterface{
 
 
 
-  @hasMany
+  //@hasMany
+  @ManyToMany(UserNoticeMtoM,foreignKey:'notice_id',localKey:'driver_id',cascadeOnDelete: true)
   List<NoticeEntity >? get notices;
+  List<int>? get noticesIdList;
 
   List<String>? get preferences;
 

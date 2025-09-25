@@ -8,18 +8,20 @@ import 'package:optional/optional_internal.dart';
 import 'package:shared_package/Services/Parser/Uint8ListJsonConverter.dart';
 
 import '../../../Library/StringLibrary/string_librairy.dart';
-import '../../ORM/ORMExtension/SymbolToStringConverter.dart';
-import 'DrivingLicenceEntity.dart';
-import 'AssuranceEntity.dart';
-import '../../Interface/entityInterface.dart';
+
 import 'dart:typed_data';
-import '../Abstract/PersonEntity.dart';
+
 
 //Import migration system
 import 'package:angel3_migration/angel3_migration.dart';
 
+import '../BDD/Interface/entityInterface.dart';
+import '../BDD/Model/Abstract/PersonEntity.dart';
+import '../BDD/Model/AbstractModels/DrivingLicenceEntity.dart';
+import '../BDD/Model/AbstractModels/VehiculeEntity.dart';
 
-import 'VehiculeEntity.dart';
+
+
 
 
 part 'PhotoEntity.g.dart';
@@ -54,9 +56,6 @@ abstract class PhotoEntity extends Model  implements EntityInterface{
   DrivingLicenceEntity ? get drivingLicence;
   int? get drivingLicenceId ;
 
-  @BelongsTo()
-  AssuranceEntity ? get assurance;
-  int? get assuranceId ;
  //PhotoEntity ({this.title,this.uri,this.description,this.photo, this.person_id, this.person,this.vehicule_id, this.vehicule, this.driving_licence_id,this.drivingLicence, String? id});
 
   /*Serialization

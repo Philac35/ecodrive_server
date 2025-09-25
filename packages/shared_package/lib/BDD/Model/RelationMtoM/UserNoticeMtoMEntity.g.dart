@@ -193,8 +193,11 @@ class UserNoticeMtoMQueryValues extends MapQueryValues {
 // **************************************************************************
 
 @generatedSerializable
-class UserNoticeMtoM implements UserNoticeMtoMEntity {
-  UserNoticeMtoM({this.notice, this.user});
+class UserNoticeMtoM extends UserNoticeMtoMEntity {
+  UserNoticeMtoM({this.notice,
+                  this.noticeId,
+                  this.user,
+                  this.userId});
 
   String? cascadeTempKey;
 
@@ -202,12 +205,23 @@ class UserNoticeMtoM implements UserNoticeMtoMEntity {
   NoticeEntity? notice;
 
   @override
+  int? noticeId;
+
+  @override
   UserEntity? user;
 
-  UserNoticeMtoM copyWith({NoticeEntity? notice, UserEntity? user}) {
+  @override
+  int? userId;
+
+  UserNoticeMtoM copyWith({NoticeEntity? notice,
+    int? noticeId,
+    UserEntity? user,
+     int? userId}) {
     return UserNoticeMtoM(
       notice: notice ?? this.notice,
+      noticeId: noticeId ?? this.noticeId,
       user: user ?? this.user,
+      userId: userId ?? this.userId,
     );
   }
 
@@ -215,21 +229,57 @@ class UserNoticeMtoM implements UserNoticeMtoMEntity {
   bool operator ==(other) {
     return other is UserNoticeMtoMEntity &&
         other.notice == notice &&
-        other.user == user;
+        other.noticeId == noticeId &&
+        other.user == user &&
+        other.userId == userId;
   }
 
   @override
   int get hashCode {
-    return hashObjects([notice, user]);
+    return hashObjects([noticeId, userId]);
   }
 
   @override
   String toString() {
-    return 'UserNoticeMtoM(notice=$notice, user=$user)';
+    return 'UserNoticeMtoM(notice=$notice,noticeId=$noticeId, user=$user,userId=$userId)';
   }
 
   Map<String, dynamic> toJson() {
     return UserNoticeMtoMSerializer.toMap(this);
+  }
+
+
+  Map<String, Map<String,dynamic>> get accessors => {
+  'id': {"get":id,"set":(val) => id = val},
+  'cascadeTempKey': {"get":cascadeTempKey,"set":(val) => cascadeTempKey = val},
+  'createdAt': {"get":createdAt,"set":(val) => createdAt = val},
+  'updatedAt': {"get":updatedAt,"set":(val) => updatedAt = val},
+  'user': {"get":user,"set":(val) => user = val},
+  'userId': {"get":userId,"set":(val) => userId = val},
+  'notice': {"get":notice,"set":(val) => notice = val},
+  'noticeId': {"get":noticeId,"set":(val) => noticeId = val}
+  };
+
+
+
+  void setField(String key, dynamic value) {
+    key=key.snakeToCamel();
+    accessors[key]!['set'](value);
+
+    // Optional: update a backing field if your entity has typed fields
+    if (this is dynamic) {
+      try {
+        (this as dynamic).noSuchMethod(Invocation.setter(Symbol(key + '='), [value]));
+      } catch (_) {}
+    }
+  }
+
+
+  dynamic getField(String key){
+    try{
+    key=key.snakeToCamel();
+       return accessors[key]!['get'];
+    }catch(e,s){print("Error to fetch field $key , error:$e, \n stack:$s");}
   }
 }
 
@@ -269,10 +319,16 @@ class UserNoticeMtoMSerializer extends Codec<UserNoticeMtoM, Map> {
           map['notice'] != null
               ? NoticeSerializer.fromMap(map['notice'] as Map)
               : null,
+      noticeId: map['notice_id'] != null?
+      int.parse( map['notice_id'])
+          :null,
       user:
           map['user'] != null
               ? UserSerializer.fromMap(map['user'] as Map)
               : null,
+      userId: map['user_id'] != null?
+      int.parse( map['user_id'])
+          :null,
     );
   }
 
@@ -282,7 +338,9 @@ class UserNoticeMtoMSerializer extends Codec<UserNoticeMtoM, Map> {
     }
     return {
       'notice': NoticeSerializer.toMap(model.notice),
+      'noticeId' : model.noticeId,
       'user': UserSerializer.toMap(model.user),
+      'userId': model.userId
     };
   }
 }
@@ -292,5 +350,9 @@ abstract class UserNoticeMtoMFields {
 
   static const String notice = 'notice';
 
+  static const String noticeId = 'notice_id';
+
   static const String user = 'user';
+
+  static const String userId = 'user_id';
 }

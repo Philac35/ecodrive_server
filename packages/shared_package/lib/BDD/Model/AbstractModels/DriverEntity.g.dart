@@ -223,28 +223,30 @@ class DriverQuery extends Query<Driver, DriverQueryWhere> {
             : null
             : null,
       );
-      if (row.length > 14) {
+      if (row.length > 13) {
         var modelOpt = PersonQuery().parseRow(row.skip(13).take(15).toList());
         modelOpt.ifPresent((m) {
           model = model.copyWith(person: m);
         });
       }
-      if (row.length > 30) {
-        var modelOpt = NoticeQuery().parseRow(row.skip(30).take(7).toList());
+      if (row.length > 28) {
+        var modelOpt = NoticeQuery().parseRow(row.skip(28).take(5).toList());
         modelOpt.ifPresent((m) {
           model = model.copyWith(notices: [m]);
         });
       }
-      if (row.length > 38) {
-        var modelOpt = UserQuery().parseRow(row.skip(38).take(9).toList());
-        print('DriverEntity L194: type of model Opt ${modelOpt.runtimeType}');
+      if (row.length > 33) {
+        print('DriverEntity L239 debug parseRow, show row for user : $row');
+        var modelOpt = UserQuery().parseRow(row.skip(34).take(10).toList());
+
+        print('DriverEntity L242: type of model Opt ${modelOpt.runtimeType}');
         modelOpt.ifPresent((m) {
           model = model.copyWith(user: m as UserEntity);
         });
       }
     } catch (e, s) {
-      print('L202,parseRow error : $e');
-      print('Stack:$s ');
+      print('L246,parseRow error : $e \n stack:$s');
+
     }
     return Optional.of(model);
   }
@@ -492,7 +494,7 @@ class DriverQueryValues extends MapQueryValues {
     lastname = model.lastname;
     age = model.age;
     gender = model.gender;
-    credits = model.credits!;
+    credits = model.credits?? 0.0;
     email = model.email;
     preferences = model.preferences;
     if (model.personId != null) {
@@ -537,6 +539,7 @@ class Driver extends DriverEntity {
     List<int>? commandIdList = const [],
     this.authUserEntity,
     List<NoticeEntity>? notices = const [],
+    List<int>? noticesIdList = const [],
     List<String>? preferences = const [],
     this.user, //required
     this.userId,
@@ -848,6 +851,8 @@ class Driver extends DriverEntity {
       print("Error to fetch field $key , error:$e, \n stack:$s");
     }
   }
+
+ 
 }
 
 // **************************************************************************
@@ -1003,6 +1008,7 @@ class DriverSerializer extends Codec<Driver, Map> {
           model.commandList?.map((m) => CommandSerializer.toMap(m)).toList(),
       // 'auth_user_entity': AuthUserSerializer.toMap(model.authUserEntity),
       'notices': model.notices?.map((m) => NoticeSerializer.toMap(m)).toList(),
+      'noticesIdList':model.noticesIdList,
       'preferences': model.preferences,
       'user': UserSerializer.toMap(model.user),
       'userId': model.userId,

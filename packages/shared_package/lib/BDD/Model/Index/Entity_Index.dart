@@ -21,6 +21,7 @@ import '../AbstractModels/PhotoEntity.dart';
 import '../AbstractModels/TravelEntity.dart';
 import '../AbstractModels/UserEntity.dart';
 import '../AbstractModels/VehiculeEntity.dart';
+import '../RelationMtoM/UserNoticeMtoMEntity.dart';
 
 final Map<String, dynamic> Entity_Index = {
   'Address': { 'type': Address,'queryClass':()=>AddressQuery(),'serializerClass': ()=>AddressSerializer(),'fromMap': AddressSerializer.fromMap, 'toMap': AddressSerializer.toMap,'fields': AddressFields.allFields},
@@ -38,6 +39,7 @@ final Map<String, dynamic> Entity_Index = {
   'Travel': { 'type': Travel,'queryClass':()=>TravelQuery(),'serializerClass': ()=>TravelSerializer(),'fromMap': TravelSerializer.fromMap,'toMap': TravelSerializer.toMap, 'fields': TravelFields.allFields},
   'User': { 'type': User,'queryClass':()=>UserQuery(),'serializerClass':()=> UserSerializer(),'fromMap': UserSerializer.fromMap, 'toMap': UserSerializer.toMap,'fields': UserFields.allFields},
   'Vehicule': { 'type': Vehicule,'queryClass':()=>VehiculeQuery(),'serializerClass':()=> VehiculeSerializer(),'fromMap': VehiculeSerializer.fromMap, 'toMap': VehiculeSerializer.toMap,'fields': VehiculeFields.allFields},
+  'UserNoticeMtoM': { 'type': UserNoticeMtoM,'queryClass':()=>UserNoticeMtoMQuery(),'serializerClass':()=> UserNoticeMtoMSerializer(),'fromMap': UserNoticeMtoMSerializer.fromMap, 'toMap': UserNoticeMtoMSerializer.toMap,'fields': UserNoticeMtoMFields.allFields},
 
 };
 

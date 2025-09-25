@@ -231,10 +231,12 @@ class PersonQuery extends Query<Person, PersonQueryWhere> {
 
 
   Optional<Person> parseRow(List row) {
+
+    print(" parseRow L235 : $row");
+
     if (row.every((x) => x == null)) {
       return Optional.empty();
     }
-
 
     var model = Person(
       id: fields.contains('id') ? row[0] : null,
@@ -307,6 +309,7 @@ class PersonQueryWhere extends QueryWhere {
       gender = StringSqlExpressionBuilder(query, 'gender'),
       credits = NumericSqlExpressionBuilder<double>(query, 'credits'),
       email = StringSqlExpressionBuilder(query, 'email'),
+      addressId = NumericSqlExpressionBuilder<int>(query, 'address_id'),
       photoId = NumericSqlExpressionBuilder<int>(query, 'photo_id'),
       authUserId = NumericSqlExpressionBuilder<int>(query, 'auth_user_id'),
       userId = NumericSqlExpressionBuilder<int>(query, 'user_id'),
@@ -333,6 +336,8 @@ class PersonQueryWhere extends QueryWhere {
 
   final StringSqlExpressionBuilder email;
 
+  final NumericSqlExpressionBuilder<int> addressId;
+
   final NumericSqlExpressionBuilder<int> photoId;
 
   final NumericSqlExpressionBuilder<int> authUserId;
@@ -355,6 +360,7 @@ class PersonQueryWhere extends QueryWhere {
       gender,
       credits,
       email,
+      addressId,
       photoId,
       authUserId,
       userId,
