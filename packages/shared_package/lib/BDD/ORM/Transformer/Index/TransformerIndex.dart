@@ -1,4 +1,5 @@
 import 'package:shared_package/BDD/Interface/entityInterface.dart';
+import 'package:shared_package/BDD/ORM/Transformer/PersonToEmployee.dart';
 import 'package:shared_package/BDD/ORM/Transformer/PersonTransformer.dart';
 import 'package:shared_package/BDD/ORM/Transformer/Transformer.dart';
 import 'package:shared_package/BDD/ORM/Transformer/UserToPersonTransformer.dart';
@@ -10,14 +11,18 @@ import 'package:shared_package/BDD/Model/AbstractModels/Modules/Authentication/E
 //import '../../../../Modules/Authentication/Entities/AuthUser.dart';
 import '../../../Model/Abstract/PersonEntity.dart';
 import '../../../Model/AbstractModels/DriverEntity.dart';
+import '../../../Model/AbstractModels/EmployeeEntity.dart';
 import '../../../Model/AbstractModels/UserEntity.dart';
+import '../AdministratorToPersonTransformer.dart';
 import '../Combinaison/AllOfTransformer.dart';
 import '../Combinaison/OneOfTransformer.dart';
 import '../Combinaison/AnyOfTransformer.dart';
+import '../EmployeeToPersonTransformer.dart';
 import '../Interface/TransformerAbstract.dart';
 import '../PersonFromUserTransformer.dart';
 import '../PersonToAdministrator.dart';
 import '../PersonToAuthUserTransformer.dart';
+import '../PersonFromEmployeeTransformer.dart';
 
 /**
  * transformerIndex
@@ -38,6 +43,7 @@ final Map<String, Map<String, TransformerAbstract>> transformerIndex = {
     ]),
    "AuthUser": PersonToAuthUserTransformer(),
    "Administrator": PersonToAdministrator(),
+   "Employee": PersonToEmployee()
 },
 
 "User":{
@@ -52,6 +58,9 @@ final Map<String, Map<String, TransformerAbstract>> transformerIndex = {
                       DriverToUserTransformer()  //build user from driver
                    ]),
   */
+  "Administrator":{
+    "Person":AdministratorToPersonTransformer(),
+  },
   "AuthUser": {
     "User": UserFromAuthTransformer(),
     "Person": AllOfTransformer<AuthUser>([
@@ -59,5 +68,13 @@ final Map<String, Map<String, TransformerAbstract>> transformerIndex = {
     ]),
 
   },
+  "Employee":{
+    "Person": AllOfTransformer<Employee>([
+          EmployeeToPersonTransformer(),   // send common fields to Person
+          PersonFromEmployeeTransformer(), // extract field person
+  ])},
+
+
+
 
 };
